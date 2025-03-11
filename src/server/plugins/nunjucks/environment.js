@@ -35,7 +35,7 @@ for (const [name, nunjucksFilter] of Object.entries(filters)) {
  * @this {NunjucksContext}
  * @param {FormSubmissionError[]} errors
  */
-function checkErrorTemplates(errors) {
+export function checkErrorTemplates(errors) {
   const { context } = this.ctx
 
   if (!context) {
@@ -55,7 +55,7 @@ environment.addGlobal('checkErrorTemplates', checkErrorTemplates)
  * @this {NunjucksContext}
  * @param {ComponentViewModel} component
  */
-function checkComponentTemplates(component) {
+export function checkComponentTemplates(component) {
   const { context } = this.ctx
 
   if (!context) {
@@ -101,7 +101,7 @@ environment.addGlobal('checkComponentTemplates', checkComponentTemplates)
  * @this {NunjucksContext}
  * @param {string} template
  */
-function evaluate(template) {
+export function evaluate(template) {
   const { context } = this.ctx
 
   return context ? evaluateTemplate(template, context) : template
