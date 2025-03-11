@@ -57,8 +57,8 @@ export interface PluginOptions {
 }
 
 export const plugin = {
-  name: '@defra/forms-runner/engine',
-  dependencies: '@hapi/vision',
+  name: '@defra/forms-engine-plugin',
+  dependencies: ['@hapi/vision', '@hapi/crumb', '@hapi/yar', 'hapi-pino'],
   multiple: true,
   register(server, options) {
     const { model, services = defaultServices, controllers } = options
