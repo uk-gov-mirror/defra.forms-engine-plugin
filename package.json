@@ -4,7 +4,6 @@
   "description": "Defra forms engine",
   "type": "module",
   "main": ".server/server/plugins/engine/index.js",
-  "private": true,
   "scripts": {
     "build": "npm run build:server && npm run build:client",
     "build:client": "NODE_ENV=${NODE_ENV:-production} webpack",
