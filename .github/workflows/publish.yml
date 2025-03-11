@@ -1,4 +1,4 @@
-name: Publish Model
+name: Publish Engine plugin
 
 on:
   push:
@@ -9,6 +9,7 @@ on:
       - 'babel.config.*'
       - 'src/**'
       - '!**/*.test.*'
+      - '.github/workflows'
 
 concurrency:
   group: publish-engine-plugin
