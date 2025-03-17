@@ -6,10 +6,11 @@ import {
   type ResponseToolkit,
   type RouteOptions
 } from '@hapi/hapi'
-import vision from '@hapi/vision'
+// import vision from '@hapi/vision'
 import { isEqual } from 'date-fns'
 import Joi from 'joi'
-import nunjucks, { type Environment } from 'nunjucks'
+import { type Environment } from 'nunjucks'
+// import nunjucks, { type Environment } from 'nunjucks'
 
 import { PREVIEW_PATH_PREFIX } from '~/src/server/constants.js'
 import {
@@ -23,12 +24,12 @@ import {
   proceed,
   redirectPath
 } from '~/src/server/plugins/engine/helpers.js'
-import {
-  PLUGIN_PATH,
-  VIEW_PATH,
-  context,
-  prepareNunjucksEnvironment
-} from '~/src/server/plugins/engine/index.js'
+// import {
+//   PLUGIN_PATH,
+//   VIEW_PATH,
+//   context,
+//   prepareNunjucksEnvironment
+// } from '~/src/server/plugins/engine/index.js'
 import {
   FormModel,
   SummaryViewModel
@@ -76,62 +77,62 @@ export const plugin = {
   name: '@defra/forms-engine-plugin',
   dependencies: ['@hapi/crumb', '@hapi/yar', 'hapi-pino'],
   multiple: true,
-  async register(server, options) {
+  register(server, options) {
     const {
       model,
       services = defaultServices,
       controllers,
-      cacheName,
-      pluginPath = PLUGIN_PATH,
-      filters
+      cacheName
+      // pluginPath = PLUGIN_PATH,
+      // filters
     } = options
     const { formsService } = services
     const cacheService = new CacheService(server, cacheName)
 
     // Paths array to tell `vision` and `nunjucks` where template files are stored.
-    const path = [`${pluginPath}/${VIEW_PATH}`]
+    // const path = [`${pluginPath}/${VIEW_PATH}`]
 
-    await server.register({
-      plugin: vision,
-      options: {
-        engines: {
-          html: {
-            compile: (
-              path: string,
-              compileOptions: { environment: Environment }
-            ) => {
-              const template = nunjucks.compile(
-                path,
-                compileOptions.environment
-              )
+    // await server.register({
+    //   plugin: vision,
+    //   options: {
+    //     engines: {
+    //       html: {
+    //         compile: (
+    //           path: string,
+    //           compileOptions: { environment: Environment }
+    //         ) => {
+    //           const template = nunjucks.compile(
+    //             path,
+    //             compileOptions.environment
+    //           )
 
-              return (context: object | undefined) => {
-                return template.render(context)
-              }
-            },
-            prepare: (options: EngineConfigurationObject, next) => {
-              // Nunjucks also needs an additional path configuration
-              // to use the templates and macros from `govuk-frontend`
-              const environment = nunjucks.configure([
-                ...path,
-                'node_modules/govuk-frontend/dist'
-              ])
+    //           return (context: object | undefined) => {
+    //             return template.render(context)
+    //           }
+    //         },
+    //         prepare: (options: EngineConfigurationObject, next) => {
+    //           // Nunjucks also needs an additional path configuration
+    //           // to use the templates and macros from `govuk-frontend`
+    //           const environment = nunjucks.configure([
+    //             ...path,
+    //             'node_modules/govuk-frontend/dist'
+    //           ])
 
-              // Applies custom filters and globals for nunjucks
-              // that are required by the `forms-engine-plugin`
-              prepareNunjucksEnvironment(environment, filters)
+    //           // Applies custom filters and globals for nunjucks
+    //           // that are required by the `forms-engine-plugin`
+    //           prepareNunjucksEnvironment(environment, filters)
 
-              options.compileOptions.environment = environment
+    //           options.compileOptions.environment = environment
 
-              next()
-            }
-          }
-        },
-        path,
-        // Provides global context used with all templates
-        context
-      }
-    })
+    //           next()
+    //         }
+    //       }
+    //     },
+    //     path,
+    //     // Provides global context used with all templates
+    //     context
+    //   }
+    // })
 
     server.expose('cacheService', cacheService)
 
