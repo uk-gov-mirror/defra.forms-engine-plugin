@@ -4,6 +4,10 @@
   "description": "Defra forms engine",
   "type": "module",
   "main": ".server/server/plugins/engine/index.js",
+  "files": [
+    ".server",
+    ".public"
+  ],
   "scripts": {
     "build": "npm run build:server && npm run build:client",
     "build:client": "NODE_ENV=${NODE_ENV:-production} webpack",
@@ -78,6 +82,7 @@
     "lodash": "^4.17.21",
     "marked": "^15.0.6",
     "nunjucks": "^3.2.3",
+    "outdent": "^0.8.0",
     "pino": "^9.6.0",
     "pino-pretty": "^13.0.0",
     "proxy-agent": "^6.5.0",
@@ -142,7 +147,6 @@
     "jest-extended": "^4.0.2",
     "jsdom": "^25.0.1",
     "lint-staged": "^15.3.0",
-    "outdent": "^0.8.0",
     "postcss": "^8.4.49",
     "postcss-load-config": "^6.0.1",
     "postcss-loader": "^8.1.1",

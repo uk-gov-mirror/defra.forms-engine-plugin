@@ -113,6 +113,26 @@ module.exports = {
           }
         ],
 
+        'n/no-unpublished-import': [
+          'error',
+          {
+            convertPath: [
+              {
+                include: ['src/**'],
+                exclude: [
+                  '**/*.test.{js,ts}',
+                  'test/**/*',
+                  'jest.environment.js',
+                  'globals.d.ts',
+                  'postcss.config.js',
+                  'webpack.config.js'
+                ],
+                replace: ['^src/(.+)$', '.server/$1']
+              }
+            ]
+          }
+        ],
+
         // Check for valid formatting
         'jsdoc/check-line-alignment': [
           'warn',
