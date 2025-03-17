@@ -34,23 +34,6 @@ Optional dependencies
 
 ## Setup
 
-### Templates and views
-
-Vision and nunjucks both need to be configured to search in the `forms-engine-plugin` views directory when looking for template files.
-
-For vision this is done through the `path` [plugin option](https://github.com/hapijs/vision/blob/master/API.md#options)
-For nunjucks it is configured through the environment [configure options](https://mozilla.github.io/nunjucks/api.html#configure).
-
-The `forms-engine-plugin` path to add can be imported from:
-
-`import { VIEW_PATH } from '@defra/forms-engine-plugin'`
-
-Which can then be appended to the `node_modules` path `node_modules/@defra/forms-engine`.
-
-The main template layout is `govuk-frontend`'s `template.njk` file, this also needs to be added to the `path`s that nunjucks can look in.
-
-See example below for more detail.
-
 ### Form config
 
 The `form-engine-plugin` uses JSON configuration files to serve form journeys.
@@ -114,12 +97,10 @@ TODO
 ```
 import hapi from '@hapi/hapi'
 import yar from '@hapi/yar'
-import vision from '@hapi/vision'
 import crumb from '@hapi/crumb'
 import inert from '@hapi/inert'
 import pino from 'hapi-pino'
-import nunjucks from 'nunjucks'
-import plugin, { prepareNunjucksEnvironment, context, VIEW_PATH } from '@defra/forms-engine-plugin'
+import plugin from '@defra/forms-engine-plugin'
 
 const server = hapi.server({
   port: 3000
@@ -138,51 +119,7 @@ await server.register({
   }
 })
 
-// Paths array to tell `vision` and `nunjucks` where template files are stored.
-// This can include `server/views`, or change it to where your local template are stored.
-const path = [
-  `node_modules/@defra/forms-engine-plugin/${VIEW_PATH}`,
-  'server/views'
-]
-
-await server.register({
-  plugin: vision,
-  options: {
-    engines: {
-      html: {
-        compile: (src, options) => {
-          const template = nunjucks.compile(src, options.environment)
-
-          return (context) => {
-            return template.render(context)
-          }
-        },
-        prepare: (options, next) => {
-          // Nunjucks also needs an additional path configuration
-          // to use the templates and macros from `govuk-frontend`
-          const environment = nunjucks.configure(
-            [
-              ...path,
-              'node_modules/govuk-frontend/dist'
-            ]
-          )
-
-          // Applies custom filters and globals for nunjucks
-          // that are required by the `forms-engine-plugin`
-          prepareNunjucksEnvironment(environment)
-
-          options.compileOptions.environment = environment
-
-          return next()
-        }
-      }
-    },
-    path,
-    context
-  }
-})
-
-// Registers the `forms-engine-plugin`
+// Register the `forms-engine-plugin`
 await server.register({
   plugin
 })
@@ -201,7 +138,11 @@ The forms plugin is configured with [registration options](https://hapi.dev/api/
   - `formSubmissionService` - used prepare the form during submission (ignore - subject to change)
   - `outputService` - used to save the submission
 - `controllers` (optional) - Object map of custom page controllers used to override the default. See [custom controllers](#custom-controllers)
-- `cacheName` (optional) - The cache name to use. Defaults to hapi's [default server cache]. Recommended for production. See [here](#custom-cache) for more details
+- `filters` (optional) - A map of custom template filters to include
+- `cacheName` (optional) - The cache name to use. Defaults to hapi's [default server cache]. Recommended for production. See [here]
+(#custom-cache) for more details
+- `pluginPath` (optional) - The location of the plugin (defaults to `node_modules/@defra/forms-engine-plugin`)
+
 
 ### Services
 
@@ -210,6 +151,25 @@ TODO
 ### Custom controllers
 
 TODO
+
+### Custom filters
+
+Use the `filter` plugin option to provide custom template filters.
+Filters are available in both [nunjucks](https://mozilla.github.io/nunjucks/templating.html#filters) and [liquid](https://liquidjs.com/filters/overview.html) templates.
+
+```
+const formatter = new Intl.NumberFormat('en-GB')
+
+await server.register({
+  plugin,
+  options: {
+    filters: {
+      money: value => formatter.format(value),
+      upper: value => typeof value === 'string' ? value.toUpperCase() : value
+    }
+  }
+})
+```
 
 ### Custom cache
 
@@ -321,3 +281,21 @@ There are a number of `LiquidJS` filters available to you from within the templa
   }
 ]
 ```
+
+## Templates and views: Extending the default layout
+
+TODO
+
+To override the default page template, vision and nunjucks both need to be configured to search in the `forms-engine-plugin` views directory when looking for template files.
+
+For vision this is done through the `path` [plugin option](https://github.com/hapijs/vision/blob/master/API.md#options)
+For nunjucks it is configured through the environment [configure options](https://mozilla.github.io/nunjucks/api.html#configure).
+
+The `forms-engine-plugin` path to add can be imported from:
+
+`import { VIEW_PATH } from '@defra/forms-engine-plugin'`
+
+Which can then be appended to the `node_modules` path `node_modules/@defra/forms-engine`.
+
+The main template layout is `govuk-frontend`'s `template.njk` file, this also needs to be added to the `path`s that nunjucks can look in.
+

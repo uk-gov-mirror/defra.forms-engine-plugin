@@ -1,6 +1,9 @@
 import { type Environment } from 'nunjucks'
 
+
+import { engine } from '~/src/server/plugins/engine/helpers.js'
 import { plugin } from '~/src/server/plugins/engine/plugin.js'
+import { type FilterFunction } from '~/src/server/plugins/engine/types.js'
 import {
   checkComponentTemplates,
   checkErrorTemplates,
@@ -19,14 +22,26 @@ const globals = {
 }
 
 export const VIEW_PATH = 'src/server/plugins/engine/views'
+export const PLUGIN_PATH = 'node_modules/@defra/forms-engine-plugin'
 
-export const prepareNunjucksEnvironment = function (env: Environment) {
+export const prepareNunjucksEnvironment = function (
+  env: Environment,
+  additionalFilters?: Record<string, FilterFunction>
+) {
   for (const [name, nunjucksFilter] of Object.entries(filters)) {
     env.addFilter(name, nunjucksFilter)
   }
 
   for (const [name, nunjucksGlobal] of Object.entries(globals)) {
     env.addGlobal(name, nunjucksGlobal)
+  }
+
+  // Apply any additional filters to both the liquid and nunjucks engines
+  if (additionalFilters) {
+    for (const [name, filter] of Object.entries(additionalFilters)) {
+      env.addFilter(name, filter)
+      engine.registerFilter(name, filter)
+    }
   }
 }
 
