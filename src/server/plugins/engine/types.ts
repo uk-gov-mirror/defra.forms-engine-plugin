@@ -313,3 +313,5 @@ export type PageViewModel =
   | FormPageViewModel
   | RepeaterSummaryPageViewModel
   | FeaturedFormPageViewModel
+
+export type FilterFunction = (value: unknown) => unknown

@@ -6,20 +6,30 @@ import {
   type ResponseToolkit,
   type RouteOptions
 } from '@hapi/hapi'
+// import vision from '@hapi/vision'
 import { isEqual } from 'date-fns'
 import Joi from 'joi'
+import { type Environment } from 'nunjucks'
+// import nunjucks, { type Environment } from 'nunjucks'
 
 import { PREVIEW_PATH_PREFIX } from '~/src/server/constants.js'
 import {
   checkEmailAddressForLiveFormSubmission,
   checkFormStatus,
   findPage,
+  getCacheService,
   getPage,
   getStartPath,
   normalisePath,
   proceed,
   redirectPath
 } from '~/src/server/plugins/engine/helpers.js'
+// import {
+//   PLUGIN_PATH,
+//   VIEW_PATH,
+//   context,
+//   prepareNunjucksEnvironment
+// } from '~/src/server/plugins/engine/index.js'
 import {
   FormModel,
   SummaryViewModel
@@ -32,7 +42,10 @@ import { getFormSubmissionData } from '~/src/server/plugins/engine/pageControlle
 import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers.js'
 import * as defaultServices from '~/src/server/plugins/engine/services/index.js'
 import { getUploadStatus } from '~/src/server/plugins/engine/services/uploadService.js'
-import { type FormContext } from '~/src/server/plugins/engine/types.js'
+import {
+  type FilterFunction,
+  type FormContext
+} from '~/src/server/plugins/engine/types.js'
 import {
   type FormRequest,
   type FormRequestPayload,
@@ -48,21 +61,80 @@ import {
   stateSchema
 } from '~/src/server/schemas/index.js'
 import * as httpService from '~/src/server/services/httpService.js'
+import { CacheService } from '~/src/server/services/index.js'
 import { type Services } from '~/src/server/types.js'
 
 export interface PluginOptions {
   model?: FormModel
   services?: Services
   controllers?: Record<string, typeof PageController>
+  cacheName?: string
+  pluginPath?: string
+  filters?: Record<string, FilterFunction>
 }
 
 export const plugin = {
   name: '@defra/forms-engine-plugin',
-  dependencies: ['@hapi/vision', '@hapi/crumb', '@hapi/yar', 'hapi-pino'],
+  dependencies: ['@hapi/crumb', '@hapi/yar', 'hapi-pino'],
   multiple: true,
   register(server, options) {
-    const { model, services = defaultServices, controllers } = options
+    const {
+      model,
+      services = defaultServices,
+      controllers,
+      cacheName
+      // pluginPath = PLUGIN_PATH,
+      // filters
+    } = options
     const { formsService } = services
+    const cacheService = new CacheService(server, cacheName)
+
+    // Paths array to tell `vision` and `nunjucks` where template files are stored.
+    // const path = [`${pluginPath}/${VIEW_PATH}`]
+
+    // await server.register({
+    //   plugin: vision,
+    //   options: {
+    //     engines: {
+    //       html: {
+    //         compile: (
+    //           path: string,
+    //           compileOptions: { environment: Environment }
+    //         ) => {
+    //           const template = nunjucks.compile(
+    //             path,
+    //             compileOptions.environment
+    //           )
+
+    //           return (context: object | undefined) => {
+    //             return template.render(context)
+    //           }
+    //         },
+    //         prepare: (options: EngineConfigurationObject, next) => {
+    //           // Nunjucks also needs an additional path configuration
+    //           // to use the templates and macros from `govuk-frontend`
+    //           const environment = nunjucks.configure([
+    //             ...path,
+    //             'node_modules/govuk-frontend/dist'
+    //           ])
+
+    //           // Applies custom filters and globals for nunjucks
+    //           // that are required by the `forms-engine-plugin`
+    //           prepareNunjucksEnvironment(environment, filters)
+
+    //           options.compileOptions.environment = environment
+
+    //           next()
+    //         }
+    //       }
+    //     },
+    //     path,
+    //     // Provides global context used with all templates
+    //     context
+    //   }
+    // })
+
+    server.expose('cacheService', cacheService)
 
     server.app.model = model
 
@@ -178,7 +250,7 @@ export const plugin = {
         throw Boom.notFound(`No model found for /${params.path}`)
       }
 
-      const { cacheService } = request.services([])
+      const cacheService = getCacheService(request.server)
       const page = getPage(model, request)
       const state = await page.getState(request)
       const flash = cacheService.getFlash(request)
@@ -671,3 +743,11 @@ export const plugin = {
     })
   }
 } satisfies Plugin<PluginOptions>
+
+interface CompileOptions {
+  environment: Environment
+}
+
+export interface EngineConfigurationObject {
+  compileOptions: CompileOptions
+}
