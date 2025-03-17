@@ -1,6 +1,5 @@
 import { type Environment } from 'nunjucks'
 
-
 import { engine } from '~/src/server/plugins/engine/helpers.js'
 import { plugin } from '~/src/server/plugins/engine/plugin.js'
 import { type FilterFunction } from '~/src/server/plugins/engine/types.js'

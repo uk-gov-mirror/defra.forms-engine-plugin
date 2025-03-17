@@ -63,7 +63,6 @@ POST    /{slug}/{path}
 A unique `slug` is used to route the user to the correct form, and the `path` used to identify the correct page within the form to show.
 The [plugin registration options](#options) have a `services` setting to provide a `formsService` that is responsible for returning `form definition` data.
 
-
 WARNING: This below is subject to change
 
 A `formsService` has two methods, one for returning `formMetadata` and another to return `formDefinition`s.
@@ -140,9 +139,8 @@ The forms plugin is configured with [registration options](https://hapi.dev/api/
 - `controllers` (optional) - Object map of custom page controllers used to override the default. See [custom controllers](#custom-controllers)
 - `filters` (optional) - A map of custom template filters to include
 - `cacheName` (optional) - The cache name to use. Defaults to hapi's [default server cache]. Recommended for production. See [here]
-(#custom-cache) for more details
+  (#custom-cache) for more details
 - `pluginPath` (optional) - The location of the plugin (defaults to `node_modules/@defra/forms-engine-plugin`)
-
 
 ### Services
 
@@ -298,4 +296,3 @@ The `forms-engine-plugin` path to add can be imported from:
 Which can then be appended to the `node_modules` path `node_modules/@defra/forms-engine`.
 
 The main template layout is `govuk-frontend`'s `template.njk` file, this also needs to be added to the `path`s that nunjucks can look in.
-
