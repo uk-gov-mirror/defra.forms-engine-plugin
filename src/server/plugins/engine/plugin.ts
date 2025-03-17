@@ -9,7 +9,7 @@ import {
 import vision from '@hapi/vision'
 import { isEqual } from 'date-fns'
 import Joi from 'joi'
-import nunjucks from 'nunjucks'
+import nunjucks, { type Environment } from 'nunjucks'
 
 import { PREVIEW_PATH_PREFIX } from '~/src/server/constants.js'
 import {
@@ -96,14 +96,20 @@ export const plugin = {
       options: {
         engines: {
           html: {
-            compile: (src, options) => {
-              const template = nunjucks.compile(src, options.environment)
+            compile: (
+              path: string,
+              compileOptions: { environment: Environment }
+            ) => {
+              const template = nunjucks.compile(
+                path,
+                compileOptions.environment
+              )
 
-              return (context) => {
+              return (context: object | undefined) => {
                 return template.render(context)
               }
             },
-            prepare: (options, next) => {
+            prepare: (options: EngineConfigurationObject, next) => {
               // Nunjucks also needs an additional path configuration
               // to use the templates and macros from `govuk-frontend`
               const environment = nunjucks.configure([
@@ -736,3 +742,11 @@ export const plugin = {
     })
   }
 } satisfies Plugin<PluginOptions>
+
+interface CompileOptions {
+  environment: Environment
+}
+
+export interface EngineConfigurationObject {
+  compileOptions: CompileOptions
+}
