@@ -6,7 +6,8 @@
   "main": ".server/server/plugins/engine/index.js",
   "files": [
     ".server",
-    ".public"
+    ".public",
+    "src"
   ],
   "scripts": {
     "build": "npm run build:server && npm run build:client",
