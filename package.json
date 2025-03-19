@@ -3,7 +3,6 @@
   "version": "0.1.1",
   "description": "Defra forms engine",
   "type": "module",
-  "main": ".server/server/plugins/engine/index.js",
   "files": [
     ".server",
     ".public",
@@ -12,10 +11,14 @@
   "exports": {
     ".": {
       "sass": "./.server/client/stylesheets/application.scss",
-      "import": "./.server/client/javascripts/application.js",
-      "default": "./.server/client/javascripts/application.js"
+      "import": "./.server/server/plugins/engine/index.js",
+      "default": "./.server/server/plugins/engine/index.js"
     },
-    "./file-upload.js": "./.server/client/javascripts/file-upload.js"
+    "./application.js": "./.server/client/javascripts/application.js",
+    "./file-upload.js": "./.server/client/javascripts/file-upload.js",
+    "./application.min.js": "./.public/javascripts/application.min.js",
+    "./file-upload.min.js": "./.public/javascripts/file-upload.min.js",
+    "./controllers/*": "./.server/server/plugins/engine/pageControllers/*"
   },
   "scripts": {
     "build": "npm run build:server && npm run build:client",
