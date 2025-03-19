@@ -37,12 +37,12 @@ export default {
   output: {
     filename:
       NODE_ENV === 'production'
-        ? 'javascripts/[name].[contenthash:7].min.js'
+        ? 'javascripts/[name].min.js'
         : 'javascripts/[name].js',
 
     chunkFilename:
       NODE_ENV === 'production'
-        ? 'javascripts/[name].[chunkhash:7].min.js'
+        ? 'javascripts/[name].min.js'
         : 'javascripts/[name].js',
 
     path: join(import.meta.dirname, '.public'),
@@ -96,7 +96,7 @@ export default {
           binary: false,
           filename:
             NODE_ENV === 'production'
-              ? 'stylesheets/[name].[contenthash:7].min.css'
+              ? 'stylesheets/[name].min.css'
               : 'stylesheets/[name].css'
         },
         use: [

@@ -4,13 +4,13 @@ import {
   type Plugin,
   type ResponseObject,
   type ResponseToolkit,
-  type RouteOptions
+  type RouteOptions,
+  type Server
 } from '@hapi/hapi'
-// import vision from '@hapi/vision'
+import vision from '@hapi/vision'
 import { isEqual } from 'date-fns'
 import Joi from 'joi'
-import { type Environment } from 'nunjucks'
-// import nunjucks, { type Environment } from 'nunjucks'
+import nunjucks, { type Environment } from 'nunjucks'
 
 import { PREVIEW_PATH_PREFIX } from '~/src/server/constants.js'
 import {
@@ -24,12 +24,12 @@ import {
   proceed,
   redirectPath
 } from '~/src/server/plugins/engine/helpers.js'
-// import {
-//   PLUGIN_PATH,
-//   VIEW_PATH,
-//   context,
-//   prepareNunjucksEnvironment
-// } from '~/src/server/plugins/engine/index.js'
+import {
+  PLUGIN_PATH,
+  VIEW_PATH,
+  context,
+  prepareNunjucksEnvironment
+} from '~/src/server/plugins/engine/index.js'
 import {
   FormModel,
   SummaryViewModel
@@ -69,70 +69,83 @@ export interface PluginOptions {
   services?: Services
   controllers?: Record<string, typeof PageController>
   cacheName?: string
-  pluginPath?: string
+  viewPaths?: string[]
   filters?: Record<string, FilterFunction>
+  pluginPath?: string
 }
 
 export const plugin = {
   name: '@defra/forms-engine-plugin',
   dependencies: ['@hapi/crumb', '@hapi/yar', 'hapi-pino'],
   multiple: true,
-  register(server, options) {
+  async register(server: Server, options: PluginOptions) {
     const {
       model,
       services = defaultServices,
       controllers,
-      cacheName
-      // pluginPath = PLUGIN_PATH,
-      // filters
+      cacheName,
+      viewPaths,
+      filters,
+      pluginPath = PLUGIN_PATH
     } = options
     const { formsService } = services
     const cacheService = new CacheService(server, cacheName)
 
     // Paths array to tell `vision` and `nunjucks` where template files are stored.
-    // const path = [`${pluginPath}/${VIEW_PATH}`]
+    // We need to include `VIEW_PATH` in addition the runtime path (node_modules)
+    // to keep the local tests working
+    const path = [`${pluginPath}/${VIEW_PATH}`, VIEW_PATH]
 
-    // await server.register({
-    //   plugin: vision,
-    //   options: {
-    //     engines: {
-    //       html: {
-    //         compile: (
-    //           path: string,
-    //           compileOptions: { environment: Environment }
-    //         ) => {
-    //           const template = nunjucks.compile(
-    //             path,
-    //             compileOptions.environment
-    //           )
+    // Include any additional user provided view paths so our internal views engine
+    // can find any files they provide from the consumer side if using custom `page.view`s
+    if (Array.isArray(viewPaths) && viewPaths.length) {
+      path.push(...viewPaths)
+    }
 
-    //           return (context: object | undefined) => {
-    //             return template.render(context)
-    //           }
-    //         },
-    //         prepare: (options: EngineConfigurationObject, next) => {
-    //           // Nunjucks also needs an additional path configuration
-    //           // to use the templates and macros from `govuk-frontend`
-    //           const environment = nunjucks.configure([
-    //             ...path,
-    //             'node_modules/govuk-frontend/dist'
-    //           ])
+    await server.register({
+      plugin: vision,
+      options: {
+        engines: {
+          html: {
+            compile: (
+              path: string,
+              compileOptions: { environment: Environment }
+            ) => {
+              const template = nunjucks.compile(
+                path,
+                compileOptions.environment
+              )
 
-    //           // Applies custom filters and globals for nunjucks
-    //           // that are required by the `forms-engine-plugin`
-    //           prepareNunjucksEnvironment(environment, filters)
+              return (context: object | undefined) => {
+                return template.render(context)
+              }
+            },
+            prepare: (
+              options: EngineConfigurationObject,
+              next: (err?: Error) => void
+            ) => {
+              // Nunjucks also needs an additional path configuration
+              // to use the templates and macros from `govuk-frontend`
+              const environment = nunjucks.configure([
+                ...path,
+                'node_modules/govuk-frontend/dist'
+              ])
 
-    //           options.compileOptions.environment = environment
+              // Applies custom filters and globals for nunjucks
+              // that are required by the `forms-engine-plugin`
+              prepareNunjucksEnvironment(environment, filters)
 
-    //           next()
-    //         }
-    //       }
-    //     },
-    //     path,
-    //     // Provides global context used with all templates
-    //     context
-    //   }
-    // })
+              options.compileOptions.environment = environment
+
+              next()
+            }
+          }
+        },
+        path,
+        // Provides global context used with all templates
+        context
+      }
+    })
 
     server.expose('cacheService', cacheService)
 
@@ -711,9 +724,14 @@ export const plugin = {
     server.route({
       method: 'get',
       path: '/upload-status/{uploadId}',
-      handler: async (request, h) => {
+      handler: async (
+        request: FormRequest,
+        h: Pick<ResponseToolkit, 'response'>
+      ) => {
         try {
-          const { uploadId } = request.params as { uploadId: string }
+          const { uploadId } = request.params as unknown as {
+            uploadId: string
+          }
           const status = await getUploadStatus(uploadId)
 
           if (!status) {

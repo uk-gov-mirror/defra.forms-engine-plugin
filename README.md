@@ -307,7 +307,9 @@ There are a number of `LiquidJS` filters available to you from within the templa
 ]
 ```
 
-## Templates and views: Extending the default layout
+## Templates and views
+
+### Extending the default layout
 
 TODO
 
@@ -323,6 +325,8 @@ The `forms-engine-plugin` path to add can be imported from:
 Which can then be appended to the `node_modules` path `node_modules/@defra/forms-engine`.
 
 The main template layout is `govuk-frontend`'s `template.njk` file, this also needs to be added to the `path`s that nunjucks can look in.
+
+### Custom page view
 
 ## Publishing the Package
 
