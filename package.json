@@ -15,10 +15,14 @@
       "default": "./.server/server/plugins/engine/index.js"
     },
     "./application.js": "./.server/client/javascripts/application.js",
-    "./file-upload.js": "./.server/client/javascripts/file-upload.js",
     "./application.min.js": "./.public/javascripts/application.min.js",
+    "./application.min.js.map": "./.public/javascripts/application.min.js.map",
+    "./file-upload.js": "./.server/client/javascripts/file-upload.js",
     "./file-upload.min.js": "./.public/javascripts/file-upload.min.js",
-    "./controllers/*": "./.server/server/plugins/engine/pageControllers/*"
+    "./file-upload.min.js.map": "./.public/javascripts/file-upload.min.js.map",
+    "./application.min.css": "./.public/stylesheets/application.min.css",
+    "./controllers/*": "./.server/server/plugins/engine/pageControllers/*",
+    "./package.json": "./package.json"
   },
   "scripts": {
     "build": "npm run build:server && npm run build:client",
