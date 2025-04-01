@@ -18,7 +18,10 @@ describe('FormModel', () => {
         basePath: '/components'
       })
 
-      const state = { checkboxesSingle: ['Arabian', 'Shetland'] }
+      const state = {
+        $$__referenceNumber: 'foobar',
+        checkboxesSingle: ['Arabian', 'Shetland']
+      }
       const pageUrl = new URL('http://example.com/components/fields-required')
 
       const request: FormContextRequest = {
@@ -36,6 +39,58 @@ describe('FormModel', () => {
       expect(context.payload.checkboxesSingle).toEqual([])
       expect(context.errors).toContainEqual(
         expect.objectContaining({ name: 'checkboxesSingle' })
+      )
+      expect(context.referenceNumber).toEqual(expect.any(String))
+    })
+
+    it('handles missing reference numbers', () => {
+      const formModel = new FormModel(fieldsRequiredDefinition, {
+        basePath: '/components'
+      })
+
+      const state = {
+        checkboxesSingle: ['Arabian', 'Shetland']
+      }
+      const pageUrl = new URL('http://example.com/components/fields-required')
+
+      const request: FormContextRequest = {
+        method: 'post',
+        payload: { crumb: 'dummyCrumb', action: 'validate' },
+        query: {},
+        path: pageUrl.pathname,
+        params: { path: 'components', slug: 'fields-required' },
+        url: pageUrl,
+        app: { model: formModel }
+      }
+
+      expect(() => formModel.getFormContext(request, state)).toThrow(
+        'Reference number not found in form state'
+      )
+    })
+
+    it('handles non-string reference numbers', () => {
+      const formModel = new FormModel(fieldsRequiredDefinition, {
+        basePath: '/components'
+      })
+
+      const state = {
+        $$__referenceNumber: 1232456,
+        checkboxesSingle: ['Arabian', 'Shetland']
+      }
+      const pageUrl = new URL('http://example.com/components/fields-required')
+
+      const request: FormContextRequest = {
+        method: 'post',
+        payload: { crumb: 'dummyCrumb', action: 'validate' },
+        query: {},
+        path: pageUrl.pathname,
+        params: { path: 'components', slug: 'fields-required' },
+        url: pageUrl,
+        app: { model: formModel }
+      }
+
+      expect(() => formModel.getFormContext(request, state)).toThrow(
+        'Reference number not found in form state'
       )
     })
   })
