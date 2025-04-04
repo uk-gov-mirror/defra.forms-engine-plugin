@@ -95,13 +95,9 @@ export const plugin = {
     // Paths array to tell `vision` and `nunjucks` where template files are stored.
     // We need to include `VIEW_PATH` in addition the runtime path (node_modules)
     // to keep the local tests working
-    const path = [`${pluginPath}/${VIEW_PATH}`, VIEW_PATH]
-
     // Include any additional user provided view paths so our internal views engine
     // can find any files they provide from the consumer side if using custom `page.view`s
-    if (Array.isArray(viewPaths) && viewPaths.length) {
-      path.push(...viewPaths)
-    }
+    const path = [...(viewPaths ?? []), `${pluginPath}/${VIEW_PATH}`, VIEW_PATH]
 
     await server.register({
       plugin: vision,
