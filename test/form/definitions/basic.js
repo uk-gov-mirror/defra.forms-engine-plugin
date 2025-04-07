@@ -7,7 +7,7 @@ import {
 import {
   createListFromFactory,
   createListItemFactory
-} from '~/test/form/definitions/factory.js'
+} from '~/test/form/factory.js'
 
 export default /** @satisfies {FormDefinition} */ ({
   name: 'Basic',
