@@ -21,23 +21,19 @@ export const listNumber = createListFromFactory({
 export const listNumberExamples = [
   createListItemFactory({
     text: '1 point',
-    value: 1,
-    state: 1
+    value: 1
   }),
   createListItemFactory({
     text: '2 points',
-    value: 2,
-    state: 2
+    value: 2
   }),
   createListItemFactory({
     text: '3 points',
-    value: 3,
-    state: 3
+    value: 3
   }),
   createListItemFactory({
     text: '4 points',
-    value: 4,
-    state: 4
+    value: 4
   })
 ]
 
@@ -59,36 +55,30 @@ export const listString = createListFromFactory({
 export const listStringExamples = [
   createListItemFactory({
     text: '1 hour',
-    value: '1',
-    state: '1'
+    value: '1'
   }),
   createListItemFactory({
     text: '2 hours',
-    value: '2',
-    state: '2'
+    value: '2'
   }),
   createListItemFactory({
     text: '3 hours',
-    value: '3',
-    state: '3'
+    value: '3'
   }),
   createListItemFactory({
     text: '4 hours',
-    value: '4',
-    state: '4'
+    value: '4'
   })
 ]
 
 export const listYesNoExamples = [
   createListItemFactory({
     text: 'Yes',
-    value: true,
-    state: true
+    value: true
   }),
   createListItemFactory({
     text: 'No',
-    value: false,
-    state: false
+    value: false
   })
 ]
 
