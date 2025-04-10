@@ -1,3 +1,11 @@
+---
+layout: default
+title: Page Templates
+parent: Configuration-based Features
+grand_parent: Features
+render_with_liquid: false
+---
+
 # Page templates
 
 Page templates are a configuration-based way of adding dynamic content to the form UI, such as displaying the answer to a question, or some data from your API. This feature is only used for presentation purposes.
@@ -147,8 +155,8 @@ Full example of the minified and escaped component, which can be appended to [th
 
 ## Providing your own filters
 
-Whilst DXT offers some out of the box filters, teams using the plugin have the capability to provide their own. See [PLUGIN_OPTIONS.md](../../PLUGIN_OPTIONS.md#custom-filters) for more information.
+Whilst DXT offers some out of the box filters, teams using the plugin have the capability to provide their own. See [PLUGIN_OPTIONS.md](/forms-engine-plugin/PLUGIN_OPTIONS) for more information.
 
 ## Using page templates with data from your own API
 
-Page templates have access to `{{ context.data }}`, which is an attribute made available when a page event is triggered. It represents the entire response body from your API. To learn more about this, [see our guidance on page events](./PAGE_EVENTS.md).
+Page templates have access to``{{ context.data  }}` , which is an attribute made available when a page event is triggered. It represents the entire response body from your API. To learn more about this, [see our guidance on page events](/forms-engine-plugin/features/configuration-based/PAGE_EVENTS).

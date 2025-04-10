@@ -1,10 +1,18 @@
+---
+layout: default
+title: Page Events
+parent: Configuration-based Features
+grand_parent: Features
+render_with_liquid: false
+---
+
 # Page events
 
 Page events are a configuration-based way of triggering an action on an event trigger. For example, when a page loads, call an API and retrieve the data from it.
 
 DXT's forms engine is a frontend service, which should remain as lightweight as possible with business logic being implemented in a backend/BFF API. Using page events, DXT can call your API and use the tailored response downstream, such a page templates to display the response value.
 
-The downstream API response becomes available under the `{{ context.data }}` view model attribute for view templates, so it can be used when rendering a page. This attribute is directly accessible by our [page templates](./../configuration-based/PAGE_TEMPLATES.md) feature and our Nunjucks-based views.
+The downstream API response becomes available under the `{{ context.data }}` view model attribute for view templates, so it can be used when rendering a page. This attribute is directly accessible by our [page templates](/forms-engine-plugin/features/configuration-based/PAGE_TEMPLATES) feature and our Nunjucks-based views.
 
 ## Architecture
 
@@ -110,14 +118,14 @@ Page template:
 ```jinja2
 {% if context.data.awardedGrantValue %}
   <p class="govuk-body">Congratulations. You are likely to receive up to £{{ context.data.awardedGrantValue }}.</p>
-{% endif %}
+{% else %}
   <p class="govuk-body">You have not been awarded any funding for this application.</p>
 {% endif %}
 ```
 
 Results in:
 
-```jinja2
+```text
 <p class="govuk-body">You have been awarded £150.</p>
 ```
 

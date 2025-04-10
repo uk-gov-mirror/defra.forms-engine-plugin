@@ -1,3 +1,11 @@
+---
+layout: default
+title: Custom Services
+parent: Code-based Features
+grand_parent: Features
+render_with_liquid: false
+---
+
 # Overriding DXT logic with custom services
 
 ## Customising where forms are loaded from
@@ -13,7 +21,7 @@ POST    /{slug}/{path}
 
 A unique `slug` is used to route the user to the correct form, and the `path` used to identify the correct page within the form to show.
 
-The [plugin registration options](../../PLUGIN_OPTIONS.md) have a `services` setting to provide a `formsService` that is responsible for returning `form definition` data.
+The [plugin registration options](/forms-engine-plugin/PLUGIN_OPTIONS.md) have a `services` setting to provide a `formsService` that is responsible for returning `form definition` data.
 
 WARNING: This below is subject to change
 

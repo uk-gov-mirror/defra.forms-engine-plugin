@@ -12,12 +12,16 @@ module.exports = {
   silent: true,
   testMatch: [
     '<rootDir>/src/**/*.test.{cjs,js,mjs,ts}',
-    '<rootDir>/test/**/*.test.{cjs,js,mjs,ts}'
+    '<rootDir>/test/**/*.test.{cjs,js,mjs,ts}',
+    '<rootDir>/scripts/**/*.test.{js,ts}'
   ],
   reporters: CI
     ? [['github-actions', { silent: false }], 'summary']
     : ['default', 'summary'],
-  collectCoverageFrom: ['<rootDir>/src/**/*.{cjs,js,mjs,ts}'],
+  collectCoverageFrom: [
+    '<rootDir>/src/**/*.{cjs,js,mjs,ts}',
+    '<rootDir>/scripts/**/*.{cjs,js,mjs}'
+  ],
   coveragePathIgnorePatterns: [
     '<rootDir>/node_modules/',
     '<rootDir>/.server',

@@ -1,7 +1,6 @@
 # Contributing to DXT
 
-> [!NOTE]
-> This guide is for developers within the Department for Environment, Food & Rural Affairs. We do not guarantee support for those outside of this organisation.
+> **Note:** This guide is for developers within the Department for Environment, Food & Rural Affairs. We do not guarantee support for those outside of this organisation.
 
 Thank you for considering making a contribution to DXT! Our goal is to make DXT a community-driven effort, collaboratively supporting the needs of the many teams within the Defra Group.
 
@@ -44,7 +43,7 @@ Feature suggestions are welcomed from teams within Defra Group only. Our roadmap
 
 All code contributed to this repository should meet the [Defra software development standards](https://defra.github.io/software-development-standards/). Our codebase, by exception, allows modification of Typescript files where appropriate. However, new code that is contributed should be Javascript with types via JSDoc, not Typescript.
 
-Our specific coding standards are primarily enforced by our GitHub workflows. These workflows will verify using tsc, ESLint, Prettier, EditorConfig and Stylelint. See the `lint` job within [.github/workflows/check-pull-request.yml](.github/workflows/check-pull-request.yml) for more details.
+Our specific coding standards are primarily enforced by our GitHub workflows. These workflows will verify using tsc, ESLint, Prettier, EditorConfig and Stylelint. See the `lint` job within [.github/workflows/check-pull-request.yml](https://github.com/DEFRA/forms-engine-plugin/blob/main/.github/workflows/check-pull-request.yml) for more details.
 
 Our GitHub Workflows will mark each pull request with a pass/fail based on tests, linting, type checking and analysis by SonarQube. **Pull requests that fail these checks will not be accepted.**
 
