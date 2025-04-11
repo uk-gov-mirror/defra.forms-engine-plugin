@@ -10,7 +10,7 @@ layout: default
 
 ## Installation
 
-[See our getting started developer guide](/docs/GETTING_STARTED.md).
+[See our getting started developer guide](./GETTING_STARTED.md).
 
 ## Demo
 
