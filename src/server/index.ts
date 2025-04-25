@@ -15,14 +15,13 @@ import { config } from '~/src/config/index.js'
 import { requestLogger } from '~/src/server/common/helpers/logging/request-logger.js'
 import { requestTracing } from '~/src/server/common/helpers/logging/request-tracing.js'
 import { buildRedisClient } from '~/src/server/common/helpers/redis-client.js'
-import { configureBlankiePlugin } from '~/src/server/plugins/blankie.js'
 import { configureCrumbPlugin } from '~/src/server/plugins/crumb.js'
-import { configureEnginePlugin } from '~/src/server/plugins/engine/index.js'
+import { configureEnginePlugin } from '~/src/server/plugins/engine/configureEnginePlugin.js'
 import pluginErrorPages from '~/src/server/plugins/errorPages.js'
 import { plugin as pluginViews } from '~/src/server/plugins/nunjucks/index.js'
 import pluginPulse from '~/src/server/plugins/pulse.js'
-import pluginRouter from '~/src/server/plugins/router.js'
 import pluginSession from '~/src/server/plugins/session.js'
+import { publicRoutes } from '~/src/server/routes/index.js'
 import { prepareSecureContext } from '~/src/server/secure-context.js'
 import { type RouteConfig } from '~/src/server/types.js'
 
@@ -82,15 +81,13 @@ export async function createServer(routeConfig?: RouteConfig) {
     prepareSecureContext(server)
   }
 
-  const pluginEngine = await configureEnginePlugin(routeConfig)
   const pluginCrumb = configureCrumbPlugin(routeConfig)
-  const pluginBlankie = configureBlankiePlugin()
+  const pluginEngine = await configureEnginePlugin(routeConfig)
 
   await server.register(pluginSession)
   await server.register(pluginPulse)
   await server.register(inert)
   await server.register(Scooter)
-  await server.register(pluginBlankie)
   await server.register(pluginCrumb)
 
   server.ext('onPreResponse', (request: Request, h: ResponseToolkit) => {
@@ -117,19 +114,19 @@ export async function createServer(routeConfig?: RouteConfig) {
 
   await server.register(pluginViews)
   await server.register(pluginEngine)
-  await server.register(pluginRouter)
+
+  await server.register({
+    plugin: {
+      name: 'router',
+      register: (server) => {
+        server.route(publicRoutes)
+      }
+    }
+  })
+
   await server.register(pluginErrorPages)
   await server.register(blipp)
   await server.register(requestTracing)
-
-  server.state('cookieConsent', {
-    ttl: 365 * 24 * 60 * 60 * 1000, // 1 year in ms
-    clearInvalid: true,
-    isHttpOnly: false,
-    isSecure: config.get('isProduction'),
-    path: '/',
-    encoding: 'none' // handle this inside the application so we can share frontend/backend cookie modification
-  })
 
   return server
 }

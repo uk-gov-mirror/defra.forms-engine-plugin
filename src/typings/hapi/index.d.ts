@@ -5,6 +5,7 @@ import { type ServerYar, type Yar } from '@hapi/yar'
 import { type Logger } from 'pino'
 
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
+import { type context } from '~/src/server/plugins/engine/nunjucks.js'
 import {
   type FormRequest,
   type FormRequestPayload
@@ -19,16 +20,9 @@ declare module '@hapi/hapi' {
       generate?: (request: Request | FormRequest | FormRequestPayload) => string
     }
     'forms-engine-plugin': {
+      baseLayoutPath: string
       cacheService: CacheService
-    }
-  }
-
-  interface PluginsStates {
-    blankie?: {
-      nonces?: {
-        script?: string
-        style?: string
-      }
+      viewContext: context
     }
   }
 

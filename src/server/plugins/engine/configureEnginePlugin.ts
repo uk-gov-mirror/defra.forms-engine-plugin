@@ -8,6 +8,10 @@ import {
   plugin,
   type PluginOptions
 } from '~/src/server/plugins/engine/plugin.js'
+import { findPackageRoot } from '~/src/server/plugins/engine/plugin.js'
+import * as defaultServices from '~/src/server/plugins/engine/services/index.js'
+import { formsService } from '~/src/server/plugins/engine/services/localFormsService.js'
+import { devtoolContext } from '~/src/server/plugins/nunjucks/context.js'
 import { type RouteConfig } from '~/src/server/types.js'
 
 export const configureEnginePlugin = async ({
@@ -27,7 +31,21 @@ export const configureEnginePlugin = async ({
 
   return {
     plugin,
-    options: { model, services, controllers }
+    options: {
+      model,
+      services: services ?? {
+        // services for testing, else use the disk loader option for running this service locally
+        ...defaultServices,
+        formsService: await formsService()
+      },
+      controllers,
+      cacheName: 'session',
+      nunjucks: {
+        baseLayoutPath: 'dxt-devtool-baselayout.html',
+        paths: [join(findPackageRoot(), 'src/server/devserver')] // custom layout to make it really clear this is not the same as the runner
+      },
+      viewContext: devtoolContext
+    }
   }
 }
 

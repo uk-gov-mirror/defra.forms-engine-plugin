@@ -179,12 +179,6 @@ export const config = convict({
   /**
    * API integrations
    */
-  managerUrl: {
-    format: String,
-    default: 'http://localhost:3001',
-    env: 'MANAGER_URL'
-  } as SchemaObj<string>,
-
   designerUrl: {
     format: String,
     default: 'http://localhost:3000',
@@ -253,19 +247,12 @@ export const config = convict({
     env: 'STAGING_PREFIX'
   },
 
-  serviceBannerText: {
-    doc: 'Service banner text used to show a maintenance message on all pages when set',
+  submissionEmailAddress: {
+    doc: 'Email address to send the form to (local devtool only)',
     format: String,
     default: '',
-    env: 'SERVICE_BANNER_TEXT'
-  },
-
-  googleAnalyticsTrackingId: {
-    doc: 'Google analytics tracking ID to be used when a user has opted in to additional cookies',
-    format: String,
-    default: '',
-    env: 'GOOGLE_ANALYTICS_TRACKING_ID'
-  }
+    env: 'SUBMISSION_EMAIL_ADDRESS'
+  } as SchemaObj<string>
 })
 
 config.validate({ allowed: 'strict' })

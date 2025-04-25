@@ -1,3 +1,7 @@
+import { existsSync } from 'fs'
+import { dirname, join } from 'path'
+import { fileURLToPath } from 'url'
+
 import { hasFormComponents, slugSchema } from '@defra/forms-model'
 import Boom from '@hapi/boom'
 import {
@@ -11,6 +15,7 @@ import vision from '@hapi/vision'
 import { isEqual } from 'date-fns'
 import Joi from 'joi'
 import nunjucks, { type Environment } from 'nunjucks'
+import resolvePkg from 'resolve'
 
 import { PREVIEW_PATH_PREFIX } from '~/src/server/constants.js'
 import {
@@ -25,7 +30,6 @@ import {
   redirectPath
 } from '~/src/server/plugins/engine/helpers.js'
 import {
-  PLUGIN_PATH,
   VIEW_PATH,
   context,
   prepareNunjucksEnvironment
@@ -65,6 +69,20 @@ import * as httpService from '~/src/server/services/httpService.js'
 import { CacheService } from '~/src/server/services/index.js'
 import { type Services } from '~/src/server/types.js'
 
+export function findPackageRoot() {
+  const currentFileName = fileURLToPath(import.meta.url)
+  const currentDirectoryName = dirname(currentFileName)
+
+  let dir = currentDirectoryName
+  while (dir !== '/') {
+    if (existsSync(join(dir, 'package.json'))) {
+      return dir
+    }
+    dir = dirname(dir)
+  }
+
+  throw new Error('package.json not found in parent directories')
+}
 export interface PluginOptions {
   model?: FormModel
   services?: Services
@@ -73,6 +91,13 @@ export interface PluginOptions {
   viewPaths?: string[]
   filters?: Record<string, FilterFunction>
   pluginPath?: string
+  nunjucks: {
+    baseLayoutPath: string
+    paths: string[]
+  }
+  viewContext: (
+    request: FormRequest | FormRequestPayload | null
+  ) => Record<string, unknown>
 }
 
 export const plugin = {
@@ -85,23 +110,25 @@ export const plugin = {
       services = defaultServices,
       controllers,
       cacheName,
-      viewPaths,
       filters,
-      pluginPath = PLUGIN_PATH
+      nunjucks: nunjucksOptions,
+      viewContext
     } = options
     const { formsService } = services
     const cacheService = new CacheService(server, cacheName)
 
-    // Paths array to tell `vision` and `nunjucks` where template files are stored.
-    // We need to include `VIEW_PATH` in addition the runtime path (node_modules)
-    // to keep the local tests working
-    const path = [`${pluginPath}/${VIEW_PATH}`, VIEW_PATH]
+    const packageRoot = findPackageRoot()
+    const govukFrontendPath = dirname(
+      resolvePkg.sync('govuk-frontend/package.json')
+    )
 
-    // Include any additional user provided view paths so our internal views engine
-    // can find any files they provide from the consumer side if using custom `page.view`s
-    if (Array.isArray(viewPaths) && viewPaths.length) {
-      path.push(...viewPaths)
-    }
+    const viewPathResolved = join(packageRoot, VIEW_PATH)
+
+    const paths = [
+      ...nunjucksOptions.paths,
+      viewPathResolved,
+      join(govukFrontendPath, 'dist')
+    ]
 
     await server.register({
       plugin: vision,
@@ -127,10 +154,7 @@ export const plugin = {
             ) => {
               // Nunjucks also needs an additional path configuration
               // to use the templates and macros from `govuk-frontend`
-              const environment = nunjucks.configure([
-                ...path,
-                'node_modules/govuk-frontend/dist'
-              ])
+              const environment = nunjucks.configure(paths)
 
               // Applies custom filters and globals for nunjucks
               // that are required by the `forms-engine-plugin`
@@ -142,12 +166,14 @@ export const plugin = {
             }
           }
         },
-        path,
+        path: paths,
         // Provides global context used with all templates
         context
       }
     })
 
+    server.expose('baseLayoutPath', nunjucksOptions.baseLayoutPath)
+    server.expose('viewContext', viewContext)
     server.expose('cacheService', cacheService)
 
     server.app.model = model

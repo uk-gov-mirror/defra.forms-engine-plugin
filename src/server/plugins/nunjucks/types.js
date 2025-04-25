@@ -12,16 +12,15 @@
 /**
  * @typedef {object} ViewContext - Nunjucks view context
  * @property {string} appVersion - Application version
- * @property {string} assetPath - Asset path
+ * @property {string} [baseLayoutPath] - Base layout path
  * @property {Partial<Config>} config - Application config properties
- * @property {CookieConsent} [cookieConsent] - Cookie consent preferences
  * @property {string} [crumb] - Cross-Site Request Forgery (CSRF) token
  * @property {string} [cspNonce] - Content Security Policy (CSP) nonce
  * @property {string} [currentPath] - Current path
  * @property {string} [previewMode] - Preview mode
  * @property {string} [slug] - Form slug
- * @property {(asset?: string) => string} getAssetPath - Asset path resolver
  * @property {FormContext} [context] - the current form context
+ * @property {PluginOptions['viewContext']} [injectedViewContext] - the current form context
  */
 
 /**
@@ -34,7 +33,7 @@
  */
 
 /**
- * @import { CookieConsent } from '~/src/common/types.js'
  * @import { config } from '~/src/config/index.js'
  * @import { FormContext } from '~/src/server/plugins/engine/types.js'
+ * @import { PluginOptions } from '~/src/server/plugins/engine/plugin.js'
  */

@@ -1,46 +1,28 @@
-import { formMetadataSchema } from '@defra/forms-model'
+const error = Error(
+  'Not implemented. Consider setting up a form loader or providing a service implementation.'
+)
 
-import { config } from '~/src/config/index.js'
-import { FormStatus } from '~/src/server/routes/types.js'
-import { getJson } from '~/src/server/services/httpService.js'
-
+// eslint-disable-next-line jsdoc/require-returns-check
 /**
- * Retrieves a form definition from the form manager for a given slug
- * @param {string} slug - the slug of the form
+ * Dummy function to get form metadata.
+ * @param {string} _slug - the slug of the form
+ * @returns {Promise<FormMetadata>}
  */
-export async function getFormMetadata(slug) {
-  const getJsonByType = /** @type {typeof getJson<FormMetadata>} */ (getJson)
+export function getFormMetadata(_slug) {
+  throw error
+}
 
-  const { payload: metadata } = await getJsonByType(
-    `${config.get('managerUrl')}/forms/slug/${slug}`
-  )
-
-  // Run it through the schema to coerce dates
-  const result = formMetadataSchema.validate(metadata)
-
-  if (result.error) {
-    throw result.error
-  }
-
-  return result.value
+// eslint-disable-next-line jsdoc/require-returns-check
+/**
+ * Dummy function to get form metadata.
+ * @param {string} _id - the id of the form
+ * @param {FormStatus} _state - the state of the form
+ * @returns {Promise<FormDefinition | undefined>}
+ */
+export function getFormDefinition(_id, _state) {
+  throw error
 }
 
 /**
- * Retrieves a form definition from the form manager for a given id
- * @param {string} id - the id of the form
- * @param {FormStatus} state - the state of the form
- */
-export async function getFormDefinition(id, state) {
-  const getJsonByType = /** @type {typeof getJson<FormDefinition>} */ (getJson)
-
-  const suffix = state === FormStatus.Draft ? `/${state}` : ''
-  const { payload: definition } = await getJsonByType(
-    `${config.get('managerUrl')}/forms/${id}/definition${suffix}`
-  )
-
-  return definition
-}
-
-/**
- * @import { FormDefinition, FormMetadata } from '@defra/forms-model'
+ * @import { FormStatus, FormDefinition, FormMetadata } from '@defra/forms-model'
  */

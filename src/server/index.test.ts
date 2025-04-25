@@ -6,6 +6,7 @@ import {
   getFormDefinition,
   getFormMetadata
 } from '~/src/server/plugins/engine/services/formsService.js'
+import * as defaultServices from '~/src/server/plugins/engine/services/index.js'
 import { getUploadStatus } from '~/src/server/plugins/engine/services/uploadService.js'
 import {
   FileStatus,
@@ -30,7 +31,9 @@ describe('Model cache', () => {
   }
 
   beforeAll(async () => {
-    server = await createServer()
+    server = await createServer({
+      services: defaultServices
+    })
     await server.initialize()
   })
 
@@ -451,42 +454,6 @@ describe('Model cache', () => {
 
       expect(res.statusCode).toBe(StatusCodes.NOT_FOUND)
       expect(getCacheSize()).toBe(0)
-    })
-  })
-
-  describe('Help pages', () => {
-    test('Contextual help page returns 200', async () => {
-      jest.mocked(getFormMetadata).mockResolvedValue({
-        ...fixtures.form.metadata,
-        draft: fixtures.form.state,
-        live: fixtures.form.state
-      })
-
-      const options = {
-        method: 'GET',
-        url: '/help/get-support/slug'
-      }
-
-      const res = await server.inject(options)
-
-      expect(res.statusCode).toBe(StatusCodes.OK)
-    })
-
-    test('Privacy notice page returns 200', async () => {
-      jest.mocked(getFormMetadata).mockResolvedValue({
-        ...fixtures.form.metadata,
-        draft: fixtures.form.state,
-        live: fixtures.form.state
-      })
-
-      const options = {
-        method: 'GET',
-        url: '/help/privacy/slug'
-      }
-
-      const res = await server.inject(options)
-
-      expect(res.statusCode).toBe(StatusCodes.OK)
     })
   })
 })
