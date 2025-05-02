@@ -43,7 +43,7 @@ export async function context(request) {
     throw Error('Missing baseLayoutPath in plugin.options.nunjucks')
   }
 
-  if ('viewContext' in pluginStorage) {
+  if (typeof pluginStorage.viewContext === 'function') {
     consumerViewContext = await pluginStorage.viewContext(request)
   }
 
