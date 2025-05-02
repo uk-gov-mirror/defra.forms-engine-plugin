@@ -117,7 +117,7 @@ await server.register({
     /**
      * View context attributes made available to your pages. Returns an object containing an arbitrary set of key-value pairs.
      */
-    viewContext: (request) => {
+    viewContext: async (request) => {
       "example": "hello world" // available to render on a nunjucks page as {{ example }}
     }
   }

@@ -97,7 +97,7 @@ export interface PluginOptions {
   }
   viewContext: (
     request: FormRequest | FormRequestPayload | null
-  ) => Record<string, unknown>
+  ) => Promise<Record<string, unknown>>
 }
 
 export const plugin = {

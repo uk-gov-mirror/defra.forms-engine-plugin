@@ -45,5 +45,20 @@ export const formsService = async () => {
     slug: 'register-as-a-unicorn-breeder-yaml' // if we needed to validate any JSON logic, make it available for convenience
   })
 
+  // Add a Yaml form
+  await loader.addForm('src/server/forms/adding-value.json', {
+    ...metadata,
+    id: 'a0f1b8c2-4d3e-4f5b-9a7c-6d1e0f2b5c3d',
+    title: 'Adding value',
+    slug: 'adding-value' // if we needed to validate any JSON logic, make it available for convenience
+  })
+
+  await loader.addForm('src/server/forms/components.json', {
+    ...metadata,
+    id: '6a872d3b-13f9e-804ce3e-4830-5c45fb32',
+    title: 'Components',
+    slug: 'components' // if we needed to validate any JSON logic, make it available for convenience
+  })
+
   return loader.toFormsService()
 }
