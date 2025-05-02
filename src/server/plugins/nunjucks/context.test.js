@@ -9,15 +9,15 @@ describe('Nunjucks context', () => {
   beforeEach(() => jest.resetModules())
 
   describe('Asset path', () => {
-    it("should include 'assetPath' for GOV.UK Frontend icons", () => {
-      const { assetPath } = devtoolContext()
+    it("should include 'assetPath' for GOV.UK Frontend icons", async () => {
+      const { assetPath } = await devtoolContext(null)
       expect(assetPath).toBe('/assets')
     })
   })
 
   describe('Asset helper', () => {
-    it("should locate 'assets-manifest.json' assets", () => {
-      const { getDxtAssetPath } = devtoolContext()
+    it("should locate 'assets-manifest.json' assets", async () => {
+      const { getDxtAssetPath } = await devtoolContext(null)
 
       expect(getDxtAssetPath('example.scss')).toBe(
         '/stylesheets/example.xxxxxxx.min.css'
@@ -39,7 +39,7 @@ describe('Nunjucks context', () => {
 
         // Update config for missing manifest
         config.set('publicDir', tmpdir())
-        const { getDxtAssetPath } = devtoolContext()
+        const { getDxtAssetPath } = await devtoolContext(null)
 
         // Uses original paths when missing
         expect(getDxtAssetPath('example.scss')).toBe('/example.scss')
@@ -47,25 +47,25 @@ describe('Nunjucks context', () => {
       })
     })
 
-    it('should return path to unknown assets', () => {
-      const { getDxtAssetPath } = devtoolContext()
+    it('should return path to unknown assets', async () => {
+      const { getDxtAssetPath } = await devtoolContext(null)
 
-      expect(getDxtAssetPath()).toBe('/')
+      expect(getDxtAssetPath('')).toBe('/')
       expect(getDxtAssetPath('example.jpg')).toBe('/example.jpg')
       expect(getDxtAssetPath('example.gif')).toBe('/example.gif')
     })
   })
 
   describe('Config', () => {
-    it('should include environment, phase tag and service info', () => {
-      expect(() => context(null)).toThrow(
+    it('should include environment, phase tag and service info', async () => {
+      await expect(context(null)).rejects.toThrow(
         'context called before plugin registered'
       )
     })
   })
 
   describe('Crumb', () => {
-    it('should handle malformed requests with missing state', () => {
+    it('should handle malformed requests with missing state', async () => {
       // While state should always exist in a valid Hapi request (it holds cookies),
       // we've seen malformed requests in production where it's missing
       const malformedRequest = /** @type {FormRequest} */ (
@@ -92,14 +92,14 @@ describe('Nunjucks context', () => {
         })
       )
 
-      const { crumb } = context(malformedRequest)
+      const { crumb } = await context(malformedRequest)
       expect(crumb).toBeUndefined()
       expect(
         malformedRequest.server.plugins.crumb.generate
       ).not.toHaveBeenCalled()
     })
 
-    it('should generate crumb when state exists', () => {
+    it('should generate crumb when state exists', async () => {
       const mockCrumb = 'generated-crumb-value'
       const validRequest = /** @type {FormRequest} */ (
         /** @type {unknown} */ ({
@@ -125,7 +125,7 @@ describe('Nunjucks context', () => {
         })
       )
 
-      const { crumb } = context(validRequest)
+      const { crumb } = await context(validRequest)
       expect(crumb).toBe(mockCrumb)
       expect(validRequest.server.plugins.crumb.generate).toHaveBeenCalledWith(
         validRequest
