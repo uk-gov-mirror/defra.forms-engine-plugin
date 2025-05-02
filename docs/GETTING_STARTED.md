@@ -103,8 +103,8 @@ await server.register({
      * Options that DXT uses to render Nunjucks templates
      */
     nunjucks: {
-      basePageLayout: 'your-base-layout.html', // the base page layout. Usually based off https://design-system.service.gov.uk/styles/page-template/
-      viewPaths // list of directories DXT should use to render your views. Must contain basePageLayout.
+      baseLayoutPath: 'your-base-layout.html', // the base page layout. Usually based off https://design-system.service.gov.uk/styles/page-template/
+      viewPaths // list of directories DXT should use to render your views. Must contain baseLayoutPath.
     },
     /**
      * Services is what DXT uses to interact with external APIs
