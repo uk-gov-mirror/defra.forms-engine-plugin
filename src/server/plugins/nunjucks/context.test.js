@@ -9,15 +9,15 @@ describe('Nunjucks context', () => {
   beforeEach(() => jest.resetModules())
 
   describe('Asset path', () => {
-    it("should include 'assetPath' for GOV.UK Frontend icons", async () => {
-      const { assetPath } = await devtoolContext(null)
+    it("should include 'assetPath' for GOV.UK Frontend icons", () => {
+      const { assetPath } = devtoolContext(null)
       expect(assetPath).toBe('/assets')
     })
   })
 
   describe('Asset helper', () => {
-    it("should locate 'assets-manifest.json' assets", async () => {
-      const { getDxtAssetPath } = await devtoolContext(null)
+    it("should locate 'assets-manifest.json' assets", () => {
+      const { getDxtAssetPath } = devtoolContext(null)
 
       expect(getDxtAssetPath('example.scss')).toBe(
         '/stylesheets/example.xxxxxxx.min.css'
@@ -39,7 +39,7 @@ describe('Nunjucks context', () => {
 
         // Update config for missing manifest
         config.set('publicDir', tmpdir())
-        const { getDxtAssetPath } = await devtoolContext(null)
+        const { getDxtAssetPath } = devtoolContext(null)
 
         // Uses original paths when missing
         expect(getDxtAssetPath('example.scss')).toBe('/example.scss')
@@ -47,8 +47,8 @@ describe('Nunjucks context', () => {
       })
     })
 
-    it('should return path to unknown assets', async () => {
-      const { getDxtAssetPath } = await devtoolContext(null)
+    it('should return path to unknown assets', () => {
+      const { getDxtAssetPath } = devtoolContext(null)
 
       expect(getDxtAssetPath('')).toBe('/')
       expect(getDxtAssetPath('example.jpg')).toBe('/example.jpg')

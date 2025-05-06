@@ -72,7 +72,7 @@ export async function context(request) {
 /**
  * Returns the context for the devtool. Consumers won't have access to this.
  * @param {FormRequest | FormRequestPayload | null} _request
- * @returns {Promise<Record<string, unknown> & { assetPath: string, getDxtAssetPath: (asset: string) => string }>}
+ * @returns {Record<string, unknown> & { assetPath: string, getDxtAssetPath: (asset: string) => string }}
  */
 export function devtoolContext(_request) {
   const manifestPath = join(config.get('publicDir'), 'assets-manifest.json')
@@ -86,12 +86,12 @@ export function devtoolContext(_request) {
     }
   }
 
-  return Promise.resolve({
+  return {
     assetPath: '/assets',
     getDxtAssetPath: (asset = '') => {
       return `/${webpackManifest?.[asset] ?? asset}`
     }
-  })
+  }
 }
 
 /**
