@@ -6,6 +6,7 @@ import { hasFormComponents, slugSchema } from '@defra/forms-model'
 import Boom from '@hapi/boom'
 import {
   type Plugin,
+  type PluginProperties,
   type ResponseObject,
   type ResponseToolkit,
   type RouteOptions,
@@ -95,9 +96,7 @@ export interface PluginOptions {
     baseLayoutPath: string
     paths: string[]
   }
-  viewContext: (
-    request: FormRequest | FormRequestPayload | null
-  ) => Promise<Record<string, unknown>>
+  viewContext: PluginProperties['forms-engine-plugin']['viewContext']
 }
 
 export const plugin = {
