@@ -117,8 +117,13 @@ await server.register({
     /**
      * View context attributes made available to your pages. Returns an object containing an arbitrary set of key-value pairs.
      */
-    viewContext: async (request) => {
-      "example": "hello world" // available to render on a nunjucks page as {{ example }}
+    viewContext: async (request) => { // async can be dropped if there's no async code within
+      const user = await userService.getUser(request.auth.credentials)
+
+      return {
+        "greeting": "Hello" // available to render on a nunjucks page as {{ greeting }}
+        "username": user.username // available to render on a nunjucks page as {{ username }}
+      }
     }
   }
 })
