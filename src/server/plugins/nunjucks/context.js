@@ -20,7 +20,6 @@ let webpackManifest
 
 /**
  * @param {FormRequest | FormRequestPayload | null} request
- * @returns {Promise<ViewContext>}
  */
 export async function context(request) {
   const { params, response } = request ?? {}
