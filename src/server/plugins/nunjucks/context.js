@@ -21,7 +21,7 @@ let webpackManifest
 /**
  * @param {FormRequest | FormRequestPayload | null} request
  */
-export function context(request) {
+export async function context(request) {
   const { params, response } = request ?? {}
 
   const { isPreview: isPreviewMode, state: formState } = checkFormStatus(params)
@@ -43,7 +43,7 @@ export function context(request) {
   }
 
   if (typeof pluginStorage.viewContext === 'function') {
-    consumerViewContext = pluginStorage.viewContext(request)
+    consumerViewContext = await pluginStorage.viewContext(request)
   }
 
   /** @type {ViewContext} */
@@ -71,8 +71,10 @@ export function context(request) {
 
 /**
  * Returns the context for the devtool. Consumers won't have access to this.
+ * @param {FormRequest | FormRequestPayload | null} _request
+ * @returns {Record<string, unknown> & { assetPath: string, getDxtAssetPath: (asset: string) => string }}
  */
-export function devtoolContext() {
+export function devtoolContext(_request) {
   const manifestPath = join(config.get('publicDir'), 'assets-manifest.json')
 
   if (!webpackManifest) {

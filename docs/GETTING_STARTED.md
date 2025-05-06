@@ -103,8 +103,8 @@ await server.register({
      * Options that DXT uses to render Nunjucks templates
      */
     nunjucks: {
-      basePageLayout: 'your-base-layout.html', // the base page layout. Usually based off https://design-system.service.gov.uk/styles/page-template/
-      viewPaths // list of directories DXT should use to render your views. Must contain basePageLayout.
+      baseLayoutPath: 'your-base-layout.html', // the base page layout. Usually based off https://design-system.service.gov.uk/styles/page-template/
+      viewPaths // list of directories DXT should use to render your views. Must contain baseLayoutPath.
     },
     /**
      * Services is what DXT uses to interact with external APIs
@@ -117,8 +117,13 @@ await server.register({
     /**
      * View context attributes made available to your pages. Returns an object containing an arbitrary set of key-value pairs.
      */
-    viewContext: (request) => {
-      "example": "hello world" // available to render on a nunjucks page as {{ example }}
+    viewContext: async (request) => { // async can be dropped if there's no async code within
+      const user = await userService.getUser(request.auth.credentials)
+
+      return {
+        "greeting": "Hello" // available to render on a nunjucks page as {{ greeting }}
+        "username": user.username // available to render on a nunjucks page as {{ username }}
+      }
     }
   }
 })
