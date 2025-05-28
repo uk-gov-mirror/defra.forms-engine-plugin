@@ -9,6 +9,7 @@ import {
 import { type DateInputItem } from '~/src/server/plugins/engine/components/types.js'
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import {
+  type ErrorMessageTemplateList,
   type FormPayload,
   type FormState
 } from '~/src/server/plugins/engine/types.js'
@@ -412,10 +413,32 @@ describe('DatePartsField', () => {
     })
 
     describe('AllPossibleErrors', () => {
-      it('should return errors', () => {
+      it('should return errors from instance method', () => {
         const errors = field.getAllPossibleErrors()
         expect(errors.baseErrors).not.toBeEmpty()
         expect(errors.advancedSettingsErrors).not.toBeEmpty()
+      })
+
+      it('should return errors from static method', () => {
+        const staticErrors = (
+          field.constructor as typeof field.constructor & {
+            getAllPossibleErrors(): ErrorMessageTemplateList
+          }
+        ).getAllPossibleErrors()
+        expect(staticErrors.baseErrors).not.toBeEmpty()
+        expect(staticErrors.advancedSettingsErrors).not.toBeEmpty()
+      })
+
+      it('instance method should delegate to static method', () => {
+        const staticResult = (
+          field.constructor as typeof field.constructor & {
+            getAllPossibleErrors(): ErrorMessageTemplateList
+          }
+        ).getAllPossibleErrors()
+
+        const instanceResult = field.getAllPossibleErrors()
+
+        expect(instanceResult).toEqual(staticResult)
       })
     })
   })
