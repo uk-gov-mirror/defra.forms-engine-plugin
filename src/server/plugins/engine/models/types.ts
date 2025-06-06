@@ -5,12 +5,10 @@ import {
 } from '@defra/forms-model'
 import { type Expression } from 'expr-eval'
 
-import {
-  type Field,
-  type getAnswer
-} from '~/src/server/plugins/engine/components/helpers.js'
+import { type Field } from '~/src/server/plugins/engine/components/helpers-pure.js'
+import { type getAnswer } from '~/src/server/plugins/engine/components/helpers.js'
 import { type RepeatPageController } from '~/src/server/plugins/engine/pageControllers/RepeatPageController.js'
-import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers.js'
+import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/types.js'
 import {
   type FormState,
   type FormSubmissionError

@@ -6,10 +6,8 @@ import lowerFirst from 'lodash/lowerFirst.js'
 
 import { AutocompleteField } from '~/src/server/plugins/engine/components/AutocompleteField.js'
 import { ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
-import {
-  getAnswer,
-  type Field
-} from '~/src/server/plugins/engine/components/helpers.js'
+import { type Field } from '~/src/server/plugins/engine/components/helpers-pure.js'
+import { getAnswer } from '~/src/server/plugins/engine/components/helpers.js'
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import {
   listNumber,

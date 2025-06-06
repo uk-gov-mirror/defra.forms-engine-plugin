@@ -3,10 +3,8 @@ import lowerFirst from 'lodash/lowerFirst.js'
 
 import { ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
 import { RadiosField } from '~/src/server/plugins/engine/components/RadiosField.js'
-import {
-  getAnswer,
-  type Field
-} from '~/src/server/plugins/engine/components/helpers.js'
+import { type Field } from '~/src/server/plugins/engine/components/helpers-pure.js'
+import { getAnswer } from '~/src/server/plugins/engine/components/helpers.js'
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import {
   listNumber,

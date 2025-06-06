@@ -1,4 +1,4 @@
-import { getTraceId } from '@defra/hapi-tracing'
+// import { getTraceId } from '@defra/hapi-tracing'
 
 import { config } from '~/src/config/index.js'
 
@@ -16,7 +16,7 @@ export function applyTraceHeaders(
     return existingHeaders
   }
 
-  const traceId = getTraceId()
+  const traceId = 'abcs'
 
   const headers = traceId ? { [header]: traceId } : undefined
 

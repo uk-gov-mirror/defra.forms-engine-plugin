@@ -1,5 +1,4 @@
-import { randomBytes } from 'node:crypto'
-
+import { customAlphabet } from 'nanoid'
 /**
  * Generates a reference number in the format of `XXX-XXX-XXX`, or `PREFIX-XXX-XXX` if a prefix is provided.
  * Provides no guarantee on uniqueness.
@@ -11,7 +10,8 @@ export function generateUniqueReference(prefix?: string) {
 
   const segments = Array.from(
     { length: segmentCount },
-    () => randomBytes(segmentLength).toString('hex').slice(0, segmentLength) // 0-9a-f, might be good enough?
+    () =>
+      customAlphabet('1234567890abcdef', segmentLength).slice(0, segmentLength) // 0-9a-f, might be good enough?
   )
 
   return `${prefix}${segments.join('-')}`.toUpperCase()

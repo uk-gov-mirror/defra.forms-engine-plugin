@@ -9,15 +9,23 @@ import joi, {
 } from 'joi'
 
 import { type ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
-import { type Component } from '~/src/server/plugins/engine/components/helpers.js'
+import { type Component } from '~/src/server/plugins/engine/components/helpers-pure.js'
 import { type ViewModel } from '~/src/server/plugins/engine/components/types.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
-import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers.js'
+// import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/types.js'
+
+// eslint-disable-next-line
+type PageControllerClass = any
+export interface ComponentClasses {
+  title?: string
+  hint?: string
+}
 
 export class ComponentBase {
   page?: PageControllerClass
   parent: Component | undefined
   collection: ComponentCollection | undefined
+  classes?: ComponentClasses
 
   type: ComponentDef['type']
   name: ComponentDef['name']
@@ -37,6 +45,7 @@ export class ComponentBase {
     props: {
       page?: PageControllerClass
       parent?: Component
+      classes?: ComponentClasses
       model: FormModel
     }
   ) {
@@ -55,6 +64,7 @@ export class ComponentBase {
     this.page = props.page
     this.parent = props.parent
     this.model = props.model
+    this.classes = props.classes
   }
 
   get viewModel() {

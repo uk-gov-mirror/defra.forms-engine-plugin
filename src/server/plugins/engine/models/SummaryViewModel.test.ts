@@ -3,10 +3,8 @@ import {
   FormModel,
   SummaryViewModel
 } from '~/src/server/plugins/engine/models/index.js'
-import {
-  createPage,
-  type PageControllerClass
-} from '~/src/server/plugins/engine/pageControllers/helpers.js'
+import { createPage } from '~/src/server/plugins/engine/pageControllers/helpers-pure.js'
+import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/types.js'
 import {
   type FormContext,
   type FormContextRequest,

@@ -6,10 +6,8 @@ import {
 
 import { ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
 import { UkAddressField } from '~/src/server/plugins/engine/components/UkAddressField.js'
-import {
-  getAnswer,
-  type Field
-} from '~/src/server/plugins/engine/components/helpers.js'
+import { type Field } from '~/src/server/plugins/engine/components/helpers-pure.js'
+import { getAnswer } from '~/src/server/plugins/engine/components/helpers.js'
 import { type ViewModel } from '~/src/server/plugins/engine/components/types.js'
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import {

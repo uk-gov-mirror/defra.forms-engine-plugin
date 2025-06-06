@@ -8,10 +8,8 @@ import { outdent } from 'outdent'
 
 import { CheckboxesField } from '~/src/server/plugins/engine/components/CheckboxesField.js'
 import { ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
-import {
-  getAnswer,
-  type Field
-} from '~/src/server/plugins/engine/components/helpers.js'
+import { type Field } from '~/src/server/plugins/engine/components/helpers-pure.js'
+import { getAnswer } from '~/src/server/plugins/engine/components/helpers.js'
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import {
   listNumber,

@@ -23,7 +23,7 @@ import { type ListFormComponent } from '~/src/server/plugins/engine/components/L
 import {
   hasListFormField,
   type Component
-} from '~/src/server/plugins/engine/components/helpers.js'
+} from '~/src/server/plugins/engine/components/helpers-pure.js'
 import {
   findPage,
   getError,
@@ -32,10 +32,8 @@ import {
 } from '~/src/server/plugins/engine/helpers.js'
 import { type ExecutableCondition } from '~/src/server/plugins/engine/models/types.js'
 import { type PageController } from '~/src/server/plugins/engine/pageControllers/PageController.js'
-import {
-  createPage,
-  type PageControllerClass
-} from '~/src/server/plugins/engine/pageControllers/helpers.js'
+import { createPage } from '~/src/server/plugins/engine/pageControllers/helpers.js'
+import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/types.js'
 import { validationOptions as opts } from '~/src/server/plugins/engine/pageControllers/validationOptions.js'
 import * as defaultServices from '~/src/server/plugins/engine/services/index.js'
 import {

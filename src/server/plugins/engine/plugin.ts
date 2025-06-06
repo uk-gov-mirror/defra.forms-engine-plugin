@@ -44,7 +44,7 @@ import { FileUploadPageController } from '~/src/server/plugins/engine/pageContro
 import { type PageController } from '~/src/server/plugins/engine/pageControllers/PageController.js'
 import { RepeatPageController } from '~/src/server/plugins/engine/pageControllers/RepeatPageController.js'
 import { getFormSubmissionData } from '~/src/server/plugins/engine/pageControllers/SummaryPageController.js'
-import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers.js'
+import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/types.js'
 import { generateUniqueReference } from '~/src/server/plugins/engine/referenceNumbers.js'
 import * as defaultServices from '~/src/server/plugins/engine/services/index.js'
 import { getUploadStatus } from '~/src/server/plugins/engine/services/uploadService.js'

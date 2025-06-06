@@ -1,7 +1,7 @@
 import { ComponentType, type InsetTextComponent } from '@defra/forms-model'
 
 import { ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
-import { type Guidance } from '~/src/server/plugins/engine/components/helpers.js'
+import { type Guidance } from '~/src/server/plugins/engine/components/helpers-pure.js'
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import definition from '~/test/form/definitions/basic.js'
 

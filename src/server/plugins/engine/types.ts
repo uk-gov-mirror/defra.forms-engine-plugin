@@ -7,14 +7,14 @@ import {
 import { type JoiExpression, type ValidationErrorItem } from 'joi'
 
 import { FormComponent } from '~/src/server/plugins/engine/components/FormComponent.js'
-import { type Component } from '~/src/server/plugins/engine/components/helpers.js'
+import { type Component } from '~/src/server/plugins/engine/components/helpers-pure.js'
 import {
   type BackLink,
   type ComponentText,
   type ComponentViewModel
 } from '~/src/server/plugins/engine/components/types.js'
 import { type PageController } from '~/src/server/plugins/engine/pageControllers/PageController.js'
-import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers.js'
+import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/types.js'
 import { type ViewContext } from '~/src/server/plugins/nunjucks/types.js'
 import { type FormAction, type FormRequest } from '~/src/server/routes/types.js'
 

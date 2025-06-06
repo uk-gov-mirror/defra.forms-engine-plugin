@@ -3,26 +3,18 @@ import {
   Engine,
   hasComponents,
   isFormType,
-  type ComponentDef,
-  type FormDefinition,
-  type Page
+  type FormDefinition
 } from '@defra/forms-model'
 import Boom from '@hapi/boom'
 import { type ResponseToolkit, type Server } from '@hapi/hapi'
 import { format, parseISO } from 'date-fns'
 import { StatusCodes } from 'http-status-codes'
-import { type Schema, type ValidationErrorItem } from 'joi'
-import { Liquid } from 'liquidjs'
+import { type ValidationErrorItem } from 'joi'
 
 import { createLogger } from '~/src/server/common/helpers/logging/logger.js'
+import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
+import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/types.js'
 import {
-  getAnswer,
-  type Field
-} from '~/src/server/plugins/engine/components/helpers.js'
-import { type FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
-import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers.js'
-import {
-  type FormContext,
   type FormContextRequest,
   type FormSubmissionError
 } from '~/src/server/plugins/engine/types.js'
@@ -35,110 +27,7 @@ import {
   type FormRequestPayload
 } from '~/src/server/routes/types.js'
 
-const logger = createLogger()
-
-export const engine = new Liquid({
-  outputEscape: 'escape',
-  jsTruthy: true,
-  ownPropertyOnly: false
-})
-
-export interface GlobalScope {
-  context: FormContext
-  pages: Map<string, Page>
-  components: Map<string, ComponentDef>
-}
-
-engine.registerFilter('evaluate', function (template?: string) {
-  if (typeof template !== 'string') {
-    return template
-  }
-
-  const globals = this.context.globals as GlobalScope
-  const evaluated = evaluateTemplate(template, globals.context)
-
-  return evaluated
-})
-
-engine.registerFilter('page', function (path?: string) {
-  if (typeof path !== 'string') {
-    return
-  }
-
-  const globals = this.context.globals as GlobalScope
-  const pageDef = globals.pages.get(path)
-
-  return pageDef
-})
-
-engine.registerFilter('href', function (path: string, query?: FormQuery) {
-  if (typeof path !== 'string') {
-    return
-  }
-
-  const globals = this.context.globals as GlobalScope
-  const page = globals.context.pageMap.get(path)
-
-  if (page === undefined) {
-    return
-  }
-
-  return getPageHref(page, query)
-})
-
-engine.registerFilter('field', function (name: string) {
-  if (typeof name !== 'string') {
-    return
-  }
-
-  const globals = this.context.globals as GlobalScope
-  const componentDef = globals.components.get(name)
-
-  return componentDef
-})
-
-engine.registerFilter('answer', function (name: string) {
-  if (typeof name !== 'string') {
-    return
-  }
-
-  const globals = this.context.globals as GlobalScope
-  const component = globals.context.componentMap.get(name)
-
-  if (!component?.isFormComponent) {
-    return
-  }
-
-  const answer = getAnswer(component as Field, globals.context.relevantState)
-
-  return answer
-})
-
-export function proceed(
-  request: Pick<FormContextRequest, 'method' | 'payload' | 'query'>,
-  h: Pick<ResponseToolkit, 'redirect' | 'view'>,
-  nextUrl: string
-) {
-  const { method, payload, query } = request
-  const { returnUrl } = query
-
-  const isReturnAllowed =
-    payload && 'action' in payload
-      ? payload.action === FormAction.Continue ||
-        payload.action === FormAction.Validate
-      : false
-
-  // Redirect to return location (optional)
-  const response =
-    isReturnAllowed && isPathRelative(returnUrl)
-      ? h.redirect(returnUrl)
-      : h.redirect(redirectPath(nextUrl))
-
-  // Redirect POST to GET to avoid resubmission
-  return method === 'post'
-    ? response.code(StatusCodes.SEE_OTHER)
-    : response.code(StatusCodes.MOVED_TEMPORARILY)
-}
+export const logger = createLogger()
 
 /**
  * Encodes a URL, returning undefined if the process fails.
@@ -152,39 +41,6 @@ export function encodeUrl(link?: string) {
       throw err
     }
   }
-}
-
-/**
- * Get page href
- */
-export function getPageHref(
-  page: PageControllerClass,
-  query?: FormQuery
-): string
-
-/**
- * Get page href by path
- */
-export function getPageHref(
-  page: PageControllerClass,
-  path: string,
-  query?: FormQuery
-): string
-
-export function getPageHref(
-  page: PageControllerClass,
-  pathOrQuery?: string | FormQuery,
-  queryOnly: FormQuery = {}
-) {
-  const path = typeof pathOrQuery === 'string' ? pathOrQuery : page.path
-  const query = typeof pathOrQuery === 'object' ? pathOrQuery : queryOnly
-
-  if (!isPathRelative(path)) {
-    throw Error(`Only relative URLs are allowed: ${path}`)
-  }
-
-  // Return path with page href as base
-  return redirectPath(page.getHref(path), query)
 }
 
 /**
@@ -226,6 +82,37 @@ export function normalisePath(path = '') {
     .replace(/\/$/, '') // Remove trailing slash
 }
 
+/**
+ * Get page href
+ */
+export function getPageHref(
+  page: PageControllerClass,
+  query?: FormQuery
+): string
+/**
+ * Get page href by path
+ */
+export function getPageHref(
+  page: PageControllerClass,
+  path: string,
+  query?: FormQuery
+): string
+export function getPageHref(
+  page: PageControllerClass,
+  pathOrQuery?: string | FormQuery,
+  queryOnly: FormQuery = {}
+) {
+  const path = typeof pathOrQuery === 'string' ? pathOrQuery : page.path
+  const query = typeof pathOrQuery === 'object' ? pathOrQuery : queryOnly
+
+  if (!isPathRelative(path)) {
+    throw Error(`Only relative URLs are allowed: ${path}`)
+  }
+
+  // Return path with page href as base
+  return redirectPath(page.getHref(path), query)
+}
+
 export function getPage(
   model: FormModel | undefined,
   request: FormContextRequest
@@ -246,6 +133,31 @@ export function findPage(model: FormModel | undefined, path?: string) {
   return model?.pages.find(({ path }) => path === findPath)
 }
 
+export function proceed(
+  request: Pick<FormContextRequest, 'method' | 'payload' | 'query'>,
+  h: Pick<ResponseToolkit, 'redirect' | 'view'>,
+  nextUrl: string
+) {
+  const { method, payload, query } = request
+  const { returnUrl } = query
+
+  const isReturnAllowed =
+    payload && 'action' in payload
+      ? payload.action === FormAction.Continue ||
+        payload.action === FormAction.Validate
+      : false
+
+  // Redirect to return location (optional)
+  const response =
+    isReturnAllowed && isPathRelative(returnUrl)
+      ? h.redirect(returnUrl)
+      : h.redirect(redirectPath(nextUrl))
+
+  // Redirect POST to GET to avoid resubmission
+  return method === 'post'
+    ? response.code(StatusCodes.SEE_OTHER)
+    : response.code(StatusCodes.MOVED_TEMPORARILY)
+}
 export function getStartPath(model?: FormModel) {
   if (model?.engine === Engine.V2) {
     const startPath = normalisePath(model.def.pages.at(0)?.path)
@@ -353,22 +265,6 @@ export function getExponentialBackoffDelay(depth: number): number {
   const CAP_DELAY_MS = 25000 // cap each delay to 25 seconds
   const delay = BASE_DELAY_MS * 2 ** (depth - 1)
   return Math.min(delay, CAP_DELAY_MS)
-}
-
-export function evaluateTemplate(
-  template: string,
-  context: FormContext
-): string {
-  const globals: GlobalScope = {
-    context,
-    pages: context.pageDefMap,
-    components: context.componentDefMap
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return engine.parseAndRenderSync(template, context.relevantState, {
-    globals
-  })
 }
 
 export function getCacheService(server: Server) {

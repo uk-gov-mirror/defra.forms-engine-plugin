@@ -2,10 +2,8 @@ import { type SubmitResponsePayload } from '@defra/forms-model'
 import { addDays, format as dateFormat } from 'date-fns'
 
 import { config } from '~/src/config/index.js'
-import {
-  escapeMarkdown,
-  getAnswer
-} from '~/src/server/plugins/engine/components/helpers.js'
+import { escapeMarkdown } from '~/src/server/plugins/engine/components/helpers-pure.js'
+import { getAnswer } from '~/src/server/plugins/engine/components/helpers.js'
 import { type checkFormStatus } from '~/src/server/plugins/engine/helpers.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { type DetailItem } from '~/src/server/plugins/engine/models/types.js'

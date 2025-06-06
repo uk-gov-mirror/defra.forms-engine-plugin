@@ -1,4 +1,4 @@
-import { evaluateTemplate } from '~/src/server/plugins/engine/helpers.js'
+import { evaluateTemplate } from '~/src/server/plugins/engine/evaluate-template.js'
 
 /**
  * Nunjucks filter to evaluate a liquid template.

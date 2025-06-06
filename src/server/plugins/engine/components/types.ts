@@ -72,6 +72,7 @@ export interface ViewModel extends Record<string, unknown> {
   hint?: {
     id?: string
     text: string
+    classes?: string
   }
   prefix?: ComponentText
   suffix?: ComponentText

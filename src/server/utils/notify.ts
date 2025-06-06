@@ -4,7 +4,6 @@ import { config } from '~/src/config/index.js'
 import { postJson } from '~/src/server/services/httpService.js'
 
 const notifyAPIKey = config.get('notifyAPIKey')
-
 // Extract the two uuids from the notifyApiKey
 // See https://github.com/alphagov/notifications-node-client/blob/main/client/api_client.js#L17
 // Needed until `https://github.com/alphagov/notifications-node-client/pull/200` is published

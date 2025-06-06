@@ -1,4 +1,4 @@
-import util from 'util'
+// import { inspect as utilInspec } from 'util'
 
 /**
  * Format JavaScript objects as strings
@@ -6,10 +6,11 @@ import util from 'util'
  * @returns {string} Formatted string
  */
 export function inspect(object) {
-  return util.inspect(object, {
-    compact: false,
-    depth: Infinity,
-    maxArrayLength: Infinity,
-    maxStringLength: Infinity
-  })
+  return JSON.stringify(object)
+  // return utilInspec(object, {
+  //   compact: false,
+  //   depth: Infinity,
+  //   maxArrayLength: Infinity,
+  //   maxStringLength: Infinity
+  // })
 }

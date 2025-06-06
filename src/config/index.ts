@@ -1,27 +1,23 @@
-import { resolve } from 'node:path'
-
-import convict, { type SchemaObj } from 'convict'
+import { type SchemaObj } from 'convict'
 import { type LevelWithSilent } from 'pino'
-
-import 'dotenv/config'
-
-const isProduction = process.env.NODE_ENV === 'production'
-const isDev = process.env.NODE_ENV !== 'production'
-const isTest = process.env.NODE_ENV === 'test'
 
 const oneMinute = 1000 * 60
 const oneHour = oneMinute * 60
 
-export const config = convict({
+const isProduction = false
+const isTest = false
+const isDev = true
+
+const configBase = {
   appDir: {
     format: String,
-    default: resolve(import.meta.dirname, '../server')
+    default:
+      '/Users/chrisdefra/Documents/esynergy/defra/forms/forms-runner/src/server'
   },
   publicDir: {
     format: String,
-    default: isTest
-      ? resolve(import.meta.dirname, '../../test/fixtures')
-      : resolve(import.meta.dirname, '../../.public')
+    default:
+      '/Users/chrisdefra/Documents/esynergy/defra/forms/forms-runner/.public'
   },
 
   /**
@@ -65,7 +61,7 @@ export const config = convict({
   isProduction: {
     doc: 'If this application running in the production environment',
     format: Boolean,
-    default: isProduction
+    default: false
   },
   isDevelopment: {
     doc: 'If this application running in the development environment',
@@ -84,19 +80,19 @@ export const config = convict({
   serviceName: {
     doc: 'Applications Service Name',
     format: String,
-    default: 'Digital Express Toolkit'
+    default: 'Submit a form to Defra'
   },
   serviceVersion: {
     doc: 'The service version, this variable is injected into your docker container in CDP environments',
     format: String,
     nullable: true,
-    default: '',
+    default: null,
     env: 'SERVICE_VERSION'
   } as SchemaObj<string>,
   feedbackLink: {
     doc: 'Used in your phase banner. Can be a URL or more commonly mailto mailto:feedback@department.gov.uk',
     format: String,
-    default: '',
+    default: 'https://www.gov.uk',
     env: 'FEEDBACK_LINK'
   } as SchemaObj<string>,
   phaseTag: {
@@ -121,7 +117,7 @@ export const config = convict({
   },
   sessionCookiePassword: {
     format: String,
-    default: '',
+    default: null,
     sensitive: true,
     env: 'SESSION_COOKIE_PASSWORD'
   } as SchemaObj<string>,
@@ -129,26 +125,26 @@ export const config = convict({
     host: {
       doc: 'Redis cache host',
       format: String,
-      default: '',
+      default: null,
       env: 'REDIS_HOST'
     } as SchemaObj<string>,
     username: {
       doc: 'Redis cache username',
       format: String,
-      default: '',
+      default: null,
       env: 'REDIS_USERNAME'
     } as SchemaObj<string>,
     password: {
       doc: 'Redis cache password',
       format: '*',
-      default: '',
+      default: null,
       sensitive: true,
       env: 'REDIS_PASSWORD'
     } as SchemaObj<string>,
     keyPrefix: {
       doc: 'Redis cache key prefix name used to isolate the cached results across multiple clients',
       format: String,
-      default: '',
+      default: null,
       env: 'REDIS_KEY_PREFIX'
     } as SchemaObj<string>
   },
@@ -167,18 +163,24 @@ export const config = convict({
    */
   notifyTemplateId: {
     format: String,
-    default: '',
+    default: '112',
     env: 'NOTIFY_TEMPLATE_ID'
   } as SchemaObj<string>,
   notifyAPIKey: {
     format: String,
-    default: '',
+    default: '113',
     env: 'NOTIFY_API_KEY'
   } as SchemaObj<string>,
 
   /**
    * API integrations
    */
+  managerUrl: {
+    format: String,
+    default: 'http://localhost:3001',
+    env: 'MANAGER_URL'
+  } as SchemaObj<string>,
+
   designerUrl: {
     format: String,
     default: 'http://localhost:3000',
@@ -193,7 +195,7 @@ export const config = convict({
 
   uploaderUrl: {
     format: String,
-    default: 'http://localhost:7337',
+    default: 'http://localhost:3005',
     env: 'UPLOADER_URL'
   } as SchemaObj<string>,
 
@@ -202,7 +204,11 @@ export const config = convict({
     default: 'files',
     env: 'UPLOADER_BUCKET_NAME'
   },
-
+  submissionEmailAddress: {
+    format: String,
+    default: 'test@test.com',
+    env: 'SUBMISSION_EMAIL_ADDRESS'
+  },
   /**
    * Logging
    */
@@ -233,7 +239,6 @@ export const config = convict({
         : ['req', 'res', 'responseTime']
     }
   },
-
   safelist: {
     format: Array,
     default: ['61bca17e-fe74-40e0-9c15-a901ad120eca.mock.pstmn.io'],
@@ -247,12 +252,52 @@ export const config = convict({
     env: 'STAGING_PREFIX'
   },
 
-  submissionEmailAddress: {
-    doc: 'Email address to send the form to (local devtool only)',
+  serviceBannerText: {
+    doc: 'Service banner text used to show a maintenance message on all pages when set',
     format: String,
     default: '',
-    env: 'SUBMISSION_EMAIL_ADDRESS'
-  } as SchemaObj<string>
-})
+    env: 'SERVICE_BANNER_TEXT'
+  },
 
-config.validate({ allowed: 'strict' })
+  googleAnalyticsTrackingId: {
+    doc: 'Google analytics tracking ID to be used when a user has opted in to additional cookies',
+    format: String,
+    default: '',
+    env: 'GOOGLE_ANALYTICS_TRACKING_ID'
+  }
+}
+
+function getItem(item: SchemaObj<unknown>): string | boolean | number {
+  if (
+    item.default === undefined &&
+    item.env === undefined &&
+    typeof item === 'object'
+  ) {
+    return Object.entries(item).reduce((acc, [key, value]) => {
+      return {
+        ...acc,
+        [key]: getItem(value)
+      }
+    }, {})
+  }
+  const env = process.env[item.env]
+  let returnValue = item.default
+  if (env) {
+    returnValue = env
+  }
+  if (typeof item.format === Function) {
+    return item.format(returnValue)
+  }
+  return returnValue
+}
+
+export const config = {
+  get(key: string) {
+    const item = configBase[key]
+    if (item === undefined) {
+      throw new Error()
+    }
+
+    return getItem(item)
+  }
+}

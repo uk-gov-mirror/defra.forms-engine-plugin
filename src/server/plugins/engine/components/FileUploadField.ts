@@ -25,8 +25,12 @@ import {
   type UploadStatusFileResponse,
   type UploadStatusResponse
 } from '~/src/server/plugins/engine/types.js'
-import { render } from '~/src/server/plugins/nunjucks/index.js'
 import { type FormQuery } from '~/src/server/routes/types.js'
+
+// import { render } from '~/src/server/plugins/nunjucks/index.js'
+const render = {
+  view() {}
+}
 
 export const uploadIdSchema = joi.string().uuid().required()
 

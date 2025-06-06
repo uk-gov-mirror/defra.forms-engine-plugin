@@ -130,6 +130,10 @@ export class FormComponent extends ComponentBase {
       viewModel.hint = {
         text: hint
       }
+
+      if (this.classes?.hint) {
+        viewModel.hint.classes = this.classes.hint
+      }
     }
 
     // Filter component errors only
@@ -149,7 +153,8 @@ export class FormComponent extends ComponentBase {
     return {
       ...viewModel,
       label: {
-        text: label
+        text: label,
+        classes: this.classes?.title
       },
       id: name,
       name,

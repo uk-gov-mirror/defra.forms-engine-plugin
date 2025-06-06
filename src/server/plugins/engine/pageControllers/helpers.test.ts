@@ -9,10 +9,12 @@ import {
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import { PageController } from '~/src/server/plugins/engine/pageControllers/PageController.js'
 import {
-  createPage,
   getProxyUrlForLocalDevelopment,
-  isPageController,
   type PageControllerType
+} from '~/src/server/plugins/engine/pageControllers/helpers-pure.js'
+import {
+  createPage,
+  isPageController
 } from '~/src/server/plugins/engine/pageControllers/helpers.js'
 import {
   FileUploadPageController,

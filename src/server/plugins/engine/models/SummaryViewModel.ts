@@ -1,18 +1,14 @@
 import { type Section } from '@defra/forms-model'
 
-import {
-  getAnswer,
-  type Field
-} from '~/src/server/plugins/engine/components/helpers.js'
+import { type Field } from '~/src/server/plugins/engine/components/helpers-pure.js'
+import { getAnswer } from '~/src/server/plugins/engine/components/helpers.js'
 import {
   type BackLink,
   type ComponentViewModel
 } from '~/src/server/plugins/engine/components/types.js'
-import {
-  evaluateTemplate,
-  getError,
-  getPageHref
-} from '~/src/server/plugins/engine/helpers.js'
+import { evaluateTemplate } from '~/src/server/plugins/engine/evaluate-template.js'
+import { getError } from '~/src/server/plugins/engine/helpers.js'
+import { getPageHref } from '~/src/server/plugins/engine/index.js'
 import {
   type Detail,
   type DetailItem,
@@ -20,7 +16,7 @@ import {
   type DetailItemRepeat
 } from '~/src/server/plugins/engine/models/types.js'
 import { RepeatPageController } from '~/src/server/plugins/engine/pageControllers/RepeatPageController.js'
-import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers.js'
+import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/types.js'
 import { validationOptions as opts } from '~/src/server/plugins/engine/pageControllers/validationOptions.js'
 import {
   type CheckAnswers,

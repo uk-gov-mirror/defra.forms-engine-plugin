@@ -1,4 +1,4 @@
-import * as helpers from '~/src/server/plugins/engine/helpers.js'
+import * as helpers from '~/src/server/plugins/engine/evaluate-template.js'
 import { environment } from '~/src/server/plugins/nunjucks/environment.js'
 
 describe('Nunjucks environment', () => {

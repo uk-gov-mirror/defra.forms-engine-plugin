@@ -1,8 +1,11 @@
-import fs from 'fs/promises'
-import path from 'node:path'
+// import fs from 'fs/promises'
+// import path from 'node:path'
 
 import YAML from 'yaml'
 
+const fs = {
+  readFile: (_filePath, _type) => Promise.resolve(JSON.stringify({}))
+}
 /**
  * FileFormService class
  */
@@ -40,7 +43,7 @@ export class FileFormService {
    * @returns {Promise<FormDefinition>}
    */
   async readForm(filepath) {
-    const ext = path.extname(filepath).toLowerCase()
+    const ext = '.json' // path.extname(filepath).toLowerCase()
 
     switch (ext) {
       case '.json':

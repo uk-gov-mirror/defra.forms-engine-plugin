@@ -11,15 +11,15 @@ import {
   isFormValue
 } from '~/src/server/plugins/engine/components/FormComponent.js'
 import {
-  createComponent,
   type Component,
   type Field,
   type Guidance
-} from '~/src/server/plugins/engine/components/helpers.js'
+} from '~/src/server/plugins/engine/components/helpers-pure.js'
+import { createComponent } from '~/src/server/plugins/engine/components/helpers.js'
 import { type ComponentViewModel } from '~/src/server/plugins/engine/components/types.js'
 import { getErrors } from '~/src/server/plugins/engine/helpers.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
-import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers.js'
+import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/types.js'
 import { validationOptions as opts } from '~/src/server/plugins/engine/pageControllers/validationOptions.js'
 import {
   type FormPayload,

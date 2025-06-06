@@ -6,6 +6,7 @@ import {
 } from '@defra/forms-model'
 
 import { type FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
+import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers-pure.js'
 import * as PageControllers from '~/src/server/plugins/engine/pageControllers/index.js'
 
 export function isPageController(
@@ -13,10 +14,6 @@ export function isPageController(
 ): controllerName is keyof typeof PageControllers {
   return isControllerName(controllerName) && controllerName in PageControllers
 }
-
-export type PageControllerClass = InstanceType<PageControllerType>
-export type PageControllerType =
-  (typeof PageControllers)[keyof typeof PageControllers]
 
 /**
  * Creates page instance for each {@link Page} type
@@ -77,25 +74,4 @@ export function createPage(model: FormModel, pageDef: Page) {
   }
 
   return controller
-}
-
-/**
- * In local development environments, we sometimes need to rewrite the
- * CDP upload URL to work with CSP/CORS restrictions.
- * This helper function rewrites localhost URLs to use the sslip.io proxy
- * This is only used when running locally with a development proxy.
- * In non-local environments, this function returns null
- * @param uploadUrl - The original upload URL from CDP
- */
-export function getProxyUrlForLocalDevelopment(
-  uploadUrl?: string
-): string | null {
-  if (!uploadUrl?.includes('localhost:7337')) {
-    return null
-  }
-
-  return uploadUrl.replace(
-    /localhost:7337/g,
-    'uploader.127.0.0.1.sslip.io:7300'
-  )
 }
