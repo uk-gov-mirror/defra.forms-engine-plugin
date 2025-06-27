@@ -23,7 +23,7 @@ export default {
     application: {
       import: ['./javascripts/application.js', './stylesheets/application.scss']
     },
-    'file-upload': './javascripts/file-upload.js'
+    shared: './javascripts/shared.js'
   },
   experiments: {
     outputModule: true
