@@ -108,7 +108,12 @@ export function evaluate(template) {
 }
 
 environment.addGlobal('evaluate', evaluate)
-environment.addGlobal('govukRebrand', config.get('showRebrand'))
+
+export function govukRebrand() {
+  return true
+}
+
+environment.addGlobal('govukRebrand', govukRebrand())
 
 /**
  * @import { NunjucksContext } from '~/src/server/plugins/nunjucks/types.js'
