@@ -1,5 +1,6 @@
 import {
   type ComponentDef,
+  type Event,
   type Item,
   type List,
   type Page
@@ -23,6 +24,7 @@ import {
   type FormRequest,
   type FormRequestPayload
 } from '~/src/server/routes/types.js'
+import { type RequestOptions } from '~/src/server/services/httpService.js'
 import { type Services } from '~/src/server/types.js'
 
 /**
@@ -333,6 +335,13 @@ export interface ErrorMessageTemplateList {
   advancedSettingsErrors: ErrorMessageTemplate[]
 }
 
+export type PreparePageEventRequestOptions = (
+  options: RequestOptions,
+  event: Event,
+  page: PageControllerClass,
+  context: FormContext
+) => void
+
 export interface PluginOptions {
   model?: FormModel
   services?: Services
@@ -349,4 +358,5 @@ export interface PluginOptions {
     paths: string[]
   }
   viewContext: PluginProperties['forms-engine-plugin']['viewContext']
+  preparePageEventRequestOptions?: PreparePageEventRequestOptions
 }
