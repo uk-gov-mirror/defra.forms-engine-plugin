@@ -1,6 +1,8 @@
 import {
   type ComponentDef,
   type Event,
+  type FormDefinition,
+  type FormMetadata,
   type Item,
   type List,
   type Page
@@ -21,6 +23,7 @@ import { type PageControllerClass } from '~/src/server/plugins/engine/pageContro
 import { type ViewContext } from '~/src/server/plugins/nunjucks/types.js'
 import {
   type FormAction,
+  type FormParams,
   type FormRequest,
   type FormRequestPayload
 } from '~/src/server/routes/types.js'
@@ -72,7 +75,7 @@ export interface FormSubmissionError
   text: string // e.g: 'Date field must be a real date'
 }
 
-export interface FormParams {
+export interface FormPayloadParams {
   action?: FormAction
   confirm?: true
   crumb?: string
@@ -83,7 +86,7 @@ export interface FormParams {
  * Form POST for question pages
  * (after Joi has converted value types)
  */
-export type FormPayload = FormParams & Partial<Record<string, FormValue>>
+export type FormPayload = FormPayloadParams & Partial<Record<string, FormValue>>
 
 export type FormValue =
   | Item['value']
@@ -342,6 +345,13 @@ export type PreparePageEventRequestOptions = (
   context: FormContext
 ) => void
 
+export type OnRequestCallback = (
+  request: FormRequest | FormRequestPayload,
+  params: FormParams,
+  definition: FormDefinition,
+  metadata: FormMetadata
+) => void
+
 export interface PluginOptions {
   model?: FormModel
   services?: Services
@@ -359,4 +369,5 @@ export interface PluginOptions {
   }
   viewContext: PluginProperties['forms-engine-plugin']['viewContext']
   preparePageEventRequestOptions?: PreparePageEventRequestOptions
+  onRequest?: OnRequestCallback
 }
