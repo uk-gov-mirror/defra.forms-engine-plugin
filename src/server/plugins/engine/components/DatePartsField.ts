@@ -13,7 +13,10 @@ import {
   type DateInputItem,
   type DatePartsState
 } from '~/src/server/plugins/engine/components/types.js'
-import { parseStrictDate } from '~/src/server/plugins/engine/date-helper.js'
+import {
+  parseStrictDate,
+  todayAsDateOnly
+} from '~/src/server/plugins/engine/date-helper.js'
 import { messageTemplate } from '~/src/server/plugins/engine/pageControllers/validationOptions.js'
 import {
   type ErrorMessageTemplateList,
@@ -129,7 +132,7 @@ export class DatePartsField extends FormComponent {
           value,
           `${value.year}-${value.month}-${value.day}`,
           'yyyy-MM-dd',
-          new Date()
+          todayAsDateOnly()
         )
       )
     ) {
@@ -259,7 +262,7 @@ export function getValidatorDate(component: DatePartsField) {
     const date = parse(
       `${values.year}-${values.month}-${values.day}`,
       'yyyy-MM-dd',
-      new Date()
+      todayAsDateOnly()
     )
 
     if (!isValid(date)) {
@@ -267,14 +270,16 @@ export function getValidatorDate(component: DatePartsField) {
     }
 
     // Minimum date from today
-    const dateMin = options.maxDaysInPast
-      ? sub(startOfToday(), { days: options.maxDaysInPast })
-      : undefined
+    const dateMin =
+      options.maxDaysInPast != null
+        ? sub(startOfToday(), { days: options.maxDaysInPast })
+        : undefined
 
     // Maximum date from today
-    const dateMax = options.maxDaysInFuture
-      ? add(startOfToday(), { days: options.maxDaysInFuture })
-      : undefined
+    const dateMax =
+      options.maxDaysInFuture != null
+        ? add(startOfToday(), { days: options.maxDaysInFuture })
+        : undefined
 
     if (dateMin && date < dateMin) {
       return helpers.error('date.min', { ...context, limit: dateMin })

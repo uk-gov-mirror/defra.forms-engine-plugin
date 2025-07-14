@@ -1,5 +1,14 @@
 import { ComponentType, type DatePartsFieldComponent } from '@defra/forms-model'
-import { addDays, format, startOfDay } from 'date-fns'
+import {
+  addDays,
+  format,
+  getDate,
+  getMonth,
+  getYear,
+  startOfDay,
+  startOfToday,
+  subDays
+} from 'date-fns'
 
 import { ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
 import {
@@ -7,6 +16,7 @@ import {
   type Field
 } from '~/src/server/plugins/engine/components/helpers.js'
 import { type DateInputItem } from '~/src/server/plugins/engine/components/types.js'
+import { todayAsDateOnly } from '~/src/server/plugins/engine/date-helper.js'
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import {
   type ErrorMessageTemplateList,
@@ -263,6 +273,252 @@ describe('DatePartsField', () => {
         expect(result4).toBeNull()
         expect(result5).toBe('2000-02-01')
       })
+    })
+
+    it('checks for min date when configured', () => {
+      const daysInPast = 7
+      const daysInPastDate = subDays(startOfToday(), daysInPast)
+      const daysInPastDateStr = format(daysInPastDate, 'd MMMM yyyy')
+      const todayDate = todayAsDateOnly()
+      const futureDate = addDays(todayDate, 1)
+      const validPastDate = subDays(todayDate, 1)
+      const invalidPastDate = subDays(todayDate, daysInPast + 1)
+
+      const collectionOptional = new ComponentCollection(
+        [
+          {
+            title: 'Example date parts field',
+            name: 'myComponent',
+            type: ComponentType.DatePartsField,
+            options: { maxDaysInPast: daysInPast }
+          }
+        ],
+        { model }
+      )
+
+      // Future date (valid)
+      const result1 = collectionOptional.validate(
+        getFormData({
+          day: getDate(futureDate).toString(),
+          month: (getMonth(futureDate) + 1).toString(),
+          year: getYear(futureDate).toString()
+        })
+      )
+
+      // Today (valid)
+      const result2 = collectionOptional.validate(
+        getFormData({
+          day: getDate(todayDate).toString(),
+          month: (getMonth(todayDate) + 1).toString(),
+          year: getYear(todayDate).toString()
+        })
+      )
+
+      // Past date within 7 days (valid)
+      const result3 = collectionOptional.validate(
+        getFormData({
+          day: getDate(validPastDate).toString(),
+          month: (getMonth(validPastDate) + 1).toString(),
+          year: getYear(validPastDate).toString()
+        })
+      )
+
+      // Past date beyond 7 days (invalid)
+      const result4 = collectionOptional.validate(
+        getFormData({
+          day: getDate(invalidPastDate).toString(),
+          month: (getMonth(invalidPastDate) + 1).toString(),
+          year: getYear(invalidPastDate).toString()
+        })
+      )
+
+      expect(result1.errors).toBeUndefined()
+      expect(result2.errors).toBeUndefined()
+      expect(result3.errors).toBeUndefined()
+      expect(result4.errors).toEqual([
+        expect.objectContaining({
+          text: `Example date parts field must be the same as or after ${daysInPastDateStr}`
+        })
+      ])
+    })
+
+    it('checks for max date when configured', () => {
+      const daysInFuture = 7
+      const daysInFutureDate = addDays(startOfToday(), daysInFuture)
+      const daysInFutureDateStr = format(daysInFutureDate, 'd MMMM yyyy')
+      const todayDate = todayAsDateOnly()
+      const pastDate = subDays(todayDate, 1)
+      const validFutureDate = addDays(todayDate, 1)
+      const invalidFutureDate = addDays(todayDate, daysInFuture + 1)
+
+      const collectionOptional = new ComponentCollection(
+        [
+          {
+            title: 'Example date parts field',
+            name: 'myComponent',
+            type: ComponentType.DatePartsField,
+            options: { maxDaysInFuture: daysInFuture }
+          }
+        ],
+        { model }
+      )
+
+      // Past date (valid)
+      const result1 = collectionOptional.validate(
+        getFormData({
+          day: getDate(pastDate).toString(),
+          month: (getMonth(pastDate) + 1).toString(),
+          year: getYear(pastDate).toString()
+        })
+      )
+
+      // Today (valid)
+      const result2 = collectionOptional.validate(
+        getFormData({
+          day: getDate(todayDate).toString(),
+          month: (getMonth(todayDate) + 1).toString(),
+          year: getYear(todayDate).toString()
+        })
+      )
+
+      // Future date within 7 days (valid)
+      const result3 = collectionOptional.validate(
+        getFormData({
+          day: getDate(validFutureDate).toString(),
+          month: (getMonth(validFutureDate) + 1).toString(),
+          year: getYear(validFutureDate).toString()
+        })
+      )
+
+      // Future date beyond 7 days (invalid)
+      const result4 = collectionOptional.validate(
+        getFormData({
+          day: getDate(invalidFutureDate).toString(),
+          month: (getMonth(invalidFutureDate) + 1).toString(),
+          year: getYear(invalidFutureDate).toString()
+        })
+      )
+
+      expect(result1.errors).toBeUndefined()
+      expect(result2.errors).toBeUndefined()
+      expect(result3.errors).toBeUndefined()
+      expect(result4.errors).toEqual([
+        expect.objectContaining({
+          text: `Example date parts field must be the same as or before ${daysInFutureDateStr}`
+        })
+      ])
+    })
+
+    it('handles min date of 0 when configured', () => {
+      const daysInPast = 0
+      const daysInPastDate = subDays(startOfToday(), daysInPast)
+      const daysInPastDateStr = format(daysInPastDate, 'd MMMM yyyy')
+      const todayDate = todayAsDateOnly()
+      const futureDate = addDays(todayDate, 1)
+      const invalidPastDate = subDays(todayDate, daysInPast + 1)
+
+      const collectionOptional = new ComponentCollection(
+        [
+          {
+            title: 'Example date parts field',
+            name: 'myComponent',
+            type: ComponentType.DatePartsField,
+            options: { maxDaysInPast: daysInPast }
+          }
+        ],
+        { model }
+      )
+
+      // Future date (valid)
+      const result1 = collectionOptional.validate(
+        getFormData({
+          day: getDate(futureDate).toString(),
+          month: (getMonth(futureDate) + 1).toString(),
+          year: getYear(futureDate).toString()
+        })
+      )
+
+      // Today (valid)
+      const result2 = collectionOptional.validate(
+        getFormData({
+          day: getDate(todayDate).toString(),
+          month: (getMonth(todayDate) + 1).toString(),
+          year: getYear(todayDate).toString()
+        })
+      )
+
+      // Any past date (invalid)
+      const result3 = collectionOptional.validate(
+        getFormData({
+          day: getDate(invalidPastDate).toString(),
+          month: (getMonth(invalidPastDate) + 1).toString(),
+          year: getYear(invalidPastDate).toString()
+        })
+      )
+
+      expect(result1.errors).toBeUndefined()
+      expect(result2.errors).toBeUndefined()
+      expect(result3.errors).toEqual([
+        expect.objectContaining({
+          text: `Example date parts field must be the same as or after ${daysInPastDateStr}`
+        })
+      ])
+    })
+
+    it('handles max date of 0 when configured', () => {
+      const daysInFuture = 0
+      const daysInFutureDate = addDays(startOfToday(), daysInFuture)
+      const daysInFutureDateStr = format(daysInFutureDate, 'd MMMM yyyy')
+      const todayDate = todayAsDateOnly()
+      const pastDate = subDays(todayDate, 1)
+      const invalidFutureDate = addDays(todayDate, daysInFuture + 1)
+
+      const collectionOptional = new ComponentCollection(
+        [
+          {
+            title: 'Example date parts field',
+            name: 'myComponent',
+            type: ComponentType.DatePartsField,
+            options: { maxDaysInFuture: daysInFuture }
+          }
+        ],
+        { model }
+      )
+
+      // Past date (valid)
+      const result1 = collectionOptional.validate(
+        getFormData({
+          day: getDate(pastDate).toString(),
+          month: (getMonth(pastDate) + 1).toString(),
+          year: getYear(pastDate).toString()
+        })
+      )
+
+      // Today (valid)
+      const result2 = collectionOptional.validate(
+        getFormData({
+          day: getDate(todayDate).toString(),
+          month: (getMonth(todayDate) + 1).toString(),
+          year: getYear(todayDate).toString()
+        })
+      )
+
+      // Any future date (invalid)
+      const result3 = collectionOptional.validate(
+        getFormData({
+          day: getDate(invalidFutureDate).toString(),
+          month: (getMonth(invalidFutureDate) + 1).toString(),
+          year: getYear(invalidFutureDate).toString()
+        })
+      )
+
+      expect(result1.errors).toBeUndefined()
+      expect(result2.errors).toBeUndefined()
+      expect(result3.errors).toEqual([
+        expect.objectContaining({
+          text: `Example date parts field must be the same as or before ${daysInFutureDateStr}`
+        })
+      ])
     })
 
     describe('State', () => {
