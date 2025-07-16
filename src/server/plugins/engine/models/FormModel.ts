@@ -8,6 +8,7 @@ import {
   convertConditionWrapperFromV2,
   formDefinitionSchema,
   formDefinitionV2Schema,
+  generateConditionAlias,
   hasComponents,
   hasRepeater,
   isConditionWrapperV2,
@@ -276,10 +277,12 @@ export class FormModel {
   ) {
     const context = { ...evaluationState }
 
-    for (const key in conditions) {
-      Object.defineProperty(context, key, {
+    for (const conditionId in conditions) {
+      const alias = generateConditionAlias(conditionId)
+
+      Object.defineProperty(context, alias, {
         get() {
-          return conditions[key]?.fn(evaluationState)
+          return conditions[conditionId]?.fn(evaluationState)
         }
       })
     }
