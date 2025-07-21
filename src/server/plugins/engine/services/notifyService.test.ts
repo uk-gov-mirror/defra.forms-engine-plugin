@@ -3,6 +3,7 @@ import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { type DetailItem } from '~/src/server/plugins/engine/models/types.js'
 import { getFormatter } from '~/src/server/plugins/engine/outputFormatters/index.js'
 import { submit } from '~/src/server/plugins/engine/services/notifyService.js'
+import { type FormContext } from '~/src/server/plugins/engine/types.js'
 import {
   FormStatus,
   type FormRequestPayload
@@ -36,6 +37,7 @@ describe('notifyService', () => {
   } as unknown as FormRequestPayload)
   let model: FormModel
   const sendNotificationMock = jest.mocked(sendNotification)
+  const formContext = {} as FormContext
 
   beforeEach(() => {
     jest.resetAllMocks()
@@ -58,7 +60,14 @@ describe('notifyService', () => {
     })
     jest.mocked(getFormatter).mockReturnValue(() => 'dummy-live')
 
-    await submit(mockRequest, model, 'test@defra.gov.uk', items, submitResponse)
+    await submit(
+      formContext,
+      mockRequest,
+      model,
+      'test@defra.gov.uk',
+      items,
+      submitResponse
+    )
 
     expect(sendNotificationMock).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -87,7 +96,14 @@ describe('notifyService', () => {
     })
     jest.mocked(getFormatter).mockReturnValue(() => 'dummy-preview')
 
-    await submit(mockRequest, model, 'test@defra.gov.uk', items, submitResponse)
+    await submit(
+      formContext,
+      mockRequest,
+      model,
+      'test@defra.gov.uk',
+      items,
+      submitResponse
+    )
 
     expect(sendNotificationMock).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -118,7 +134,14 @@ describe('notifyService', () => {
       .mocked(getFormatter)
       .mockReturnValue(() => 'dummy-preview " Hello world \' !@/')
 
-    await submit(mockRequest, model, 'test@defra.gov.uk', items, submitResponse)
+    await submit(
+      formContext,
+      mockRequest,
+      model,
+      'test@defra.gov.uk',
+      items,
+      submitResponse
+    )
 
     expect(sendNotificationMock).toHaveBeenCalledWith(
       expect.objectContaining({

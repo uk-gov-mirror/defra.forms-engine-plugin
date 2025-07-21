@@ -10,10 +10,12 @@ import {
   type DetailItemField,
   type DetailItemRepeat
 } from '~/src/server/plugins/engine/models/types.js'
+import { type FormContext } from '~/src/server/plugins/engine/types.js'
 
 const designerUrl = config.get('designerUrl')
 
 export function format(
+  context: FormContext,
   items: DetailItem[],
   model: FormModel,
   _submitResponse: SubmitResponsePayload,
@@ -27,7 +29,8 @@ export function format(
     meta: {
       schemaVersion: '1',
       timestamp: now.toISOString(),
-      definition: model.def
+      definition: model.def,
+      referenceNumber: context.referenceNumber
     },
     data: categorisedData
   }

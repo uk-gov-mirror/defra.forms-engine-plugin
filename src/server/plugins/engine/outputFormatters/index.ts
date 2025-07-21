@@ -6,8 +6,10 @@ import { type DetailItem } from '~/src/server/plugins/engine/models/types.js'
 import { format as formatHumanV1 } from '~/src/server/plugins/engine/outputFormatters/human/v1.js'
 import { format as formatMachineV1 } from '~/src/server/plugins/engine/outputFormatters/machine/v1.js'
 import { format as formatMachineV2 } from '~/src/server/plugins/engine/outputFormatters/machine/v2.js'
+import { type FormContext } from '~/src/server/plugins/engine/types.js'
 
 type Formatter = (
+  context: FormContext,
   items: DetailItem[],
   model: FormModel,
   submitResponse: SubmitResponsePayload,
