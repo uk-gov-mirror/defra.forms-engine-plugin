@@ -29,8 +29,8 @@ export function format(
     meta: {
       schemaVersion: '1',
       timestamp: now.toISOString(),
-      definition: model.def,
-      referenceNumber: context.referenceNumber
+      referenceNumber: context.referenceNumber,
+      definition: model.def
     },
     data: categorisedData
   }
