@@ -5,6 +5,7 @@ import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import { PageController } from '~/src/server/plugins/engine/pageControllers/PageController.js'
 import { type FormRequest } from '~/src/server/routes/types.js'
 import definition from '~/test/form/definitions/basic.js'
+import { testCapabilities } from '~/test/stubs/capabilities.js'
 
 describe('PageController', () => {
   let model: FormModel
@@ -19,12 +20,16 @@ describe('PageController', () => {
     const page1 = pages[0]
     const page2 = pages[1]
 
-    model = new FormModel(definition, {
-      basePath: testBasePath
-    })
+    model = new FormModel(
+      definition,
+      {
+        basePath: testBasePath
+      },
+      testCapabilities
+    )
 
-    controller1 = new PageController(model, page1)
-    controller2 = new PageController(model, page2)
+    controller1 = new PageController(model, page1, testCapabilities)
+    controller2 = new PageController(model, page2, testCapabilities)
   })
 
   describe('Properties', () => {
@@ -93,7 +98,11 @@ describe('PageController', () => {
         view: 'custom-view'
       }
 
-      const customController = new PageController(model, customPage)
+      const customController = new PageController(
+        model,
+        customPage,
+        testCapabilities
+      )
 
       expect(customController).toHaveProperty('viewName', 'custom-view')
     })

@@ -7,6 +7,7 @@ import {
 
 import { type FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import * as PageControllers from '~/src/server/plugins/engine/pageControllers/index.js'
+import { type Capabilities } from '~/src/server/plugins/engine/types.js'
 
 export function isPageController(
   controllerName?: string | ControllerType
@@ -21,11 +22,19 @@ export type PageControllerType =
 /**
  * Creates page instance for each {@link Page} type
  */
-export function createPage(model: FormModel, pageDef: Page) {
+export function createPage(
+  model: FormModel,
+  pageDef: Page,
+  capabilities: Capabilities
+) {
   const controllerName = controllerNameFromPath(pageDef.controller)
 
   if (!pageDef.controller) {
-    return new PageControllers.QuestionPageController(model, pageDef)
+    return new PageControllers.QuestionPageController(
+      model,
+      pageDef,
+      capabilities
+    )
   }
 
   // Patch legacy controllers
@@ -37,38 +46,70 @@ export function createPage(model: FormModel, pageDef: Page) {
 
   switch (pageDef.controller) {
     case ControllerType.Start:
-      controller = new PageControllers.StartPageController(model, pageDef)
+      controller = new PageControllers.StartPageController(
+        model,
+        pageDef,
+        capabilities
+      )
       break
 
     case ControllerType.Page:
-      controller = new PageControllers.QuestionPageController(model, pageDef)
+      controller = new PageControllers.QuestionPageController(
+        model,
+        pageDef,
+        capabilities
+      )
       break
 
     case ControllerType.Terminal:
-      controller = new PageControllers.TerminalPageController(model, pageDef)
+      controller = new PageControllers.TerminalPageController(
+        model,
+        pageDef,
+        capabilities
+      )
       break
 
     case ControllerType.Summary:
-      controller = new PageControllers.SummaryPageController(model, pageDef)
+      controller = new PageControllers.SummaryPageController(
+        model,
+        pageDef,
+        capabilities
+      )
       break
 
     case ControllerType.Status:
-      controller = new PageControllers.StatusPageController(model, pageDef)
+      controller = new PageControllers.StatusPageController(
+        model,
+        pageDef,
+        capabilities
+      )
       break
 
     case ControllerType.FileUpload:
-      controller = new PageControllers.FileUploadPageController(model, pageDef)
+      controller = new PageControllers.FileUploadPageController(
+        model,
+        pageDef,
+        capabilities
+      )
       break
 
     case ControllerType.Repeat:
-      controller = new PageControllers.RepeatPageController(model, pageDef)
+      controller = new PageControllers.RepeatPageController(
+        model,
+        pageDef,
+        capabilities
+      )
       break
   }
 
   if (typeof controller === 'undefined') {
     if (model.controllers?.[pageDef.controller]) {
       const Ctrl = model.controllers[pageDef.controller]
-      controller = new Ctrl(model, pageDef) as unknown as PageControllerClass // type assertion needed because TS can't verify custom controller structure
+      controller = new Ctrl(
+        model,
+        pageDef,
+        capabilities
+      ) as unknown as PageControllerClass // type assertion needed because TS can't verify custom controller structure
     }
   }
 

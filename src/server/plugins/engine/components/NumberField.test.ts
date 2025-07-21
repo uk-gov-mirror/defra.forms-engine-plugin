@@ -9,14 +9,13 @@ import {
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import definition from '~/test/form/definitions/blank.js'
 import { getFormData, getFormState } from '~/test/helpers/component-helpers.js'
+import { testCapabilities } from '~/test/stubs/capabilities.js'
 
 describe('NumberField', () => {
   let model: FormModel
 
   beforeEach(() => {
-    model = new FormModel(definition, {
-      basePath: 'test'
-    })
+    model = new FormModel(definition, { basePath: 'test' }, testCapabilities)
   })
 
   describe('Defaults', () => {

@@ -14,14 +14,13 @@ import {
   type FormState
 } from '~/src/server/plugins/engine/types.js'
 import definition from '~/test/form/definitions/blank.js'
+import { testCapabilities } from '~/test/stubs/capabilities.js'
 
 describe('DatePartsField', () => {
   let model: FormModel
 
   beforeEach(() => {
-    model = new FormModel(definition, {
-      basePath: 'test'
-    })
+    model = new FormModel(definition, { basePath: 'test' }, testCapabilities)
   })
 
   describe('Defaults', () => {

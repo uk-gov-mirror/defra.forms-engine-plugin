@@ -14,7 +14,10 @@ import { makeLoadFormPreHandler } from '~/src/server/plugins/engine/routes/index
 import { getRoutes as getQuestionRoutes } from '~/src/server/plugins/engine/routes/questions.js'
 import { getRoutes as getRepeaterItemDeleteRoutes } from '~/src/server/plugins/engine/routes/repeaters/item-delete.js'
 import { getRoutes as getRepeaterSummaryRoutes } from '~/src/server/plugins/engine/routes/repeaters/summary.js'
-import { type PluginOptions } from '~/src/server/plugins/engine/types.js'
+import {
+  type Capabilities,
+  type PluginOptions
+} from '~/src/server/plugins/engine/types.js'
 import { registerVision } from '~/src/server/plugins/engine/vision.js'
 import {
   type FormRequestPayloadRefs,
@@ -49,6 +52,10 @@ export const plugin = {
       }
     })
 
+    const capabilities: Capabilities = {
+      saveAndReturn: options.sessionHydrator !== undefined
+    }
+
     await registerVision(server, options)
 
     server.expose('baseLayoutPath', nunjucksOptions.baseLayoutPath)
@@ -62,7 +69,11 @@ export const plugin = {
     const itemCache = new Map<string, { model: FormModel; updatedAt: Date }>()
     server.app.models = itemCache
 
-    const loadFormPreHandler = makeLoadFormPreHandler(server, options)
+    const loadFormPreHandler = makeLoadFormPreHandler(
+      server,
+      options,
+      capabilities
+    )
 
     const getRouteOptions: RouteOptions<FormRequestRefs> = {
       pre: [

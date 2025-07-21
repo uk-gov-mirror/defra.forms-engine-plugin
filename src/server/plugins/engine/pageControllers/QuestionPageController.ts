@@ -23,6 +23,7 @@ import {
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { PageController } from '~/src/server/plugins/engine/pageControllers/PageController.js'
 import {
+  type Capabilities,
   type FormContext,
   type FormContextRequest,
   type FormPageViewModel,
@@ -49,9 +50,10 @@ import { merge } from '~/src/server/services/cacheService.js'
 export class QuestionPageController extends PageController {
   collection: ComponentCollection
   errorSummaryTitle = 'There is a problem'
+  allowSaveAndReturn = true
 
-  constructor(model: FormModel, pageDef: Page) {
-    super(model, pageDef)
+  constructor(model: FormModel, pageDef: Page, capabilities: Capabilities) {
+    super(model, pageDef, capabilities)
 
     // Components collection
     this.collection = new ComponentCollection(
@@ -534,10 +536,6 @@ export class QuestionPageController extends PageController {
       : this.href // Redirect to current page (refresh)
 
     return proceed(request, h, nextUrl)
-  }
-
-  shouldShowSaveAndReturn(): boolean {
-    return true
   }
 
   /**

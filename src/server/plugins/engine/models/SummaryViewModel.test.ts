@@ -14,6 +14,7 @@ import {
   type FormState
 } from '~/src/server/plugins/engine/types.js'
 import definition from '~/test/form/definitions/repeat-mixed.js'
+import { testCapabilities } from '~/test/stubs/capabilities.js'
 
 const basePath = `${FORM_PREFIX}/test`
 
@@ -29,11 +30,13 @@ describe('SummaryViewModel', () => {
   let summaryViewModel: SummaryViewModel
 
   beforeEach(() => {
-    model = new FormModel(definition, {
-      basePath: `${FORM_PREFIX}/test`
-    })
+    model = new FormModel(
+      definition,
+      { basePath: `${FORM_PREFIX}/test` },
+      testCapabilities
+    )
 
-    page = createPage(model, definition.pages[2])
+    page = createPage(model, definition.pages[2], testCapabilities)
     pageUrl = new URL('http://example.com/repeat/pizza-order/summary')
 
     request = {
@@ -257,11 +260,15 @@ describe('SummaryPageController', () => {
   let request: FormContextRequest
 
   beforeEach(() => {
-    model = new FormModel(definition, {
-      basePath: `${FORM_PREFIX}/test`
-    })
+    model = new FormModel(
+      definition,
+      { basePath: `${FORM_PREFIX}/test` },
+      testCapabilities
+    )
 
-    controller = new SummaryPageController(model, definition.pages[2])
+    controller = new SummaryPageController(model, definition.pages[2], {
+      saveAndReturn: true
+    })
 
     request = {
       method: 'get',

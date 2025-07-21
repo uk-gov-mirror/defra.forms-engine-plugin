@@ -23,7 +23,9 @@ import {
   SummaryPageController,
   TerminalPageController
 } from '~/src/server/plugins/engine/pageControllers/index.js'
+import { type Capabilities } from '~/src/server/plugins/engine/types.js'
 import definition from '~/test/form/definitions/blank.js'
+import { testCapabilities } from '~/test/stubs/capabilities.js'
 
 describe('Page controller helpers', () => {
   const examples = PageTypes.map((pageType) => {
@@ -79,9 +81,13 @@ describe('Page controller helpers', () => {
   })
 
   describe('Helper: createPage', () => {
-    const model = new FormModel(definition, {
-      basePath: 'test'
-    })
+    const model = new FormModel(
+      definition,
+      {
+        basePath: 'test'
+      },
+      testCapabilities
+    )
 
     it.each([...examples])(
       "creates page for controller '$pageDef.controller'",
@@ -89,7 +95,9 @@ describe('Page controller helpers', () => {
         const pageDef1 = structuredClone(pageDef)
         const pageDef2 = structuredClone(pageDef)
 
-        expect(createPage(model, pageDef1)).toBeInstanceOf(controller)
+        expect(createPage(model, pageDef1, testCapabilities)).toBeInstanceOf(
+          controller
+        )
 
         const controllerType = ControllerTypes.find(
           ({ name }) => name === pageDef1.controller
@@ -99,7 +107,9 @@ describe('Page controller helpers', () => {
         pageDef2.controller = controllerType?.path
 
         // Check for legacy path support
-        expect(createPage(model, pageDef2)).toBeInstanceOf(controller)
+        expect(createPage(model, pageDef2, testCapabilities)).toBeInstanceOf(
+          controller
+        )
       }
     )
 
@@ -108,8 +118,12 @@ describe('Page controller helpers', () => {
         class CustomPageController extends PageController {
           customProperty: string
 
-          constructor(model: FormModel, pageDef: Page) {
-            super(model, pageDef)
+          constructor(
+            model: FormModel,
+            pageDef: Page,
+            capabilities: Capabilities
+          ) {
+            super(model, pageDef, capabilities)
             this.customProperty = 'some-value'
           }
         }
@@ -121,16 +135,24 @@ describe('Page controller helpers', () => {
           components: []
         }
 
-        const testModel = new FormModel(definition, {
-          basePath: 'test'
-        })
+        const testModel = new FormModel(
+          definition,
+          {
+            basePath: 'test'
+          },
+          testCapabilities
+        )
 
         type ControllerMap = Record<string, typeof PageController>
         testModel.controllers = {
           CustomController: CustomPageController
         } as ControllerMap
 
-        const controller = createPage(testModel, customPageDef as Page)
+        const controller = createPage(
+          testModel,
+          customPageDef as Page,
+          testCapabilities
+        )
 
         expect(controller).toBeInstanceOf(CustomPageController)
         expect(controller).toHaveProperty('customProperty', 'some-value')
@@ -145,7 +167,7 @@ describe('Page controller helpers', () => {
         controller: 'UnknownPageController'
       }
 
-      expect(() => createPage(model, pageDef)).toThrow(
+      expect(() => createPage(model, pageDef, testCapabilities)).toThrow(
         `Page controller ${pageDef.controller} does not exist`
       )
     })

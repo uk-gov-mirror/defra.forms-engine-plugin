@@ -10,6 +10,7 @@ import {
 import { type FormContextRequest } from '~/src/server/plugins/engine/types.js'
 import { FormStatus } from '~/src/server/routes/types.js'
 import definition from '~/test/form/definitions/repeat-mixed.js'
+import { testCapabilities } from '~/test/stubs/capabilities.js'
 
 const itemId1 = 'abc-123'
 const itemId2 = 'xyz-987'
@@ -26,9 +27,13 @@ const submitResponse = {
   }
 }
 
-const model = new FormModel(definition, {
-  basePath: 'test'
-})
+const model = new FormModel(
+  definition,
+  {
+    basePath: 'test'
+  },
+  testCapabilities
+)
 
 const state = {
   $$__referenceNumber: 'foobar',
@@ -50,7 +55,7 @@ const state = {
 const pageDef = definition.pages[2]
 const pageUrl = new URL('http://example.com/repeat/pizza-order/summary')
 
-const controller = new SummaryPageController(model, pageDef)
+const controller = new SummaryPageController(model, pageDef, testCapabilities)
 
 const request = {
   method: 'get',

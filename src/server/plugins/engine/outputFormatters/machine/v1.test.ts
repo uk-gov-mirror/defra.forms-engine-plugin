@@ -15,6 +15,7 @@ import {
 } from '~/src/server/plugins/engine/types.js'
 import { FormStatus } from '~/src/server/routes/types.js'
 import definition from '~/test/form/definitions/repeat-mixed.js'
+import { testCapabilities } from '~/test/stubs/capabilities.js'
 
 const submitResponse = {
   message: 'Submit completed',
@@ -28,9 +29,13 @@ const submitResponse = {
   }
 }
 
-const model = new FormModel(definition, {
-  basePath: 'test'
-})
+const model = new FormModel(
+  definition,
+  {
+    basePath: 'test'
+  },
+  testCapabilities
+)
 
 const formStatus = {
   isPreview: false,

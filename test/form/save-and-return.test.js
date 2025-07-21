@@ -16,7 +16,7 @@ jest.mock('~/src/server/utils/notify.ts')
 jest.mock('~/src/server/plugins/engine/services/formsService.js')
 jest.mock('~/src/server/plugins/engine/services/formSubmissionService.js')
 
-describe('Save and Return functionality', () => {
+describe('Save and Return functionality when feature enabled', () => {
   /** @type {Server} */
   let server
 
@@ -30,7 +30,10 @@ describe('Save and Return functionality', () => {
     server = await createServer({
       formFileName: 'basic.js',
       formFilePath: join(import.meta.dirname, 'definitions'),
-      enforceCsrf: true
+      enforceCsrf: true,
+      capabilities: {
+        saveAndReturn: true
+      }
     })
 
     await server.initialize()

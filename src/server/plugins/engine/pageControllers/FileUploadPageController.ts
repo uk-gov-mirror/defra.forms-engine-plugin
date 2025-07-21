@@ -23,6 +23,7 @@ import {
 import {
   FileStatus,
   UploadStatus,
+  type Capabilities,
   type FeaturedFormPageViewModel,
   type FileState,
   type FormContext,
@@ -64,8 +65,12 @@ export class FileUploadPageController extends QuestionPageController {
   fileUpload: FileUploadField
   fileDeleteViewName = 'item-delete'
 
-  constructor(model: FormModel, pageDef: PageFileUpload) {
-    super(model, pageDef)
+  constructor(
+    model: FormModel,
+    pageDef: PageFileUpload,
+    capabilities: Capabilities
+  ) {
+    super(model, pageDef, capabilities)
 
     const { collection } = this
 

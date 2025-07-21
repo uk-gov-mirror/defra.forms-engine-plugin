@@ -22,6 +22,7 @@ import {
 } from '~/src/server/plugins/engine/types.js'
 import definition from '~/test/form/definitions/file-upload-basic.js'
 import { getFormData, getFormState } from '~/test/helpers/component-helpers.js'
+import { testCapabilities } from '~/test/stubs/capabilities.js'
 
 describe('FileUploadField', () => {
   let model: FormModel
@@ -143,9 +144,7 @@ describe('FileUploadField', () => {
   ]
 
   beforeEach(() => {
-    model = new FormModel(definition, {
-      basePath: 'test'
-    })
+    model = new FormModel(definition, { basePath: 'test' }, testCapabilities)
   })
 
   describe('Defaults', () => {
@@ -164,7 +163,7 @@ describe('FileUploadField', () => {
         schema: {}
       } satisfies FileUploadFieldComponent
 
-      page = createPage(model, definition.pages[0])
+      page = createPage(model, definition.pages[0], testCapabilities)
       collection = new ComponentCollection([def], { page, model })
       field = collection.fields[0]
     })
@@ -193,7 +192,7 @@ describe('FileUploadField', () => {
           schema: {}
         } satisfies FileUploadFieldComponent
 
-        page = createPage(model, definition.pages[0])
+        page = createPage(model, definition.pages[0], testCapabilities)
         collection = new ComponentCollection([def], { page, model })
 
         const { formSchema } = collection

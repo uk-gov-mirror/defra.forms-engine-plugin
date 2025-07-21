@@ -1,6 +1,7 @@
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import { TerminalPageController } from '~/src/server/plugins/engine/pageControllers/TerminalPageController.js'
 import definition from '~/test/form/definitions/basic.js'
+import { testCapabilities } from '~/test/stubs/capabilities.js'
 
 describe('TerminalController', () => {
   let model: FormModel
@@ -11,11 +12,15 @@ describe('TerminalController', () => {
 
     const page1 = pages[0]
 
-    model = new FormModel(definition, {
-      basePath: 'test'
-    })
+    model = new FormModel(
+      definition,
+      {
+        basePath: 'test'
+      },
+      testCapabilities
+    )
 
-    controller1 = new TerminalPageController(model, page1)
+    controller1 = new TerminalPageController(model, page1, testCapabilities)
   })
 
   describe('Route handlers', () => {

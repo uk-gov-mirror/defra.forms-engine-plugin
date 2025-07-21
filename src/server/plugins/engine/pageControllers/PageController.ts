@@ -21,6 +21,7 @@ import {
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { type ExecutableCondition } from '~/src/server/plugins/engine/models/types.js'
 import {
+  type Capabilities,
   type FormContext,
   type PageViewModelBase
 } from '~/src/server/plugins/engine/types.js'
@@ -45,8 +46,10 @@ export class PageController {
   events?: Events
   collection?: ComponentCollection
   viewName = 'index'
+  allowSaveAndReturn = false
+  capabilities: Capabilities
 
-  constructor(model: FormModel, pageDef: Page) {
+  constructor(model: FormModel, pageDef: Page, capabilities: Capabilities) {
     const { def } = model
 
     this.def = def
@@ -55,6 +58,7 @@ export class PageController {
     this.pageDef = pageDef
     this.title = pageDef.title
     this.events = pageDef.events
+    this.capabilities = capabilities
 
     // Resolve section
     this.section = model.sections.find(
@@ -182,5 +186,9 @@ export class PageController {
     h: Pick<ResponseToolkit, 'redirect' | 'view'>
   ) => ReturnType<Lifecycle.Method<FormRequestPayloadRefs>> {
     throw Boom.badRequest('Unsupported POST route handler for this page')
+  }
+
+  shouldShowSaveAndReturn(): boolean {
+    return this.capabilities.saveAndReturn && this.allowSaveAndReturn
   }
 }

@@ -10,6 +10,7 @@ import { redirectPath } from '~/src/server/plugins/engine/helpers.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { QuestionPageController } from '~/src/server/plugins/engine/pageControllers/QuestionPageController.js'
 import {
+  type Capabilities,
   type FormContext,
   type FormContextRequest,
   type FormPageViewModel,
@@ -35,8 +36,12 @@ export class RepeatPageController extends QuestionPageController {
   listDeleteViewName = 'item-delete'
   repeat: Repeat
 
-  constructor(model: FormModel, pageDef: PageRepeat) {
-    super(model, pageDef)
+  constructor(
+    model: FormModel,
+    pageDef: PageRepeat,
+    capabilities: Capabilities
+  ) {
+    super(model, pageDef, capabilities)
 
     this.repeat = pageDef.repeat
 

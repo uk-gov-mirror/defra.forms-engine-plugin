@@ -49,6 +49,7 @@ import {
 import { validationOptions as opts } from '~/src/server/plugins/engine/pageControllers/validationOptions.js'
 import * as defaultServices from '~/src/server/plugins/engine/services/index.js'
 import {
+  type Capabilities,
   type FormContext,
   type FormContextRequest,
   type FormState,
@@ -92,6 +93,7 @@ export class FormModel {
   constructor(
     def: typeof this.def,
     options: { basePath: string },
+    capabilities: Capabilities,
     services: Services = defaultServices,
     controllers?: Record<string, typeof PageController>
   ) {
@@ -181,7 +183,9 @@ export class FormModel {
       this.conditions[condition.name] = condition
     })
 
-    this.pages = def.pages.map((pageDef) => createPage(this, pageDef))
+    this.pages = def.pages.map((pageDef) =>
+      createPage(this, pageDef, capabilities)
+    )
 
     if (
       !def.pages.some(
@@ -191,11 +195,15 @@ export class FormModel {
       )
     ) {
       this.pages.push(
-        createPage(this, {
-          title: 'Form submitted',
-          path: ControllerPath.Status,
-          controller: ControllerType.Status
-        })
+        createPage(
+          this,
+          {
+            title: 'Form submitted',
+            path: ControllerPath.Status,
+            controller: ControllerType.Status
+          },
+          capabilities
+        )
       )
     }
 

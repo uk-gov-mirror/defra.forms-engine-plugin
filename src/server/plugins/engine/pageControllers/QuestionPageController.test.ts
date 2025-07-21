@@ -4,6 +4,7 @@ import { type ResponseToolkit } from '@hapi/hapi'
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import { QuestionPageController } from '~/src/server/plugins/engine/pageControllers/QuestionPageController.js'
 import {
+  type Capabilities,
   type FormContext,
   type FormContextRequest,
   type FormPageViewModel,
@@ -21,6 +22,7 @@ import definitionConditionsBasic, {
 } from '~/test/form/definitions/conditions-basic.js'
 import definitionConditionsComplex from '~/test/form/definitions/conditions-complex.js'
 import definitionConditionsDates from '~/test/form/definitions/conditions-dates.js'
+import { testCapabilities } from '~/test/stubs/capabilities.js'
 
 describe('QuestionPageController', () => {
   let page1: PageQuestion
@@ -44,12 +46,16 @@ describe('QuestionPageController', () => {
     page2 = pages[1]
     page2Url = new URL('http://example.com/test/second-page')
 
-    model = new FormModel(definitionConditionsBasic, {
-      basePath: 'test'
-    })
+    model = new FormModel(
+      definitionConditionsBasic,
+      {
+        basePath: 'test'
+      },
+      testCapabilities
+    )
 
-    controller1 = new QuestionPageController(model, page1)
-    controller2 = new QuestionPageController(model, page2)
+    controller1 = new QuestionPageController(model, page1, testCapabilities)
+    controller2 = new QuestionPageController(model, page2, testCapabilities)
 
     requestPage1 = {
       method: 'get',
@@ -260,13 +266,21 @@ describe('QuestionPageController', () => {
     it('filters state by journey pages', () => {
       const { pages } = definitionConditionsComplex
 
-      const model = new FormModel(definitionConditionsComplex, {
-        basePath: 'test'
-      })
+      const model = new FormModel(
+        definitionConditionsComplex,
+        {
+          basePath: 'test'
+        },
+        testCapabilities
+      )
 
       // Selected page appears after convergence and contains a conditional field
       // This is the page we're theoretically browsing to
-      const controller = new QuestionPageController(model, pages[7])
+      const controller = new QuestionPageController(
+        model,
+        pages[7],
+        testCapabilities
+      )
 
       // The state below shows we said we had a UKPassport and entered details for an applicant
       const state: FormSubmissionState = {
@@ -369,11 +383,19 @@ describe('QuestionPageController', () => {
     it('combines state values for date fields', () => {
       const { pages } = definitionConditionsDates
 
-      const model = new FormModel(definitionConditionsDates, {
-        basePath: 'test'
-      })
+      const model = new FormModel(
+        definitionConditionsDates,
+        {
+          basePath: 'test'
+        },
+        testCapabilities
+      )
 
-      const controller = new QuestionPageController(model, pages[0])
+      const controller = new QuestionPageController(
+        model,
+        pages[0],
+        testCapabilities
+      )
 
       const request = {
         method: 'get',
@@ -409,11 +431,19 @@ describe('QuestionPageController', () => {
     it('filters on condition A', () => {
       const { pages } = conditionalReveal
 
-      const model = new FormModel(conditionalReveal, {
-        basePath: 'test'
-      })
+      const model = new FormModel(
+        conditionalReveal,
+        {
+          basePath: 'test'
+        },
+        testCapabilities
+      )
 
-      const controller = new QuestionPageController(model, pages[0])
+      const controller = new QuestionPageController(
+        model,
+        pages[0],
+        testCapabilities
+      )
 
       // The state below shows we said we had a UKPassport and entered details for an applicant
       const state: FormSubmissionState = { $$__referenceNumber: 'foobar' }
@@ -465,11 +495,19 @@ describe('QuestionPageController', () => {
     it('filters on condition B', () => {
       const { pages } = conditionalReveal
 
-      const model = new FormModel(conditionalReveal, {
-        basePath: 'test'
-      })
+      const model = new FormModel(
+        conditionalReveal,
+        {
+          basePath: 'test'
+        },
+        testCapabilities
+      )
 
-      const controller = new QuestionPageController(model, pages[0])
+      const controller = new QuestionPageController(
+        model,
+        pages[0],
+        testCapabilities
+      )
 
       // The state below shows we said we had a UKPassport and entered details for an applicant
       const state: FormSubmissionState = { $$__referenceNumber: 'foobar' }
@@ -731,9 +769,13 @@ describe('QuestionPageController V2', () => {
     page1Url = new URL('http://example.com/test/first-page')
     page2Url = new URL('http://example.com/test/second-page')
 
-    model = new FormModel(definitionConditionsBasicV2, {
-      basePath: 'test'
-    })
+    model = new FormModel(
+      definitionConditionsBasicV2,
+      {
+        basePath: 'test'
+      },
+      testCapabilities
+    )
 
     controller1 = model.pages[0] // new QuestionPageController(model, page1)
     controller2 = model.pages[1] // new QuestionPageController(model, page2)
@@ -944,13 +986,21 @@ describe('QuestionPageController V2', () => {
     it('filters state by journey pages', () => {
       const { pages } = definitionConditionsComplex
 
-      const model = new FormModel(definitionConditionsComplex, {
-        basePath: 'test'
-      })
+      const model = new FormModel(
+        definitionConditionsComplex,
+        {
+          basePath: 'test'
+        },
+        testCapabilities
+      )
 
       // Selected page appears after convergence and contains a conditional field
       // This is the page we're theoretically browsing to
-      const controller = new QuestionPageController(model, pages[7])
+      const controller = new QuestionPageController(
+        model,
+        pages[7],
+        testCapabilities
+      )
 
       // The state below shows we said we had a UKPassport and entered details for an applicant
       const state: FormSubmissionState = {
@@ -1053,11 +1103,19 @@ describe('QuestionPageController V2', () => {
     it('combines state values for date fields', () => {
       const { pages } = definitionConditionsDates
 
-      const model = new FormModel(definitionConditionsDates, {
-        basePath: 'test'
-      })
+      const model = new FormModel(
+        definitionConditionsDates,
+        {
+          basePath: 'test'
+        },
+        testCapabilities
+      )
 
-      const controller = new QuestionPageController(model, pages[0])
+      const controller = new QuestionPageController(
+        model,
+        pages[0],
+        testCapabilities
+      )
 
       const request = {
         method: 'get',
@@ -1286,11 +1344,19 @@ describe('Save and Return functionality', () => {
   beforeEach(() => {
     const { pages } = definitionConditionsBasic
 
-    model = new FormModel(definitionConditionsBasic, {
-      basePath: 'test'
-    })
+    const capabilities: Capabilities = {
+      saveAndReturn: true
+    }
 
-    controller1 = new QuestionPageController(model, pages[0])
+    model = new FormModel(
+      definitionConditionsBasic,
+      {
+        basePath: 'test'
+      },
+      capabilities
+    )
+
+    controller1 = new QuestionPageController(model, pages[0], capabilities)
 
     requestPage1 = {
       method: 'get',

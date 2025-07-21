@@ -18,6 +18,7 @@ import {
 } from '~/src/server/plugins/engine/helpers.js'
 import { handleLegacyRedirect } from '~/src/server/plugins/engine/helpers.js'
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
+// ...existing code...
 import {
   createPage,
   type PageControllerClass
@@ -33,6 +34,7 @@ import {
 } from '~/src/server/routes/types.js'
 import definition from '~/test/form/definitions/basic.js'
 import templateDefinition from '~/test/form/definitions/templates.js'
+import { testCapabilities } from '~/test/stubs/capabilities.js'
 
 interface NunjucksContext {
   context: {
@@ -49,11 +51,13 @@ describe('Helpers', () => {
   let h: Pick<ResponseToolkit, 'redirect' | 'view'>
 
   beforeEach(() => {
-    const model = new FormModel(definition, {
-      basePath: 'test'
-    })
+    const model = new FormModel(
+      definition,
+      { basePath: 'test' },
+      testCapabilities
+    )
 
-    page = createPage(model, definition.pages[0])
+    page = createPage(model, definition.pages[0], testCapabilities)
     const pageUrl = new URL(page.href, 'http://example.com')
 
     request = {
@@ -551,9 +555,11 @@ describe('Helpers', () => {
     let formContext: FormContext
 
     beforeEach(() => {
-      model = new FormModel(templateDefinition, {
-        basePath: 'template'
-      })
+      model = new FormModel(
+        templateDefinition,
+        { basePath: 'template' },
+        testCapabilities
+      )
 
       formContext = {
         evaluationState: {},

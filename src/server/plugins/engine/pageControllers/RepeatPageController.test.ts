@@ -8,6 +8,7 @@ import {
   type RepeaterSummaryPageViewModel
 } from '~/src/server/plugins/engine/types.js'
 import definition from '~/test/form/definitions/repeat.js'
+import { testCapabilities } from '~/test/stubs/capabilities.js'
 
 describe('RepeatPageController', () => {
   const itemId1 = 'abc-123'
@@ -38,11 +39,15 @@ describe('RepeatPageController', () => {
       'http://example.com'
     )
 
-    model = new FormModel(definition, {
-      basePath: 'test'
-    })
+    model = new FormModel(
+      definition,
+      {
+        basePath: 'test'
+      },
+      testCapabilities
+    )
 
-    controller = new RepeatPageController(model, pages[0])
+    controller = new RepeatPageController(model, pages[0], testCapabilities)
 
     requestPage = {
       method: 'get',

@@ -4,14 +4,21 @@ import { type ResponseToolkit } from '@hapi/hapi'
 import { getCacheService } from '~/src/server/plugins/engine/helpers.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { QuestionPageController } from '~/src/server/plugins/engine/pageControllers/QuestionPageController.js'
-import { type FormContext } from '~/src/server/plugins/engine/types.js'
+import {
+  type Capabilities,
+  type FormContext
+} from '~/src/server/plugins/engine/types.js'
 import { type FormRequest } from '~/src/server/routes/types.js'
 
 export class StatusPageController extends QuestionPageController {
   declare pageDef: PageStatus
 
-  constructor(model: FormModel, pageDef: PageStatus) {
-    super(model, pageDef)
+  constructor(
+    model: FormModel,
+    pageDef: PageStatus,
+    capabilities: Capabilities
+  ) {
+    super(model, pageDef, capabilities)
     this.viewName = 'confirmation'
   }
 

@@ -9,6 +9,7 @@ import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import { listYesNoExamples } from '~/test/fixtures/list.js'
 import definition from '~/test/form/definitions/blank.js'
 import { getFormData, getFormState } from '~/test/helpers/component-helpers.js'
+import { testCapabilities } from '~/test/stubs/capabilities.js'
 
 describe('YesNoField', () => {
   let def: YesNoFieldComponent
@@ -24,9 +25,7 @@ describe('YesNoField', () => {
       options: {}
     } satisfies YesNoFieldComponent
 
-    model = new FormModel(definition, {
-      basePath: 'test'
-    })
+    model = new FormModel(definition, { basePath: 'test' }, testCapabilities)
 
     collection = new ComponentCollection([def], { model })
     field = collection.fields[0]

@@ -13,6 +13,7 @@ import conditionsListDefinition from '~/test/form/definitions/conditions-list.js
 import relativeDatesDefinition from '~/test/form/definitions/conditions-relative-dates-v2.js'
 import fieldsRequiredDefinition from '~/test/form/definitions/fields-required.js'
 import joinedConditionsDefinition from '~/test/form/definitions/joined-conditions-test.js'
+import { testCapabilities } from '~/test/stubs/capabilities.js'
 
 jest.mock('~/src/server/plugins/engine/date-helper.ts')
 
@@ -24,7 +25,7 @@ describe('FormModel', () => {
   describe('Constructor', () => {
     it('loads a valid form definition', () => {
       expect(
-        () => new FormModel(definition, { basePath: 'test' })
+        () => new FormModel(definition, { basePath: 'test' }, testCapabilities)
       ).not.toThrow()
     })
 
@@ -34,7 +35,11 @@ describe('FormModel', () => {
         pages: definitionV2.pages.map((page) => ({ ...page, title: '' }))
       }
 
-      const model = new FormModel(noTitlesDefinition, { basePath: 'test' })
+      const model = new FormModel(
+        noTitlesDefinition,
+        { basePath: 'test' },
+        testCapabilities
+      )
 
       expect(model.def.pages.at(0)?.title).toBe(
         'Have you previously been married?'
@@ -80,7 +85,11 @@ describe('FormModel', () => {
         .fn()
         .mockReturnValue({ value: definitionWithLists })
 
-      const model = new FormModel(definitionWithLists, { basePath: 'test' })
+      const model = new FormModel(
+        definitionWithLists,
+        { basePath: 'test' },
+        testCapabilities
+      )
 
       expect(
         model.getListById('c5eba145-b04d-4d41-a50c-e5e2f9b6357f')
@@ -93,7 +102,11 @@ describe('FormModel', () => {
         .fn()
         .mockReturnValue({ value: definitionV2 })
 
-      const model = new FormModel(definitionV2, { basePath: 'test' })
+      const model = new FormModel(
+        definitionV2,
+        { basePath: 'test' },
+        testCapabilities
+      )
 
       expect(
         model.getComponentById('717eb213-4e4b-4a2d-9cfd-2780f5e1e3e5')
@@ -105,7 +118,11 @@ describe('FormModel', () => {
       formDefinitionV2Schema.validate = jest
         .fn()
         .mockReturnValue({ value: definitionV2 })
-      const model = new FormModel(definitionV2, { basePath: 'test' })
+      const model = new FormModel(
+        definitionV2,
+        { basePath: 'test' },
+        testCapabilities
+      )
 
       expect(
         model.getConditionById('6c9e2f4a-1d7b-5e8c-3f6a-9e2d5b7c4f1a')
@@ -117,9 +134,10 @@ describe('FormModel', () => {
         error: 'Validation error'
       })
 
-      expect(() => new FormModel(definitionV2, { basePath: 'test' })).toThrow(
-        'Validation error'
-      )
+      expect(
+        () =>
+          new FormModel(definitionV2, { basePath: 'test' }, testCapabilities)
+      ).toThrow('Validation error')
     })
 
     it('assigns v1 to the schema if not defined', () => {
@@ -133,7 +151,11 @@ describe('FormModel', () => {
         .fn()
         .mockReturnValue({ value: definitionWithoutSchema })
 
-      const model = new FormModel(definitionWithoutSchema, { basePath: 'test' })
+      const model = new FormModel(
+        definitionWithoutSchema,
+        { basePath: 'test' },
+        testCapabilities
+      )
 
       expect(model.schemaVersion).toBe(SchemaVersion.V1)
     })
@@ -141,9 +163,13 @@ describe('FormModel', () => {
 
   describe('getFormContext', () => {
     it('clears a previous checkbox field value when the field is omitted from the payload', () => {
-      const formModel = new FormModel(fieldsRequiredDefinition, {
-        basePath: '/components'
-      })
+      const formModel = new FormModel(
+        fieldsRequiredDefinition,
+        {
+          basePath: '/components'
+        },
+        testCapabilities
+      )
 
       const state = {
         $$__referenceNumber: 'foobar',
@@ -171,9 +197,13 @@ describe('FormModel', () => {
     })
 
     it('handles missing reference numbers', () => {
-      const formModel = new FormModel(fieldsRequiredDefinition, {
-        basePath: '/components'
-      })
+      const formModel = new FormModel(
+        fieldsRequiredDefinition,
+        {
+          basePath: '/components'
+        },
+        testCapabilities
+      )
 
       const state = {
         checkboxesSingle: ['Arabian', 'Shetland']
@@ -196,9 +226,13 @@ describe('FormModel', () => {
     })
 
     it('handles non-string reference numbers', () => {
-      const formModel = new FormModel(fieldsRequiredDefinition, {
-        basePath: '/components'
-      })
+      const formModel = new FormModel(
+        fieldsRequiredDefinition,
+        {
+          basePath: '/components'
+        },
+        testCapabilities
+      )
 
       const state = {
         $$__referenceNumber: 123456789,
@@ -222,9 +256,13 @@ describe('FormModel', () => {
     })
 
     it('redirects to the page if the list field (radio) is invalidated due to list item conditions', () => {
-      const formModel = new FormModel(conditionsListDefinition, {
-        basePath: '/conditional-list-items'
-      })
+      const formModel = new FormModel(
+        conditionsListDefinition,
+        {
+          basePath: '/conditional-list-items'
+        },
+        testCapabilities
+      )
 
       const state = {
         $$__referenceNumber: 'foobar',
@@ -257,9 +295,13 @@ describe('FormModel', () => {
     })
 
     it('redirects to the page if the list field (check) is invalidated due to list item conditions', () => {
-      const formModel = new FormModel(conditionsListDefinition, {
-        basePath: '/conditional-list-items'
-      })
+      const formModel = new FormModel(
+        conditionsListDefinition,
+        {
+          basePath: '/conditional-list-items'
+        },
+        testCapabilities
+      )
 
       const state = {
         $$__referenceNumber: 'foobar',
@@ -301,7 +343,11 @@ describe('FormModel', () => {
       formDefinitionV2Schema.validate = jest
         .fn()
         .mockReturnValue({ value: relativeDatesDefinition })
-      const model = new FormModel(relativeDatesDefinition, { basePath: 'test' })
+      const model = new FormModel(
+        relativeDatesDefinition,
+        { basePath: 'test' },
+        testCapabilities
+      )
 
       const allConditionsKeys = Object.keys(model.conditions)
       expect(allConditionsKeys).toHaveLength(8)
@@ -347,9 +393,13 @@ describe('FormModel - Joined Conditions', () => {
       .fn()
       .mockReturnValue({ value: joinedConditionsDefinition })
 
-    const model = new FormModel(joinedConditionsDefinition, {
-      basePath: 'test'
-    })
+    const model = new FormModel(
+      joinedConditionsDefinition,
+      {
+        basePath: 'test'
+      },
+      testCapabilities
+    )
 
     expect(model.conditions).toBeDefined()
     expect(Object.keys(model.conditions)).toHaveLength(3)
@@ -374,9 +424,13 @@ describe('FormModel - Joined Conditions', () => {
       .fn()
       .mockReturnValue({ value: joinedConditionsDefinition })
 
-    const model = new FormModel(joinedConditionsDefinition, {
-      basePath: 'test'
-    })
+    const model = new FormModel(
+      joinedConditionsDefinition,
+      {
+        basePath: 'test'
+      },
+      testCapabilities
+    )
 
     const joinedConditionPage = model.pages.find(
       (page) => page.path === '/joined-condition-page'
@@ -397,9 +451,13 @@ describe('FormModel - Joined Conditions', () => {
         .fn()
         .mockReturnValue({ value: joinedConditionsDefinition })
 
-      const model = new FormModel(joinedConditionsDefinition, {
-        basePath: 'test'
-      })
+      const model = new FormModel(
+        joinedConditionsDefinition,
+        {
+          basePath: 'test'
+        },
+        testCapabilities
+      )
 
       const evaluationState = { fsZNJr: 'Bob', DaBGpS: true }
 
@@ -420,9 +478,13 @@ describe('FormModel - Joined Conditions', () => {
         .fn()
         .mockReturnValue({ value: joinedConditionsDefinition })
 
-      const model = new FormModel(joinedConditionsDefinition, {
-        basePath: 'test'
-      })
+      const model = new FormModel(
+        joinedConditionsDefinition,
+        {
+          basePath: 'test'
+        },
+        testCapabilities
+      )
 
       const joinedCondition =
         model.conditions['db43c6bc-9ce6-478b-8345-4fff5eff2ba3']
@@ -439,7 +501,11 @@ describe('FormModel - Joined Conditions', () => {
     })
 
     it('should handle V1 engine without display name replacement', () => {
-      const model = new FormModel(definition, { basePath: 'test' })
+      const model = new FormModel(
+        definition,
+        { basePath: 'test' },
+        testCapabilities
+      )
 
       const condition = model.conditions.ZCXeMz
       expect(condition).toBeDefined()
@@ -462,9 +528,13 @@ describe('FormModel - Joined Conditions', () => {
         .fn()
         .mockReturnValue({ value: definitionWithoutDisplayName })
 
-      const model = new FormModel(definitionWithoutDisplayName, {
-        basePath: 'test'
-      })
+      const model = new FormModel(
+        definitionWithoutDisplayName,
+        {
+          basePath: 'test'
+        },
+        testCapabilities
+      )
 
       expect(model.conditions).toBeDefined()
       expect(Object.keys(model.conditions)).toHaveLength(3)

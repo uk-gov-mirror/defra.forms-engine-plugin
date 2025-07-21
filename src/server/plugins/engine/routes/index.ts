@@ -21,6 +21,7 @@ import { type PageControllerClass } from '~/src/server/plugins/engine/pageContro
 import { generateUniqueReference } from '~/src/server/plugins/engine/referenceNumbers.js'
 import * as defaultServices from '~/src/server/plugins/engine/services/index.js'
 import {
+  type Capabilities,
   type FormContext,
   type PluginOptions
 } from '~/src/server/plugins/engine/types.js'
@@ -84,7 +85,11 @@ export async function redirectOrMakeHandler(
   return proceed(request, h, page.getHref(relevantPath))
 }
 
-export function makeLoadFormPreHandler(server: Server, options: PluginOptions) {
+export function makeLoadFormPreHandler(
+  server: Server,
+  options: PluginOptions,
+  capabilities: Capabilities
+) {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- hapi types are wrong
   const prefix = server.realm.modifiers.route.prefix ?? ''
 
@@ -157,6 +162,7 @@ export function makeLoadFormPreHandler(server: Server, options: PluginOptions) {
       const model = new FormModel(
         definition,
         { basePath },
+        capabilities,
         services,
         controllers
       )

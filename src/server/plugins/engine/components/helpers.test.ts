@@ -4,10 +4,13 @@ import { ComponentBase } from '~/src/server/plugins/engine/components/ComponentB
 import { createComponent } from '~/src/server/plugins/engine/components/helpers.js'
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import definition from '~/test/form/definitions/basic.js'
+import { testCapabilities } from '~/test/stubs/capabilities.js'
 
-const formModel = new FormModel(definition, {
-  basePath: 'test'
-})
+const formModel = new FormModel(
+  definition,
+  { basePath: 'test' },
+  testCapabilities
+)
 
 describe('helpers tests', () => {
   test('should throw if invalid type', () => {

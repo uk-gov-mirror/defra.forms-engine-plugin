@@ -32,6 +32,7 @@ import {
   type FormRequestPayload
 } from '~/src/server/routes/types.js'
 import definition from '~/test/form/definitions/file-upload-basic.js'
+import { testCapabilities } from '~/test/stubs/capabilities.js'
 
 type TestableFileUploadPageController = FileUploadPageController & {
   initiateAndStoreNewUpload(
@@ -59,11 +60,15 @@ describe('FileUploadPageController', () => {
   beforeEach(() => {
     const { pages } = structuredClone(definition)
 
-    model = new FormModel(definition, {
-      basePath: 'test'
-    })
+    model = new FormModel(
+      definition,
+      {
+        basePath: 'test'
+      },
+      testCapabilities
+    )
 
-    controller = new FileUploadPageController(model, pages[0])
+    controller = new FileUploadPageController(model, pages[0], testCapabilities)
     request = {
       logger: {
         info: jest.fn(),
@@ -110,7 +115,9 @@ describe('FileUploadPageController', () => {
       // @ts-expect-error - Allow invalid component for test
       pages[0].components = [textComponent]
 
-      expect(() => new FileUploadPageController(model, pages[0])).toThrow(
+      expect(
+        () => new FileUploadPageController(model, pages[0], testCapabilities)
+      ).toThrow(
         `Expected 1 FileUploadFieldComponent in FileUploadPageController '${pages[0].path}'`
       )
     })
@@ -121,7 +128,9 @@ describe('FileUploadPageController', () => {
       // @ts-expect-error - Allow invalid component for test
       pages[0].components.unshift(textComponent)
 
-      expect(() => new FileUploadPageController(model, pages[0])).toThrow(
+      expect(
+        () => new FileUploadPageController(model, pages[0], testCapabilities)
+      ).toThrow(
         `Expected 'fileUpload' to be the first form component in FileUploadPageController '${pages[0].path}'`
       )
     })
@@ -896,8 +905,16 @@ describe('FileUploadPageController', () => {
 
     beforeEach(() => {
       const { pages } = structuredClone(definition)
-      const model = new FormModel(definition, { basePath: 'test' })
-      controller = new FileUploadPageController(model, pages[0])
+      const model = new FormModel(
+        definition,
+        { basePath: 'test' },
+        testCapabilities
+      )
+      controller = new FileUploadPageController(
+        model,
+        pages[0],
+        testCapabilities
+      )
     })
 
     describe('when no details provided', () => {

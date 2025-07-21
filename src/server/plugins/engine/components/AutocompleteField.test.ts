@@ -19,6 +19,7 @@ import {
 } from '~/test/fixtures/list.js'
 import definition from '~/test/form/definitions/blank.js'
 import { getFormData, getFormState } from '~/test/helpers/component-helpers.js'
+import { testCapabilities } from '~/test/stubs/capabilities.js'
 
 describe.each([
   {
@@ -62,9 +63,13 @@ describe.each([
     const updated = structuredClone(definition)
     updated.lists = [options.list]
 
-    model = new FormModel(updated, {
-      basePath: 'test'
-    })
+    model = new FormModel(
+      updated,
+      {
+        basePath: 'test'
+      },
+      testCapabilities
+    )
 
     collection = new ComponentCollection([def], { model })
     field = collection.fields[0]
@@ -313,9 +318,13 @@ describe.each([
       })
 
       it('returns empty items when missing', () => {
-        const model = new FormModel(definition, {
-          basePath: 'test'
-        })
+        const model = new FormModel(
+          definition,
+          {
+            basePath: 'test'
+          },
+          testCapabilities
+        )
 
         const { items } = new AutocompleteField(def, { model })
         expect(items).toEqual([])

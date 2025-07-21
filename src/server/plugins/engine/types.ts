@@ -380,3 +380,7 @@ export interface PluginOptions {
   onRequest?: OnRequestCallback
   baseUrl: string // base URL of the application, protocol and hostname e.g. "https://myapp.com"
 }
+
+export interface Capabilities {
+  saveAndReturn: boolean
+}

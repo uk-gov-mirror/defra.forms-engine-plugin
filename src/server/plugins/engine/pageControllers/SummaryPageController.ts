@@ -24,6 +24,7 @@ import {
 } from '~/src/server/plugins/engine/models/types.js'
 import { QuestionPageController } from '~/src/server/plugins/engine/pageControllers/QuestionPageController.js'
 import {
+  type Capabilities,
   type FormContext,
   type FormContextRequest,
   type FormSubmissionState
@@ -36,13 +37,14 @@ import {
 
 export class SummaryPageController extends QuestionPageController {
   declare pageDef: Page
+  allowSaveAndReturn = true
 
   /**
    * The controller which is used when Page["controller"] is defined as "./pages/summary.js"
    */
 
-  constructor(model: FormModel, pageDef: Page) {
-    super(model, pageDef)
+  constructor(model: FormModel, pageDef: Page, capabilities: Capabilities) {
+    super(model, pageDef, capabilities)
     this.viewName = 'summary'
 
     // Components collection
@@ -143,10 +145,6 @@ export class SummaryPageController extends QuestionPageController {
         }
       }
     }
-  }
-
-  shouldShowSaveAndReturn(): boolean {
-    return true
   }
 }
 

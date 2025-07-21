@@ -18,13 +18,17 @@ export const configureEnginePlugin = async ({
   services,
   controllers,
   preparePageEventRequestOptions,
-  onRequest
+  onRequest,
+  capabilities
 }: RouteConfig = {}): Promise<{
   plugin: typeof plugin
   options: PluginOptions
 }> => {
   let model: FormModel | undefined
 
+  /*
+    This is only used for local tests
+  */
   if (formFileName && formFilePath) {
     const definition = await getForm(join(formFilePath, formFileName))
     const { name } = parse(formFileName)
@@ -34,6 +38,7 @@ export const configureEnginePlugin = async ({
     model = new FormModel(
       definition,
       { basePath: initialBasePath },
+      capabilities ?? { saveAndReturn: false },
       services,
       controllers
     )
