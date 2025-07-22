@@ -83,7 +83,7 @@ describe('getPersonalisation', () => {
       isPreview: true
     }
   ])('should personalise $state email', (formStatus) => {
-    const body = format(items, model, submitResponse, formStatus)
+    const body = format(context, items, model, submitResponse, formStatus)
 
     const dateNow = new Date()
     const dateExpiry = addDays(dateNow, 90)
@@ -122,12 +122,12 @@ describe('getPersonalisation', () => {
       isPreview: true
     }
 
-    const body1 = format(items, model, submitResponse, {
+    const body1 = format(context, items, model, submitResponse, {
       state: FormStatus.Live,
       isPreview: false
     })
 
-    const body2 = format(items, model, submitResponse, {
+    const body2 = format(context, items, model, submitResponse, {
       state: FormStatus.Draft,
       isPreview: true
     })

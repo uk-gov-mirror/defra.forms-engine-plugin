@@ -9,6 +9,7 @@ import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { type DetailItem } from '~/src/server/plugins/engine/models/types.js'
 import { type PageController } from '~/src/server/plugins/engine/pageControllers/PageController.js'
 import {
+  type FormContext,
   type OnRequestCallback,
   type PluginOptions,
   type PreparePageEventRequestOptions
@@ -53,6 +54,7 @@ export interface RouteConfig {
 
 export interface OutputService {
   submit: (
+    context: FormContext,
     request: FormRequestPayload,
     model: FormModel,
     emailAddress: string,

@@ -9,10 +9,12 @@ import {
 import { type checkFormStatus } from '~/src/server/plugins/engine/helpers.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { type DetailItem } from '~/src/server/plugins/engine/models/types.js'
+import { type FormContext } from '~/src/server/plugins/engine/types.js'
 
 const designerUrl = config.get('designerUrl')
 
 export function format(
+  _context: FormContext,
   items: DetailItem[],
   model: FormModel,
   submitResponse: SubmitResponsePayload,

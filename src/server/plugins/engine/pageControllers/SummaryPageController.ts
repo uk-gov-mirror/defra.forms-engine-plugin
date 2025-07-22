@@ -105,7 +105,6 @@ export class SummaryPageController extends QuestionPageController {
     ) => {
       const { model } = this
       const { params } = request
-      const { state } = context
       const cacheService = getCacheService(request.server)
 
       const { formsService } = this.model.services
@@ -121,7 +120,7 @@ export class SummaryPageController extends QuestionPageController {
       // Send submission email
       if (emailAddress) {
         const viewModel = this.getSummaryViewModel(request, context)
-        await submitForm(request, viewModel, model, state, emailAddress)
+        await submitForm(context, request, viewModel, model, emailAddress)
       }
 
       await cacheService.setConfirmationState(request, { confirmed: true })
@@ -147,13 +146,13 @@ export class SummaryPageController extends QuestionPageController {
 }
 
 async function submitForm(
+  context: FormContext,
   request: FormRequestPayload,
   summaryViewModel: SummaryViewModel,
   model: FormModel,
-  state: FormSubmissionState,
   emailAddress: string
 ) {
-  await extendFileRetention(model, state, emailAddress)
+  await extendFileRetention(model, context.state, emailAddress)
 
   const formStatus = checkFormStatus(request.params)
   const logTags = ['submit', 'submissionApi']
@@ -180,6 +179,7 @@ async function submitForm(
   }
 
   return model.services.outputService.submit(
+    context,
     request,
     model,
     emailAddress,

@@ -6,12 +6,14 @@ import { checkFormStatus } from '~/src/server/plugins/engine/helpers.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { type DetailItem } from '~/src/server/plugins/engine/models/types.js'
 import { getFormatter } from '~/src/server/plugins/engine/outputFormatters/index.js'
+import { type FormContext } from '~/src/server/plugins/engine/types.js'
 import { type FormRequestPayload } from '~/src/server/routes/types.js'
 import { sendNotification } from '~/src/server/utils/notify.js'
 
 const templateId = config.get('notifyTemplateId')
 
 export async function submit(
+  context: FormContext,
   request: FormRequestPayload,
   model: FormModel,
   emailAddress: string,
@@ -33,7 +35,7 @@ export async function submit(
   const outputVersion = model.def.output?.version ?? '1'
 
   const outputFormatter = getFormatter(outputAudience, outputVersion)
-  let body = outputFormatter(items, model, submitResponse, formStatus)
+  let body = outputFormatter(context, items, model, submitResponse, formStatus)
 
   // GOV.UK Notify transforms quotes into curly quotes, so we can't just send the raw payload
   // This is logic specific to Notify, so we include the logic here rather than in the formatter

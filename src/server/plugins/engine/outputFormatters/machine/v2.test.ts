@@ -11,7 +11,8 @@ import { format } from '~/src/server/plugins/engine/outputFormatters/machine/v2.
 import {
   FileStatus,
   UploadStatus,
-  type FileState
+  type FileState,
+  type FormContextRequest
 } from '~/src/server/plugins/engine/types.js'
 import { FormStatus } from '~/src/server/routes/types.js'
 import definition from '~/test/form/definitions/repeat-mixed.js'
@@ -40,6 +41,42 @@ const formStatus = {
 const dummyField: Field = {
   getFormValueFromState: (_) => 'hello world'
 } as Field
+
+const itemId1 = 'abc-123'
+const itemId2 = 'xyz-987'
+
+const state = {
+  $$__referenceNumber: 'foobar',
+  orderType: 'delivery',
+  pizza: [
+    {
+      toppings: 'Ham',
+      quantity: 2,
+      itemId: itemId1
+    },
+    {
+      toppings: 'Pepperoni',
+      quantity: 1,
+      itemId: itemId2
+    }
+  ]
+}
+
+const pageUrl = new URL('http://example.com/repeat/pizza-order/summary')
+
+const request = {
+  method: 'get',
+  url: pageUrl,
+  path: pageUrl.pathname,
+  params: {
+    path: 'pizza-order',
+    slug: 'repeat'
+  },
+  query: {},
+  app: { model }
+} satisfies FormContextRequest
+
+const context = model.getFormContext(request, state)
 
 const testDetailItemField: DetailItemField = {
   name: 'exampleField',
@@ -182,7 +219,7 @@ describe('getPersonalisation', () => {
   it('should return the machine output', () => {
     model.def = definition
 
-    const body = format(items, model, submitResponse, formStatus)
+    const body = format(context, items, model, submitResponse, formStatus)
 
     const parsedBody = JSON.parse(body)
 
@@ -224,6 +261,7 @@ describe('getPersonalisation', () => {
     expect(parsedBody.meta.schemaVersion).toBe('2')
     expect(parsedBody.meta.timestamp).toBeDateString()
     expect(parsedBody.meta.definition).toEqual(definition)
+    expect(parsedBody.meta.referenceNumber).toBe('foobar')
     expect(parsedBody.data).toEqual(expectedData)
   })
 })

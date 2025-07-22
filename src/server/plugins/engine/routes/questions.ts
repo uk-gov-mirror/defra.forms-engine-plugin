@@ -71,7 +71,7 @@ function makeGetHandler(
         )
 
         // @ts-expect-error - function signature will be refactored in the next iteration of the formatter
-        const payload = format(items, model, undefined, undefined)
+        const payload = format(context, items, model, undefined, undefined)
         const opts = { payload }
 
         if (preparePageEventRequestOptions) {
