@@ -377,7 +377,15 @@ export function evaluateTemplate(
 }
 
 export function getCacheService(server: Server) {
-  return server.plugins['forms-engine-plugin'].cacheService
+  return getPluginOptions(server).cacheService
+}
+
+export function getSaveAndReturnHelpers(server: Server) {
+  return getPluginOptions(server).saveAndReturn
+}
+
+export function getPluginOptions(server: Server) {
+  return server.plugins['forms-engine-plugin']
 }
 
 /**

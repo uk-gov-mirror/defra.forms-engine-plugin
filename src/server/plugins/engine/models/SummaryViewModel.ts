@@ -51,7 +51,7 @@ export class SummaryViewModel {
   serviceUrl: string
   hasMissingNotificationEmail?: boolean
   components?: ComponentViewModel[]
-  allowSaveAndReturn?: boolean
+  allowSaveAndReturn = false
 
   constructor(
     request: FormContextRequest,
