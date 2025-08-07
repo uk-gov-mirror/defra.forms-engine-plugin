@@ -16,7 +16,9 @@ describe('File Upload Client JS', () => {
           <h2 class="govuk-heading-m">Uploaded files</h2>
           <p class="govuk-body">0 files uploaded</p>
         </div>
-        <button class="govuk-button">Continue</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button">Continue</button>
+        </div>
       </form>
     `
 
@@ -174,7 +176,9 @@ describe('File Upload Client JS', () => {
           <h2 class="govuk-heading-m">Uploaded files</h2>
           <p class="govuk-body">0 files uploaded</p>
         </div>
-        <button class="govuk-button">Continue</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button">Continue</button>
+        </div>
       </form>
     `
 
@@ -201,7 +205,9 @@ describe('File Upload Client JS', () => {
         <h2 class="govuk-heading-m">Uploaded files</h2>
         <p class="govuk-body">0 files uploaded</p>
         <dl class="govuk-summary-list govuk-summary-list--long-key"></dl>
-        <button class="govuk-button">Continue</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button">Continue</button>
+        </div>
       </form>
     `
 
@@ -236,7 +242,9 @@ describe('File Upload Client JS', () => {
             <dd class="govuk-summary-list__actions"></dd>
           </div>
         </dl>
-        <button class="govuk-button">Continue</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button">Continue</button>
+        </div>
       </form>
     `
 
@@ -264,7 +272,9 @@ describe('File Upload Client JS', () => {
       <form>
         <h2 class="govuk-heading-m">Uploaded files</h2>
         <p class="govuk-body">0 files uploaded</p>
-        <button class="govuk-button">Continue</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button">Continue</button>
+        </div>
       </form>
     `
 
@@ -304,7 +314,9 @@ describe('File Upload Client JS', () => {
       </form>
       <form>
         <h2 class="govuk-heading-m">Uploaded files</h2>
-        <button class="govuk-button">Continue</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button">Continue</button>
+        </div>
       </form>
     `
 
@@ -330,7 +342,9 @@ describe('File Upload Client JS', () => {
           <h2 class="govuk-heading-m">Uploaded files</h2>
           <p class="govuk-body">0 files uploaded</p>
         </div>
-        <button class="govuk-button">Continue</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button">Continue</button>
+        </div>
       </form>
     `
 
@@ -451,7 +465,9 @@ describe('File Upload Client JS', () => {
           <p class="govuk-body">0 files uploaded</p>
           <!-- No next sibling after p.govuk-body -->
         </div>
-        <button class="govuk-button">Continue</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button">Continue</button>
+        </div>
       </form>
     `
 
@@ -497,7 +513,9 @@ describe('File Upload Client JS', () => {
             <dd class="govuk-summary-list__actions"></dd>
           </div>
         </dl>
-        <button class="govuk-button">Continue</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button">Continue</button>
+        </div>
       </form>
     `
 
@@ -572,7 +590,9 @@ describe('File Upload Client JS', () => {
           <h2 class="govuk-heading-m">Uploaded files</h2>
           <p class="govuk-body">0 files uploaded</p>
         </div>
-        <button class="govuk-button">Continue</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button">Continue</button>
+        </div>
       </form>
     `
 
@@ -605,7 +625,9 @@ describe('File Upload Client JS', () => {
           <h2 class="govuk-heading-m">Uploaded files</h2>
           <p class="govuk-body">0 files uploaded</p>
         </div>
-        <button class="govuk-button">Continue</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button">Continue</button>
+        </div>
       </form>
     `
 
@@ -643,7 +665,9 @@ describe('File Upload Client JS', () => {
           <h2 class="govuk-heading-m">Uploaded files</h2>
           <p class="govuk-body">0 files uploaded</p>
         </div>
-        <button class="govuk-button">Continue</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button">Continue</button>
+        </div>
       </form>
       <div class="govuk-summary-list__row" data-filename="some-file.pdf">
         <dt class="govuk-summary-list__key">some-file.pdf</dt>
@@ -680,7 +704,9 @@ describe('File Upload Client JS', () => {
       <form id="uploadedFilesContainer">
         <h2 class="govuk-heading-m">Uploaded files</h2>
         <!-- No p.govuk-body element -->
-        <button class="govuk-button">Continue</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button">Continue</button>
+        </div>
       </form>
     `
 
@@ -703,7 +729,9 @@ describe('File Upload Client JS', () => {
       <form id="uploadedFilesContainer">
         <h2 class="govuk-heading-m">Uploaded files</h2>
         <p class="govuk-body">0 files uploaded</p>
-        <button class="govuk-button">Continue</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button">Continue</button>
+        </div>
       </form>
     `
 
@@ -723,7 +751,9 @@ describe('File Upload Client JS', () => {
         <div class="govuk-summary-list__row" data-filename="some-file.pdf">
           <dt>Original row that should be removed</dt>
         </div>
-        <button class="govuk-button">Continue</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button">Continue</button>
+        </div>
       </form>
     `
 
@@ -756,7 +786,9 @@ describe('File Upload Client JS', () => {
           <h2 class="govuk-heading-m">Uploaded files</h2>
           <p class="govuk-body">0 files uploaded</p>
         </div>
-        <button class="govuk-button">Continue</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button">Continue</button>
+        </div>
       </form>
     `
 
@@ -797,7 +829,9 @@ describe('File Upload Client JS', () => {
           <h2 class="govuk-heading-m">Uploaded files</h2>
           <p class="govuk-body">0 files uploaded</p>
         </div>
-        <button class="govuk-button">Continue</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button">Continue</button>
+        </div>
       </form>
     `
 
@@ -847,7 +881,9 @@ describe('File Upload Client JS', () => {
           <h2 class="govuk-heading-m">Uploaded files</h2>
           <p class="govuk-body">0 files uploaded</p>
         </div>
-        <button class="govuk-button">Continue</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button">Continue</button>
+        </div>
       </form>
     `
 
@@ -1032,7 +1068,9 @@ describe('File Upload Client JS', () => {
           <h2 class="govuk-heading-m">Uploaded files</h2>
           <p class="govuk-body">0 files uploaded</p>
         </div>
-        <button class="govuk-button">Continue</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button">Continue</button>
+        </div>
       </form>
     `
 
@@ -1097,7 +1135,9 @@ describe('File Upload Client JS', () => {
           <h2 class="govuk-heading-m">Uploaded files</h2>
           <p class="govuk-body">0 files uploaded</p>
         </div>
-        <button class="govuk-button">Continue</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button">Continue</button>
+        </div>
       </form>
     `
 
@@ -1163,7 +1203,9 @@ describe('File Upload Client JS', () => {
           <h2 class="govuk-heading-m">Uploaded files</h2>
           <p class="govuk-body">0 files uploaded</p>
         </div>
-        <button class="govuk-button">Continue</button>
+        <div class="govuk-button-group">
+          <button class="govuk-button">Continue</button>
+        </div>
       </form>
     `
 
