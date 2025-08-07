@@ -66,10 +66,10 @@ function findOrCreateSummaryList(form, fileCountP) {
     summaryList = document.createElement('dl')
     summaryList.className = 'govuk-summary-list govuk-summary-list--long-key'
 
-    const continueButton = form.querySelector('.govuk-button')
+    const buttonGroup = form.querySelector('.govuk-button-group')
 
-    if (continueButton) {
-      form.insertBefore(summaryList, continueButton)
+    if (buttonGroup) {
+      form.insertBefore(summaryList, buttonGroup)
     } else {
       form.insertBefore(summaryList, fileCountP.nextSibling)
     }
