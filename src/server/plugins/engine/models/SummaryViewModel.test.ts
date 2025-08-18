@@ -310,3 +310,52 @@ describe('SummaryPageController', () => {
     })
   })
 })
+
+describe('SummaryViewModel (summaryPath handling)', () => {
+  const itemId = 'pizza-001'
+  let model: FormModel
+  let basePage: PageControllerClass
+  let request: FormContextRequest
+  let context: FormContext
+
+  beforeEach(() => {
+    model = new FormModel(definition, { basePath })
+    basePage = createPage(model, definition.pages[2])
+    request = buildFormContextRequest({
+      method: 'get',
+      url: new URL(`${basePath}/summary`, 'http://example.com'),
+      path: `${basePath}/summary`,
+      params: { path: 'pizza-order', slug: 'repeat' },
+      query: {},
+      app: { model }
+    })
+  })
+
+  it('should use page.getSummaryPath(request) when present', () => {
+    const summaryPathFromRequest = `${basePath}/custom-summary-path?param=value`
+    const getSummaryPathMock = jest
+      .spyOn(basePage, 'getSummaryPath')
+      .mockImplementation((req?: FormContextRequest) => {
+        return req ? summaryPathFromRequest : `${basePath}/custom-summary-path`
+      })
+
+    context = model.getFormContext(request, {
+      $$__referenceNumber: 'test1',
+      orderType: 'delivery',
+      pizza: [{ toppings: 'Cheese', quantity: 1, itemId }]
+    })
+
+    const viewModel = new SummaryViewModel(request, basePage, context)
+    expect(getSummaryPathMock).toHaveBeenCalledWith(request)
+
+    // SummaryPath should be used as returnPath for ItemField/ItemRepeat
+    const pizzaSection = viewModel.details.find((x) => x.title === 'Food') ?? {
+      items: []
+    }
+    const pizzaItem = pizzaSection.items[0]
+    // Should get correct returnPath in hrefs
+    expect(pizzaItem.href).toMatch(encodeURIComponent(summaryPathFromRequest))
+
+    getSummaryPathMock.mockRestore()
+  })
+})
