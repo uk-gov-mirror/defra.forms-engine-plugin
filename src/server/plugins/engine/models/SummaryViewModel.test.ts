@@ -420,3 +420,90 @@ describe('SummaryViewModel (summaryPath handling)', () => {
     getSummaryPathMock.mockRestore()
   })
 })
+
+describe('SummaryViewModel (summaryPath fallback)', () => {
+  const itemId = 'pizza-001'
+  let model: FormModel
+  let basePage: PageControllerClass
+  let request: FormContextRequest
+  let context: FormContext
+
+  beforeEach(() => {
+    model = new FormModel(definition, { basePath })
+    basePage = createPage(model, definition.pages[2])
+    request = buildFormContextRequest({
+      method: 'get',
+      url: new URL(`${basePath}/summary`, 'http://example.com'),
+      path: `${basePath}/summary`,
+      params: { path: 'pizza-order', slug: 'repeat' },
+      query: {},
+      app: { model }
+    })
+  })
+
+  it('should fallback to page.getSummaryPath() when returnPath is undefined for ItemField', () => {
+    // Force summaryPath from request to be undefined so items must fall back to their own page.getSummaryPath()
+    const getSummaryPathMock = jest
+      .spyOn(basePage, 'getSummaryPath')
+      .mockImplementation((req?: FormContextRequest) => {
+        return req ? (undefined as unknown as string) : `${basePath}/summary`
+      })
+
+    context = model.getFormContext(request, {
+      $$__referenceNumber: 'test-fallback-1',
+      orderType: 'delivery',
+      pizza: [{ toppings: 'Cheese', quantity: 1, itemId }]
+    })
+
+    const viewModel = new SummaryViewModel(request, basePage, context)
+
+    // First summary section contains a non-repeat ItemField
+    const firstSection = viewModel.details[0]
+    const firstItem = firstSection.items[0]
+
+    // Should include default summary path in returnUrl
+    expect(firstItem.href).toContain(encodeURIComponent(`${basePath}/summary`))
+
+    getSummaryPathMock.mockRestore()
+  })
+
+  it('should fallback to page.getSummaryPath() when returnPath is undefined for ItemRepeat and subItems', () => {
+    // Force summaryPath from request to be undefined so items must fall back to their own page.getSummaryPath()
+    const getSummaryPathMock = jest
+      .spyOn(basePage, 'getSummaryPath')
+      .mockImplementation((req?: FormContextRequest) => {
+        return req ? (undefined as unknown as string) : `${basePath}/summary`
+      })
+
+    context = model.getFormContext(request, {
+      $$__referenceNumber: 'test-fallback-2',
+      orderType: 'delivery',
+      pizza: [
+        { toppings: 'Cheese', quantity: 1, itemId },
+        { toppings: 'Ham', quantity: 2, itemId: 'pizza-002' }
+      ]
+    })
+
+    const viewModel = new SummaryViewModel(request, basePage, context)
+
+    // Repeat section (Food)
+    const pizzaSection = viewModel.details.find((x) => x.title === 'Food')
+    const repeatItem: DetailItem | undefined = pizzaSection?.items[0]
+
+    expect(repeatItem?.href ?? '').toContain(
+      encodeURIComponent(`${basePath}/summary`)
+    )
+
+    // subItems is an array of arrays of ItemField; flatten and check all hrefs
+    const subItems = (
+      repeatItem && 'subItems' in repeatItem ? repeatItem.subItems : []
+    ).flat()
+
+    expect(subItems.length).toBeGreaterThan(0)
+    for (const subItem of subItems) {
+      expect(subItem.href).toContain(encodeURIComponent(`${basePath}/summary`))
+    }
+
+    getSummaryPathMock.mockRestore()
+  })
+})
