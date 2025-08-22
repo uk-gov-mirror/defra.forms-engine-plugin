@@ -63,6 +63,27 @@ export const configureEnginePlugin = async ({
     }
 
     /*
+    To enable custom buttons, use this config:
+
+    ```
+      buttons: [
+        {
+          text: 'My custom submit button'
+        },
+        {
+          text: 'Withdraw button',
+          action: 'withdraw-submission'
+        }
+      ],
+      actionHandlers: {
+        'withdraw-submission': async (request, _) => {
+          await getCacheService(request.server).clearState(request)
+          return '/summary'
+        }
+      }
+    ```
+
+    /*
     To enable save and return for testing purposes, use this config:
 
     ```

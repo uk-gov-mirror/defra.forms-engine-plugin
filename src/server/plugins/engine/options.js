@@ -32,7 +32,8 @@ const pluginRegistrationOptionsSchema = Joi.object({
         action: Joi.string().optional()
       })
     )
-    .optional()
+    .optional(),
+  actionHandlers: Joi.object().pattern(Joi.string(), Joi.function())
 })
 
 /**

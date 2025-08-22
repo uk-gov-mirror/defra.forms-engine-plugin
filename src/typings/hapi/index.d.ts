@@ -2,6 +2,7 @@
 
 import { type Plugin } from '@hapi/hapi'
 import { type ServerYar, type Yar } from '@hapi/yar'
+import { type Schema as JoiSchema } from 'joi'
 import { type Logger } from 'pino'
 
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
@@ -36,6 +37,10 @@ declare module '@hapi/hapi' {
         FormAction | string,
         (request: FormRequestPayload, context: FormContext) => Promise<string>
       >
+      schemas: {
+        actionSchema: JoiSchema
+        paramsSchema: JoiSchema
+      }
     }
   }
 

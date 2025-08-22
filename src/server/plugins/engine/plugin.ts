@@ -22,6 +22,10 @@ import {
   type FormRequestPayloadRefs,
   type FormRequestRefs
 } from '~/src/server/routes/types.js'
+import {
+  buildActionSchema,
+  buildParamsSchema
+} from '~/src/server/schemas/index.js'
 import { CacheService } from '~/src/server/services/index.js'
 
 export const plugin = {
@@ -51,12 +55,20 @@ export const plugin = {
 
     await registerVision(server, options)
 
+    const buttons = getButtons(options)
+    const actionHandlers = getActionHandlers(options)
+    const customActions = Object.keys(actionHandlers)
+
     server.expose('baseLayoutPath', nunjucksOptions.baseLayoutPath)
     server.expose('viewContext', viewContext)
     server.expose('cacheService', cacheService)
     server.expose('saveAndReturn', saveAndReturn)
-    server.expose('buttons', getButtons(options))
-    server.expose('actionHandlers', getActionHandlers(options))
+    server.expose('buttons', buttons)
+    server.expose('actionHandlers', actionHandlers)
+    server.expose('schemas', {
+      actionSchema: buildActionSchema(customActions),
+      paramsSchema: buildParamsSchema(customActions)
+    })
 
     server.app.model = model
 
@@ -90,12 +102,13 @@ export const plugin = {
 
     const routes = [
       ...getQuestionRoutes(
+        server,
         getRouteOptions,
         postRouteOptions,
         preparePageEventRequestOptions
       ),
-      ...getRepeaterSummaryRoutes(getRouteOptions, postRouteOptions),
-      ...getRepeaterItemDeleteRoutes(getRouteOptions, postRouteOptions),
+      ...getRepeaterSummaryRoutes(server, getRouteOptions, postRouteOptions),
+      ...getRepeaterItemDeleteRoutes(server, getRouteOptions, postRouteOptions),
       ...getSaveAndReturnExitRoutes(getRouteOptions),
       ...getFileUploadStatusRoutes()
     ]

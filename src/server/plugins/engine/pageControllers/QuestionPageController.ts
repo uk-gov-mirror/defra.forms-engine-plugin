@@ -10,7 +10,7 @@ import {
 } from '@defra/forms-model'
 // import Boom from '@hapi/boom' // No longer needed
 import { type ResponseToolkit, type RouteOptions } from '@hapi/hapi'
-import { type ValidationErrorItem } from 'joi'
+import Joi, { type ValidationErrorItem } from 'joi'
 
 import { ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
 import { optionalText } from '~/src/server/plugins/engine/components/constants.js'
@@ -18,6 +18,7 @@ import { type BackLink } from '~/src/server/plugins/engine/components/types.js'
 import {
   getCacheService,
   getErrors,
+  getSchemas,
   normalisePath,
   proceed
 } from '~/src/server/plugins/engine/helpers.js'
@@ -39,11 +40,7 @@ import {
   type FormRequestPayloadRefs,
   type FormRequestRefs
 } from '~/src/server/routes/types.js'
-import {
-  actionSchema,
-  crumbSchema,
-  paramsSchema
-} from '~/src/server/schemas/index.js'
+import { crumbSchema } from '~/src/server/schemas/index.js'
 import { merge } from '~/src/server/services/cacheService.js'
 
 export class QuestionPageController extends PageController {
@@ -62,7 +59,7 @@ export class QuestionPageController extends PageController {
 
     this.collection.formSchema = this.collection.formSchema.keys({
       crumb: crumbSchema,
-      action: actionSchema
+      action: Joi.string()
     })
   }
 
@@ -274,7 +271,7 @@ export class QuestionPageController extends PageController {
   getFormParams(request?: FormContextRequest): FormPayloadParams {
     const { payload } = request ?? {}
 
-    const result = paramsSchema.validate(payload, {
+    const result = getSchemas(request?.server).paramsSchema.validate(payload, {
       abortEarly: false,
       stripUnknown: true
     })
