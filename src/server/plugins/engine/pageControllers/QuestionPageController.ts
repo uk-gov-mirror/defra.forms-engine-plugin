@@ -8,7 +8,7 @@ import {
   type Link,
   type Page
 } from '@defra/forms-model'
-import Boom from '@hapi/boom'
+// import Boom from '@hapi/boom' // No longer needed
 import { type ResponseToolkit, type RouteOptions } from '@hapi/hapi'
 import { type ValidationErrorItem } from 'joi'
 
@@ -18,7 +18,6 @@ import { type BackLink } from '~/src/server/plugins/engine/components/types.js'
 import {
   getCacheService,
   getErrors,
-  getSaveAndReturnHelpers,
   normalisePath,
   proceed
 } from '~/src/server/plugins/engine/helpers.js'
@@ -35,7 +34,6 @@ import {
   type FormSubmissionState
 } from '~/src/server/plugins/engine/types.js'
 import {
-  FormAction,
   type FormRequest,
   type FormRequestPayload,
   type FormRequestPayloadRefs,
@@ -515,10 +513,13 @@ export class QuestionPageController extends PageController {
         return h.view(viewName, viewModel)
       }
 
-      // Check if this is a save-and-return action
+      // Check if this is a custom action that needs handling
       const { action } = request.payload
-      if (action === FormAction.SaveAndReturn) {
-        return this.handleSaveAndReturn(request, context, h)
+      const { actionHandlers } = request.server.plugins['forms-engine-plugin']
+
+      if (action && action in actionHandlers) {
+        const exitPath = await actionHandlers[action](request, context)
+        return h.redirect(this.getHref(exitPath))
       }
 
       // Save and proceed
@@ -537,31 +538,6 @@ export class QuestionPageController extends PageController {
       : this.href // Redirect to current page (refresh)
 
     return proceed(request, h, nextUrl)
-  }
-
-  /**
-   * Handle save-and-return action by processing form data and redirecting to exit page
-   */
-  async handleSaveAndReturn(
-    request: FormRequestPayload,
-    context: FormContext,
-    h: Pick<ResponseToolkit, 'redirect' | 'view'>
-  ) {
-    const { state } = context
-
-    // Save the current state and redirect to exit page
-    const saveAndReturn = getSaveAndReturnHelpers(request.server)
-
-    if (!saveAndReturn?.sessionPersister) {
-      throw Boom.internal('Server misconfigured for save and return')
-    }
-
-    await saveAndReturn.sessionPersister(state, request)
-
-    const cacheService = getCacheService(request.server)
-    await cacheService.clearState(request)
-
-    return h.redirect(this.getHref('/exit'))
   }
 
   /**

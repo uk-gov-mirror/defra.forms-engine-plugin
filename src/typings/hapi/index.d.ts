@@ -7,6 +7,7 @@ import { type Logger } from 'pino'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { type PluginOptions } from '~/src/server/plugins/engine/types.ts'
 import {
+  type FormAction,
   type FormRequest,
   type FormRequestPayload
 } from '~/src/server/routes/types.js'
@@ -31,6 +32,10 @@ declare module '@hapi/hapi' {
         name?: string
         action?: string
       }[]
+      actionHandlers: Record<
+        FormAction | string,
+        (request: FormRequestPayload, context: FormContext) => Promise<string>
+      >
     }
   }
 

@@ -384,4 +384,5 @@ export interface PluginOptions {
   onRequest?: OnRequestCallback
   baseUrl: string // base URL of the application, protocol and hostname e.g. "https://myapp.com"
   buttons?: PluginProperties['forms-engine-plugin']['buttons']
+  actionHandlers?: PluginProperties['forms-engine-plugin']['actionHandlers']
 }

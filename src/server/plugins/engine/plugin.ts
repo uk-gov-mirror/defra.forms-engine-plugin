@@ -8,6 +8,7 @@ import {
 
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { validatePluginOptions } from '~/src/server/plugins/engine/options.js'
+import { handleSaveAndReturn } from '~/src/server/plugins/engine/pageControllers/buttonHandlers.js'
 import { getRoutes as getSaveAndReturnExitRoutes } from '~/src/server/plugins/engine/routes/exit.js'
 import { getRoutes as getFileUploadStatusRoutes } from '~/src/server/plugins/engine/routes/file-upload.js'
 import { makeLoadFormPreHandler } from '~/src/server/plugins/engine/routes/index.js'
@@ -17,6 +18,7 @@ import { getRoutes as getRepeaterSummaryRoutes } from '~/src/server/plugins/engi
 import { type PluginOptions } from '~/src/server/plugins/engine/types.js'
 import { registerVision } from '~/src/server/plugins/engine/vision.js'
 import {
+  FormAction,
   type FormRequestPayloadRefs,
   type FormRequestRefs
 } from '~/src/server/routes/types.js'
@@ -54,6 +56,7 @@ export const plugin = {
     server.expose('cacheService', cacheService)
     server.expose('saveAndReturn', saveAndReturn)
     server.expose('buttons', getButtons(options))
+    server.expose('actionHandlers', getActionHandlers(options))
 
     server.app.model = model
 
@@ -111,7 +114,7 @@ function getButtons(pluginOptions: PluginOptions) {
   if (pluginOptions.saveAndReturn) {
     buttons.push({
       text: 'Save and return',
-      action: 'action'
+      action: FormAction.SaveAndReturn
     })
   }
 
@@ -120,4 +123,16 @@ function getButtons(pluginOptions: PluginOptions) {
   }
 
   return buttons
+}
+
+function getActionHandlers(pluginOptions: PluginOptions) {
+  let actionHandlers: PluginOptions['actionHandlers'] = {
+    [FormAction.SaveAndReturn]: handleSaveAndReturn
+  }
+
+  if (pluginOptions.actionHandlers) {
+    actionHandlers = pluginOptions.actionHandlers
+  }
+
+  return actionHandlers
 }

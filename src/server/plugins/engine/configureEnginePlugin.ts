@@ -61,6 +61,28 @@ export const configureEnginePlugin = async ({
       baseUrl: 'http://localhost:3009', // always runs locally
       saveAndReturn
     }
+
+    /*
+    To enable save and return for testing purposes, use this config:
+
+    ```
+    saveAndReturn: {
+      keyGenerator: (_) => {
+        return `save-and-return`
+      },
+      sessionHydrator: (_) => {
+        return Promise.resolve({
+          applicantFirstName: 'Joe'
+        })
+      },
+      sessionPersister: () => {
+        console.log('no-op')
+      }
+    }
+    ```
+
+    Then load http://localhost:3009/page-events-demo and the applicantFirstName should be pre-filled as 'Joe'
+     */
   }
 }
 
