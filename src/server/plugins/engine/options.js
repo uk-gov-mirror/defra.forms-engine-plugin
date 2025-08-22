@@ -24,7 +24,15 @@ const pluginRegistrationOptionsSchema = Joi.object({
     keyGenerator: Joi.function(),
     sessionHydrator: Joi.function(),
     sessionPersister: Joi.function()
-  }).optional()
+  }).optional(),
+  buttons: Joi.array()
+    .items(
+      Joi.object({
+        text: Joi.string().required(),
+        action: Joi.string().optional()
+      })
+    )
+    .optional()
 })
 
 /**

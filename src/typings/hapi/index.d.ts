@@ -26,6 +26,11 @@ declare module '@hapi/hapi' {
         request: FormRequest | FormRequestPayload | null
       ) => Record<string, unknown> | Promise<Record<string, unknown>>
       saveAndReturn?: PluginOptions['saveAndReturn']
+      buttons?: {
+        text: string
+        name?: string
+        action?: string
+      }[]
     }
   }
 

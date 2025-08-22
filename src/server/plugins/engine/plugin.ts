@@ -53,6 +53,7 @@ export const plugin = {
     server.expose('viewContext', viewContext)
     server.expose('cacheService', cacheService)
     server.expose('saveAndReturn', saveAndReturn)
+    server.expose('buttons', getButtons(options))
 
     server.app.model = model
 
@@ -99,3 +100,24 @@ export const plugin = {
     server.route(routes as unknown as ServerRoute[]) // TODO
   }
 } satisfies Plugin<PluginOptions>
+
+function getButtons(pluginOptions: PluginOptions) {
+  let buttons: PluginOptions['buttons'] = [
+    {
+      text: 'Continue'
+    }
+  ]
+
+  if (pluginOptions.saveAndReturn) {
+    buttons.push({
+      text: 'Save and return',
+      action: 'action'
+    })
+  }
+
+  if (pluginOptions.buttons) {
+    buttons = pluginOptions.buttons
+  }
+
+  return buttons
+}
