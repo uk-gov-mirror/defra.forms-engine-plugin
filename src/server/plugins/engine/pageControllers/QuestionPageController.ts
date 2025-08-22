@@ -8,7 +8,6 @@ import {
   type Link,
   type Page
 } from '@defra/forms-model'
-// import Boom from '@hapi/boom' // No longer needed
 import { type ResponseToolkit, type RouteOptions } from '@hapi/hapi'
 import Joi, { type ValidationErrorItem } from 'joi'
 
