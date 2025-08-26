@@ -4,9 +4,11 @@
 <form method="post" novalidate>
   <input type="hidden" name="crumb" value="{{ crumb }}">
 
-  {{ componentList(components) }}
+  {% block components %}
+    {{ componentList(components) }}
+  {% endblock %}
 
-  {% if not engineButtons %}
+  {% block buttons %}
     <div class="govuk-button-group">
       {{ govukButton({
         text: "Start now" if isStartPage else "Continue",
@@ -24,7 +26,5 @@
         }) }}
       {% endif %}
     </div>
-  {% else %}
-    {{ engineButtons | safe }}
-  {% endif %}
+  {% endblock %}
 </form>
