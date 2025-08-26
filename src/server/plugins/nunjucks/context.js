@@ -54,8 +54,7 @@ export async function context(request) {
     crumb: safeGenerateCrumb(request),
     currentPath: `${request.path}${request.url.search}`,
     previewMode: isPreviewMode ? formState : undefined,
-    slug: isResponseOK ? params?.slug : undefined,
-    buttons: pluginStorage.buttons
+    slug: isResponseOK ? params?.slug : undefined
   }
 
   return ctx

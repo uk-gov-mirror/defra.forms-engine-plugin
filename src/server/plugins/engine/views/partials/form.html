@@ -6,41 +6,25 @@
 
   {{ componentList(components) }}
 
-  <div class="govuk-button-group">
-    {% for button in buttons %}
-
-      {% set isFirst = loop.index0 == 0 %}
-
-      {% if isFirst and isStartPage %}
-        {% set btnText = "Start now" %}
-        {% set btnIsStart = true %}
-      {% else %}
-        {% set btnText = button.text %}
-        {% set btnIsStart = false %}
-      {% endif %}
-
-      {% if button.action %}
-        {% set btnName = 'action' %}
-      {% else %}
-        {% set btnName = undefined %}
-      {% endif %}
-
-      {% set btnValue = button.action %}
-
-      {% if isFirst %}
-        {% set btnClasses = "" %}
-      {% else %}
-        {% set btnClasses = "govuk-button--secondary" %}
-      {% endif %}
-
+  {% if not engineButtons %}
+    <div class="govuk-button-group">
       {{ govukButton({
-        text: btnText,
-        isStartButton: btnIsStart,
-        name: btnName,
-        value: btnValue,
-        preventDoubleClick: true,
-        classes: btnClasses
+        text: "Start now" if isStartPage else "Continue",
+        isStartButton: isStartPage,
+        preventDoubleClick: true
       }) }}
-    {% endfor %}
-  </div>
+
+      {% if allowSaveAndReturn %}
+        {{ govukButton({
+          text: "Save and return",
+          classes: "govuk-button--secondary",
+          name: "action",
+          value: "save-and-return",
+          preventDoubleClick: true
+        }) }}
+      {% endif %}
+    </div>
+  {% else %}
+    {{ engineButtons | safe }}
+  {% endif %}
 </form>

@@ -55,7 +55,6 @@ export const plugin = {
 
     await registerVision(server, options)
 
-    const buttons = getButtons(options)
     const actionHandlers = getActionHandlers(options)
     const customActions = Object.keys(actionHandlers)
 
@@ -63,7 +62,6 @@ export const plugin = {
     server.expose('viewContext', viewContext)
     server.expose('cacheService', cacheService)
     server.expose('saveAndReturn', saveAndReturn)
-    server.expose('buttons', buttons)
     server.expose('actionHandlers', actionHandlers)
     server.expose('schemas', {
       actionSchema: buildActionSchema(customActions),
@@ -116,27 +114,6 @@ export const plugin = {
     server.route(routes as unknown as ServerRoute[]) // TODO
   }
 } satisfies Plugin<PluginOptions>
-
-function getButtons(pluginOptions: PluginOptions) {
-  let buttons: PluginOptions['buttons'] = [
-    {
-      text: 'Continue'
-    }
-  ]
-
-  if (pluginOptions.saveAndReturn) {
-    buttons.push({
-      text: 'Save and return',
-      action: FormAction.SaveAndReturn
-    })
-  }
-
-  if (pluginOptions.buttons) {
-    buttons = pluginOptions.buttons
-  }
-
-  return buttons
-}
 
 function getActionHandlers(pluginOptions: PluginOptions) {
   let actionHandlers: PluginOptions['actionHandlers'] = {
