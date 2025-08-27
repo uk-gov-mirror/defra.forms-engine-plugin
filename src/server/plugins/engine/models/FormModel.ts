@@ -46,7 +46,7 @@ import { type PageController } from '~/src/server/plugins/engine/pageControllers
 import {
   createPage,
   type PageControllerClass
-} from '~/src/server/plugins/engine/pageControllers/helpers.js'
+} from '~/src/server/plugins/engine/pageControllers/factory.js'
 import { validationOptions as opts } from '~/src/server/plugins/engine/pageControllers/validationOptions.js'
 import * as defaultServices from '~/src/server/plugins/engine/services/index.js'
 import {

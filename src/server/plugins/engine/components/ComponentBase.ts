@@ -12,7 +12,7 @@ import { type ComponentCollection } from '~/src/server/plugins/engine/components
 import { type Component } from '~/src/server/plugins/engine/components/factory.js'
 import { type ViewModel } from '~/src/server/plugins/engine/components/types.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
-import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers.js'
+import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/factory.js'
 
 export class ComponentBase {
   page?: PageControllerClass

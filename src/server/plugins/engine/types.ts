@@ -20,7 +20,7 @@ import {
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { type RichFormValue } from '~/src/server/plugins/engine/outputFormatters/machine/v2.js'
 import { type PageController } from '~/src/server/plugins/engine/pageControllers/PageController.js'
-import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers.js'
+import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/factory.js'
 import { type ViewContext } from '~/src/server/plugins/nunjucks/types.js'
 import {
   type FormAction,

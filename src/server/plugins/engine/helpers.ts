@@ -21,7 +21,7 @@ import {
   type Field
 } from '~/src/server/plugins/engine/components/factory.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
-import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers.js'
+import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/factory.js'
 import {
   type FormContext,
   type FormContextRequest,

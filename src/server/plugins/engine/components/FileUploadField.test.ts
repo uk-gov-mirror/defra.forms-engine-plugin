@@ -13,7 +13,7 @@ import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import {
   createPage,
   type PageControllerClass
-} from '~/src/server/plugins/engine/pageControllers/helpers.js'
+} from '~/src/server/plugins/engine/pageControllers/factory.js'
 import { validationOptions as opts } from '~/src/server/plugins/engine/pageControllers/validationOptions.js'
 import {
   FileStatus,
