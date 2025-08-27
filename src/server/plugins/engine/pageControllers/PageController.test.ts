@@ -3,7 +3,7 @@ import { type ResponseToolkit } from '@hapi/hapi'
 import { FORM_PREFIX } from '~/src/server/constants.js'
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import { PageController } from '~/src/server/plugins/engine/pageControllers/PageController.js'
-import { serverWithSaveAndReturn } from '~/src/server/plugins/engine/pageControllers/__stubs__/server.js'
+import { serverWithSaveAndExit } from '~/src/server/plugins/engine/pageControllers/__stubs__/server.js'
 import { type FormRequest } from '~/src/server/routes/types.js'
 import definition from '~/test/form/definitions/basic.js'
 
@@ -206,10 +206,10 @@ describe('PageController', () => {
       )
     })
 
-    it('supports save and return functionality', async () => {
+    it('supports save and exit functionality', async () => {
       const mockRequest = {
         ...request,
-        payload: { saveAndReturn: true }
+        payload: { ExitReturn: true }
       } as FormRequest
 
       const mockResponse = {
@@ -232,9 +232,9 @@ describe('PageController', () => {
     })
   })
 
-  describe('shouldShowSaveAndReturn', () => {
-    it('should return false (PageController does not allow save and return)', () => {
-      expect(controller1.shouldShowSaveAndReturn(serverWithSaveAndReturn)).toBe(
+  describe('shouldShowSaveAndExit', () => {
+    it('should return false (PageController does not allow save and exit)', () => {
+      expect(controller1.shouldShowSaveAndExit(serverWithSaveAndExit)).toBe(
         false
       )
     })

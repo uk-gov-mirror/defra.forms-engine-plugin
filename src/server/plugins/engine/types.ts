@@ -308,7 +308,7 @@ export interface FormPageViewModel extends PageViewModelBase {
   context: FormContext
   errors?: FormSubmissionError[]
   hasMissingNotificationEmail?: boolean
-  allowSaveAndReturn: boolean
+  allowSaveAndExit: boolean
 }
 
 export interface RepeaterSummaryPageViewModel extends PageViewModelBase {
@@ -366,7 +366,7 @@ export interface PluginOptions {
   cacheName?: string
   globals?: Record<string, GlobalFunction>
   filters?: Record<string, FilterFunction>
-  saveAndReturn?: {
+  saveAndExit?: {
     keyGenerator: (request: RequestType) => string
     sessionHydrator: (request: RequestType) => Promise<FormSubmissionState>
     sessionPersister: (

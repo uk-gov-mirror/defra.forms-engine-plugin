@@ -392,8 +392,8 @@ export function getCacheService(server: Server) {
   return getPluginOptions(server).cacheService
 }
 
-export function getSaveAndReturnHelpers(server: Server) {
-  return getPluginOptions(server).saveAndReturn
+export function getSaveAndExitHelpers(server: Server) {
+  return getPluginOptions(server).saveAndExit
 }
 
 export function getPluginOptions(server: Server) {

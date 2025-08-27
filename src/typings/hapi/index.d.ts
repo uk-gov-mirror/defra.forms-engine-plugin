@@ -27,7 +27,7 @@ declare module '@hapi/hapi' {
       viewContext?: (
         request: FormRequest | FormRequestPayload | null
       ) => Record<string, unknown> | Promise<Record<string, unknown>>
-      saveAndReturn?: PluginOptions['saveAndReturn']
+      saveAndExit?: PluginOptions['saveAndExit']
       buttons?: {
         text: string
         name?: string

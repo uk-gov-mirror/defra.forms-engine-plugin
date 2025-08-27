@@ -8,8 +8,8 @@ import {
 
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { validatePluginOptions } from '~/src/server/plugins/engine/options.js'
-import { handleSaveAndReturn } from '~/src/server/plugins/engine/pageControllers/buttonHandlers.js'
-import { getRoutes as getSaveAndReturnExitRoutes } from '~/src/server/plugins/engine/routes/exit.js'
+import { handleSaveAndExit } from '~/src/server/plugins/engine/pageControllers/buttonHandlers.js'
+import { getRoutes as getSaveAndExitRoutes } from '~/src/server/plugins/engine/routes/exit.js'
 import { getRoutes as getFileUploadStatusRoutes } from '~/src/server/plugins/engine/routes/file-upload.js'
 import { makeLoadFormPreHandler } from '~/src/server/plugins/engine/routes/index.js'
 import { getRoutes as getQuestionRoutes } from '~/src/server/plugins/engine/routes/questions.js'
@@ -38,7 +38,7 @@ export const plugin = {
     const {
       model,
       cacheName,
-      saveAndReturn,
+      saveAndExit,
       nunjucks: nunjucksOptions,
       viewContext,
       preparePageEventRequestOptions
@@ -48,8 +48,8 @@ export const plugin = {
       server,
       cacheName,
       options: {
-        keyGenerator: saveAndReturn?.keyGenerator,
-        sessionHydrator: saveAndReturn?.sessionHydrator
+        keyGenerator: saveAndExit?.keyGenerator,
+        sessionHydrator: saveAndExit?.sessionHydrator
       }
     })
 
@@ -62,7 +62,7 @@ export const plugin = {
     server.expose('baseLayoutPath', nunjucksOptions.baseLayoutPath)
     server.expose('viewContext', viewContext)
     server.expose('cacheService', cacheService)
-    server.expose('saveAndReturn', saveAndReturn)
+    server.expose('saveAndExit', saveAndExit)
     server.expose('buttons', buttons)
     server.expose('actionHandlers', actionHandlers)
     server.expose('schemas', {
@@ -109,7 +109,7 @@ export const plugin = {
       ),
       ...getRepeaterSummaryRoutes(server, getRouteOptions, postRouteOptions),
       ...getRepeaterItemDeleteRoutes(server, getRouteOptions, postRouteOptions),
-      ...getSaveAndReturnExitRoutes(getRouteOptions),
+      ...getSaveAndExitRoutes(getRouteOptions),
       ...getFileUploadStatusRoutes()
     ]
 
@@ -124,10 +124,10 @@ function getButtons(pluginOptions: PluginOptions) {
     }
   ]
 
-  if (pluginOptions.saveAndReturn) {
+  if (pluginOptions.saveAndExit) {
     buttons.push({
-      text: 'Save and return',
-      action: FormAction.SaveAndReturn
+      text: 'Save and exit',
+      action: FormAction.SaveAndExit
     })
   }
 
@@ -140,7 +140,7 @@ function getButtons(pluginOptions: PluginOptions) {
 
 function getActionHandlers(pluginOptions: PluginOptions) {
   let actionHandlers: PluginOptions['actionHandlers'] = {
-    [FormAction.SaveAndReturn]: handleSaveAndReturn
+    [FormAction.SaveAndExit]: handleSaveAndExit
   }
 
   if (pluginOptions.actionHandlers) {

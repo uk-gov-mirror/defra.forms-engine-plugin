@@ -68,7 +68,7 @@ export class SummaryPageController extends QuestionPageController {
     viewModel.feedbackLink = this.feedbackLink
     viewModel.phaseTag = this.phaseTag
     viewModel.components = components
-    viewModel.allowSaveAndReturn = this.shouldShowSaveAndReturn(request.server)
+    viewModel.allowSaveAndExit = this.shouldShowSaveAndExit(request.server)
 
     return viewModel
   }

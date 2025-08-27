@@ -45,7 +45,7 @@ import { merge } from '~/src/server/services/cacheService.js'
 export class QuestionPageController extends PageController {
   collection: ComponentCollection
   errorSummaryTitle = 'There is a problem'
-  allowSaveAndReturn = true
+  allowSaveAndExit = true
 
   constructor(model: FormModel, pageDef: Page) {
     super(model, pageDef)
@@ -171,7 +171,7 @@ export class QuestionPageController extends PageController {
       showTitle,
       components,
       errors,
-      allowSaveAndReturn: this.shouldShowSaveAndReturn(request.server)
+      allowSaveAndExit: this.shouldShowSaveAndExit(request.server)
     }
   }
 

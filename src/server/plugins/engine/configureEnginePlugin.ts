@@ -19,7 +19,8 @@ export const configureEnginePlugin = async ({
   controllers,
   preparePageEventRequestOptions,
   onRequest,
-  saveAndReturn
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  saveAndExit
 }: RouteConfig = {}): Promise<{
   plugin: typeof plugin
   options: PluginOptions
@@ -59,7 +60,20 @@ export const configureEnginePlugin = async ({
       preparePageEventRequestOptions,
       onRequest,
       baseUrl: 'http://localhost:3009', // always runs locally
-      saveAndReturn
+      saveAndExit: {
+        keyGenerator: (_) => {
+          return `save-and-exit`
+        },
+        sessionHydrator: (_) => {
+          return Promise.resolve({
+            applicantFirstName: 'Joe'
+          })
+        },
+        sessionPersister: () => {
+          // eslint-disable-next-line no-console
+          console.log('no-op')
+        }
+      }
     }
 
     /*
@@ -84,12 +98,12 @@ export const configureEnginePlugin = async ({
     ```
 
     /*
-    To enable save and return for testing purposes, use this config:
+    To enable save and exit for testing purposes, use this config:
 
     ```
-    saveAndReturn: {
+    saveAndExit: {
       keyGenerator: (_) => {
-        return `save-and-return`
+        return `save-and-exit`
       },
       sessionHydrator: (_) => {
         return Promise.resolve({
