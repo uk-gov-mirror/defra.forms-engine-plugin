@@ -19,7 +19,7 @@ import { createLogger } from '~/src/server/common/helpers/logging/logger.js'
 import {
   getAnswer,
   type Field
-} from '~/src/server/plugins/engine/components/helpers.js'
+} from '~/src/server/plugins/engine/components/factory.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers.js'
 import {

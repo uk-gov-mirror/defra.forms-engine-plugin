@@ -11,7 +11,7 @@ import { type PluginProperties, type Request } from '@hapi/hapi'
 import { type JoiExpression, type ValidationErrorItem } from 'joi'
 
 import { FormComponent } from '~/src/server/plugins/engine/components/FormComponent.js'
-import { type Component } from '~/src/server/plugins/engine/components/helpers.js'
+import { type Component } from '~/src/server/plugins/engine/components/factory.js'
 import {
   type BackLink,
   type ComponentText,

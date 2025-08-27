@@ -15,7 +15,7 @@ import {
   type Component,
   type Field,
   type Guidance
-} from '~/src/server/plugins/engine/components/helpers.js'
+} from '~/src/server/plugins/engine/components/factory.js'
 import { type ComponentViewModel } from '~/src/server/plugins/engine/components/types.js'
 import { getErrors } from '~/src/server/plugins/engine/helpers.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'

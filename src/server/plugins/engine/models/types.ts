@@ -6,9 +6,9 @@ import {
 import { type Expression } from 'expr-eval'
 
 import {
-  type Field,
-  type getAnswer
-} from '~/src/server/plugins/engine/components/helpers.js'
+  getAnswer,
+  type Field
+} from '~/src/server/plugins/engine/components/factory.js'
 import { type RepeatPageController } from '~/src/server/plugins/engine/pageControllers/RepeatPageController.js'
 import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers.js'
 import {

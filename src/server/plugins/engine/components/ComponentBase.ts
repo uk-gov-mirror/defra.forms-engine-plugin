@@ -9,7 +9,7 @@ import joi, {
 } from 'joi'
 
 import { type ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
-import { type Component } from '~/src/server/plugins/engine/components/helpers.js'
+import { type Component } from '~/src/server/plugins/engine/components/factory.js'
 import { type ViewModel } from '~/src/server/plugins/engine/components/types.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers.js'

@@ -33,7 +33,7 @@ import {} from '~/src/server/plugins/engine/components/YesNoField.js'
 import {
   hasListFormField,
   type Component
-} from '~/src/server/plugins/engine/components/helpers.js'
+} from '~/src/server/plugins/engine/components/factory.js'
 import { todayAsDateOnly } from '~/src/server/plugins/engine/date-helper.js'
 import {
   findPage,

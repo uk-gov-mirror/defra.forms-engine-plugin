@@ -5,7 +5,7 @@ import { ComponentCollection } from '~/src/server/plugins/engine/components/Comp
 import {
   getAnswer,
   type Field
-} from '~/src/server/plugins/engine/components/helpers.js'
+} from '~/src/server/plugins/engine/components/factory.js'
 import { type DateInputItem } from '~/src/server/plugins/engine/components/types.js'
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import {

@@ -8,7 +8,7 @@ import { tempItemSchema } from '~/src/server/plugins/engine/components/FileUploa
 import {
   getAnswer,
   type Field
-} from '~/src/server/plugins/engine/components/helpers.js'
+} from '~/src/server/plugins/engine/components/factory.js'
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import {
   createPage,

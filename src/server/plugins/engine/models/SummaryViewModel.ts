@@ -3,7 +3,7 @@ import { type Section } from '@defra/forms-model'
 import {
   getAnswer,
   type Field
-} from '~/src/server/plugins/engine/components/helpers.js'
+} from '~/src/server/plugins/engine/components/factory.js'
 import {
   type BackLink,
   type ComponentViewModel
