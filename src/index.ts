@@ -17,7 +17,20 @@ process.on('unhandledRejection', (error) => {
  * Main entrypoint to the application.
  */
 async function startServer() {
-  const server = await createServer()
+  const db = {}
+
+  const server = await createServer({
+    saveAndReturn: {
+      keyGenerator: (request) => request.yar.id,
+      sessionHydrator: (request) => {
+        return Promise.resolve(db[request.yar.id])
+      },
+      sessionPersister: (state, request) => {
+        db[request.yar.id] = state
+        return Promise.resolve()
+      }
+    }
+  })
   await server.start()
 
   process.send?.('online')
