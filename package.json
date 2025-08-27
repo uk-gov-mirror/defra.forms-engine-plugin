@@ -79,6 +79,7 @@
     "@hapi/vision": "^7.0.3",
     "@hapi/wreck": "^18.1.0",
     "@hapi/yar": "^11.0.2",
+    "@modernpoacher/catbox-mongodb": "^1.1.218",
     "@types/humanize-duration": "^3.27.4",
     "accessible-autocomplete": "^3.0.1",
     "atob": "^2.1.2",
