@@ -1,6 +1,4 @@
 import Catbox from '@hapi/catbox'
-import { Engine as CatboxMemory } from '@hapi/catbox-memory'
-import { Engine as CatboxRedis } from '@hapi/catbox-redis'
 import hapi, {
   type Request,
   type ResponseToolkit,
@@ -17,7 +15,6 @@ import { ProxyAgent } from 'proxy-agent'
 import { config } from '~/src/config/index.js'
 import { requestLogger } from '~/src/server/common/helpers/logging/request-logger.js'
 import { requestTracing } from '~/src/server/common/helpers/logging/request-tracing.js'
-import { buildRedisClient } from '~/src/server/common/helpers/redis-client.js'
 import { configureCrumbPlugin } from '~/src/server/plugins/crumb.js'
 import { configureEnginePlugin } from '~/src/server/plugins/engine/configureEnginePlugin.js'
 import pluginErrorPages from '~/src/server/plugins/errorPages.js'
