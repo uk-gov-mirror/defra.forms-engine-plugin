@@ -1,3 +1,4 @@
+import Catbox from '@hapi/catbox'
 import { Engine as CatboxMemory } from '@hapi/catbox-memory'
 import { Engine as CatboxRedis } from '@hapi/catbox-redis'
 import hapi, {
@@ -9,6 +10,7 @@ import hapi, {
 import inert from '@hapi/inert'
 import Scooter from '@hapi/scooter'
 import Wreck from '@hapi/wreck'
+import Client from '@modernpoacher/catbox-mongodb'
 import blipp from 'blipp'
 import { ProxyAgent } from 'proxy-agent'
 
@@ -35,6 +37,11 @@ Wreck.agents = {
 }
 
 const serverOptions = (): ServerOptions => {
+  const cache = new Catbox.Client(Client, {
+    uri: 'mongodb://localhost:27017/?replicaSet=rs0&directConnection=true&readPreference=secondaryPreferred',
+    partition: 'my-state'
+  })
+
   const serverOptions: ServerOptions = {
     debug: { request: [`${config.get('isDevelopment')}`] },
     port: config.get('port'),
@@ -61,11 +68,12 @@ const serverOptions = (): ServerOptions => {
     cache: [
       {
         name: 'session',
-        engine: config.get('isTest')
-          ? new CatboxMemory()
-          : new CatboxRedis({
-              client: buildRedisClient()
-            })
+        engine: cache
+        // engine: config.get('isTest')
+        //   ? new CatboxMemory()
+        //   : new CatboxRedis({
+        //       client: buildRedisClient()
+        //     })
       }
     ]
   }
