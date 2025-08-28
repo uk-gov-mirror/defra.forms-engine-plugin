@@ -65,11 +65,8 @@ export class CheckboxesField extends SelectionControlField {
     return this.isValue(value) ? value : undefined
   }
 
-  getDisplayStringFromState(state: FormSubmissionState) {
+  getDisplayStringFromFormValue(selected: (string | number | boolean)[]) {
     const { items } = this
-
-    // Selected checkbox values
-    const selected = this.getFormValueFromState(state) ?? []
 
     // Map selected values to text
     return items
@@ -78,9 +75,9 @@ export class CheckboxesField extends SelectionControlField {
       .join(', ')
   }
 
-  getContextValueFromState(state: FormSubmissionState) {
-    const values = this.getFormValueFromState(state)
-
+  getContextValueFormFormValue(
+    values: (string | number | boolean)[] | undefined
+  ): (string | number | boolean)[] {
     /**
      * For evaluation context purposes, optional {@link CheckboxesField}
      * with an undefined value (i.e. nothing selected) should default to [].
@@ -93,6 +90,20 @@ export class CheckboxesField extends SelectionControlField {
      * should return true IF 'selectedchecks' is undefined, not throw and return false.
      */
     return values ?? []
+  }
+
+  getDisplayStringFromState(state: FormSubmissionState) {
+    // Selected checkbox values
+    const selected = this.getFormValueFromState(state) ?? []
+
+    // Map selected values to text
+    return this.getDisplayStringFromFormValue(selected)
+  }
+
+  getContextValueFromState(state: FormSubmissionState) {
+    const values = this.getFormValueFromState(state)
+
+    return this.getContextValueFormFormValue(values)
   }
 
   isValue(value?: FormStateValue | FormState): value is Item['value'][] {

@@ -103,9 +103,7 @@ export class MonthYearField extends FormComponent {
     return MonthYearField.isMonthYear(value) ? value : undefined
   }
 
-  getDisplayStringFromState(state: FormSubmissionState) {
-    const value = this.getFormValueFromState(state)
-
+  getDisplayStringFromFormValue(value: MonthYearState | undefined): string {
     if (!value) {
       return ''
     }
@@ -117,9 +115,15 @@ export class MonthYearField extends FormComponent {
     return `${monthString} ${value.year}`
   }
 
-  getContextValueFromState(state: FormSubmissionState) {
+  getDisplayStringFromState(state: FormSubmissionState) {
     const value = this.getFormValueFromState(state)
 
+    return this.getDisplayStringFromFormValue(value)
+  }
+
+  getContextValueFormFormValue(
+    value: MonthYearState | undefined
+  ): string | null {
     if (
       !value ||
       !isValid(
@@ -135,6 +139,12 @@ export class MonthYearField extends FormComponent {
     }
 
     return format(`${value.year}-${value.month}-01`, 'yyyy-MM')
+  }
+
+  getContextValueFromState(state: FormSubmissionState) {
+    const value = this.getFormValueFromState(state)
+
+    return this.getContextValueFormFormValue(value)
   }
 
   getViewModel(payload: FormPayload, errors?: FormSubmissionError[]) {
