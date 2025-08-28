@@ -1,7 +1,7 @@
 import { type ComponentDef } from '@defra/forms-model'
 
 import { ComponentBase } from '~/src/server/plugins/engine/components/ComponentBase.js'
-import { createComponent } from '~/src/server/plugins/engine/components/helpers.js'
+import { createComponent } from '~/src/server/plugins/engine/components/helpers/components.js'
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import definition from '~/test/form/definitions/basic.js'
 

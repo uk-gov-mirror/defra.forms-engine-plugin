@@ -8,12 +8,12 @@ import { tempItemSchema } from '~/src/server/plugins/engine/components/FileUploa
 import {
   getAnswer,
   type Field
-} from '~/src/server/plugins/engine/components/helpers.js'
+} from '~/src/server/plugins/engine/components/helpers/components.js'
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import {
   createPage,
   type PageControllerClass
-} from '~/src/server/plugins/engine/pageControllers/helpers.js'
+} from '~/src/server/plugins/engine/pageControllers/helpers/pages.js'
 import { validationOptions as opts } from '~/src/server/plugins/engine/pageControllers/validationOptions.js'
 import {
   FileStatus,

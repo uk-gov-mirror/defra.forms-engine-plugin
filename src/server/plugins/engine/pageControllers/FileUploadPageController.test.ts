@@ -15,7 +15,7 @@ import {
 } from '~/src/server/plugins/engine/pageControllers/FileUploadPageController.js'
 import { QuestionPageController } from '~/src/server/plugins/engine/pageControllers/QuestionPageController.js'
 import { serverWithSaveAndReturn } from '~/src/server/plugins/engine/pageControllers/__stubs__/server.js'
-import * as pageHelpers from '~/src/server/plugins/engine/pageControllers/helpers.js'
+import * as pageHelpers from '~/src/server/plugins/engine/pageControllers/helpers/index.js'
 import * as uploadService from '~/src/server/plugins/engine/services/uploadService.js'
 import {
   FileStatus,

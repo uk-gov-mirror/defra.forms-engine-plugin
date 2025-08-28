@@ -9,7 +9,7 @@ import { UkAddressField } from '~/src/server/plugins/engine/components/UkAddress
 import {
   getAnswer,
   type Field
-} from '~/src/server/plugins/engine/components/helpers.js'
+} from '~/src/server/plugins/engine/components/helpers/components.js'
 import { type ViewModel } from '~/src/server/plugins/engine/components/types.js'
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import {

@@ -11,7 +11,7 @@ import { type PluginProperties, type Request } from '@hapi/hapi'
 import { type JoiExpression, type ValidationErrorItem } from 'joi'
 
 import { FormComponent } from '~/src/server/plugins/engine/components/FormComponent.js'
-import { type Component } from '~/src/server/plugins/engine/components/helpers.js'
+import { type Component } from '~/src/server/plugins/engine/components/helpers/components.js'
 import {
   type BackLink,
   type ComponentText,
@@ -20,7 +20,7 @@ import {
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { type RichFormValue } from '~/src/server/plugins/engine/outputFormatters/machine/v2.js'
 import { type PageController } from '~/src/server/plugins/engine/pageControllers/PageController.js'
-import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers.js'
+import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers/pages.js'
 import { type ViewContext } from '~/src/server/plugins/nunjucks/types.js'
 import {
   type FormAction,
@@ -403,7 +403,7 @@ export type FormAdapterSubmissionMessageMetaSerialised = Omit<
   FormAdapterSubmissionMessageMeta,
   'schemaVersion' | 'timestamp' | 'status'
 > & {
-  schemaVersion: string
+  schemaVersion: number
   status: string
   timestamp: string
 }

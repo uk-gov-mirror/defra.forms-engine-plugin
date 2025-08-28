@@ -15,7 +15,7 @@ import {
 } from '~/src/server/plugins/engine/helpers.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { QuestionPageController } from '~/src/server/plugins/engine/pageControllers/QuestionPageController.js'
-import { getProxyUrlForLocalDevelopment } from '~/src/server/plugins/engine/pageControllers/helpers.js'
+import { getProxyUrlForLocalDevelopment } from '~/src/server/plugins/engine/pageControllers/helpers/index.js'
 import {
   getUploadStatus,
   initiateUpload

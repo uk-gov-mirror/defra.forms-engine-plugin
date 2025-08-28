@@ -1,7 +1,7 @@
 import { type FormMetadata } from '@defra/forms-model'
 
 import { FileUploadField } from '~/src/server/plugins/engine/components/FileUploadField.js'
-import { type Field } from '~/src/server/plugins/engine/components/helpers.js'
+import { type Field } from '~/src/server/plugins/engine/components/helpers/components.js'
 import { FormModel } from '~/src/server/plugins/engine/models/index.js'
 import {
   type DetailItem,
