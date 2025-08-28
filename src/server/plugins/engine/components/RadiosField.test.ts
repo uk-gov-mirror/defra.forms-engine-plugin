@@ -6,7 +6,7 @@ import { RadiosField } from '~/src/server/plugins/engine/components/RadiosField.
 import {
   getAnswer,
   type Field
-} from '~/src/server/plugins/engine/components/factory.js'
+} from '~/src/server/plugins/engine/components/helpers/components.js'
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import {
   listNumber,

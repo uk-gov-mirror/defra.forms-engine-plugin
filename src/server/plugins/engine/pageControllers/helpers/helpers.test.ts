@@ -8,12 +8,12 @@ import {
 
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import { PageController } from '~/src/server/plugins/engine/pageControllers/PageController.js'
+import { getProxyUrlForLocalDevelopment } from '~/src/server/plugins/engine/pageControllers/helpers/index.js'
 import {
   createPage,
   isPageController,
   type PageControllerType
-} from '~/src/server/plugins/engine/pageControllers/factory.js'
-import { getProxyUrlForLocalDevelopment } from '~/src/server/plugins/engine/pageControllers/helpers.js'
+} from '~/src/server/plugins/engine/pageControllers/helpers/pages.js'
 import {
   FileUploadPageController,
   QuestionPageController,

@@ -3,7 +3,7 @@ import { type Section } from '@defra/forms-model'
 import {
   getAnswer,
   type Field
-} from '~/src/server/plugins/engine/components/factory.js'
+} from '~/src/server/plugins/engine/components/helpers/components.js'
 import {
   type BackLink,
   type ComponentViewModel
@@ -20,7 +20,7 @@ import {
   type DetailItemRepeat
 } from '~/src/server/plugins/engine/models/types.js'
 import { RepeatPageController } from '~/src/server/plugins/engine/pageControllers/RepeatPageController.js'
-import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/factory.js'
+import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers/pages.js'
 import { validationOptions as opts } from '~/src/server/plugins/engine/pageControllers/validationOptions.js'
 import {
   type CheckAnswers,

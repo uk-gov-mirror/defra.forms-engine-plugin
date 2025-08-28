@@ -8,9 +8,9 @@ import { type Expression } from 'expr-eval'
 import {
   getAnswer,
   type Field
-} from '~/src/server/plugins/engine/components/factory.js'
+} from '~/src/server/plugins/engine/components/helpers/components.js'
 import { type RepeatPageController } from '~/src/server/plugins/engine/pageControllers/RepeatPageController.js'
-import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/factory.js'
+import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers/pages.js'
 import {
   type FormState,
   type FormSubmissionError

@@ -33,7 +33,7 @@ import {} from '~/src/server/plugins/engine/components/YesNoField.js'
 import {
   hasListFormField,
   type Component
-} from '~/src/server/plugins/engine/components/factory.js'
+} from '~/src/server/plugins/engine/components/helpers/components.js'
 import { todayAsDateOnly } from '~/src/server/plugins/engine/date-helper.js'
 import {
   findPage,
@@ -46,7 +46,7 @@ import { type PageController } from '~/src/server/plugins/engine/pageControllers
 import {
   createPage,
   type PageControllerClass
-} from '~/src/server/plugins/engine/pageControllers/factory.js'
+} from '~/src/server/plugins/engine/pageControllers/helpers/pages.js'
 import { validationOptions as opts } from '~/src/server/plugins/engine/pageControllers/validationOptions.js'
 import * as defaultServices from '~/src/server/plugins/engine/services/index.js'
 import {

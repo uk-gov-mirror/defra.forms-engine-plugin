@@ -5,8 +5,8 @@ import {
 import { addDays, format as dateFormat } from 'date-fns'
 
 import { config } from '~/src/config/index.js'
-import { getAnswer } from '~/src/server/plugins/engine/components/factory.js'
-import { escapeMarkdown } from '~/src/server/plugins/engine/components/helpers.js'
+import { getAnswer } from '~/src/server/plugins/engine/components/helpers/components.js'
+import { escapeMarkdown } from '~/src/server/plugins/engine/components/helpers/index.js'
 import { type checkFormStatus } from '~/src/server/plugins/engine/helpers.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { type DetailItem } from '~/src/server/plugins/engine/models/types.js'

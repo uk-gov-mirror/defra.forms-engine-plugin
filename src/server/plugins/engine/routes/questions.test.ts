@@ -4,7 +4,7 @@ import { type ResponseObject, type ResponseToolkit } from '@hapi/hapi'
 import nock from 'nock'
 
 import { type FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
-import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/factory.js'
+import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers/pages.js'
 import { redirectOrMakeHandler } from '~/src/server/plugins/engine/routes/index.js'
 import {
   makeGetHandler,

@@ -1,9 +1,12 @@
-import { getAnswer } from '~/src/server/plugins/engine/components/factory.js'
+import { getAnswer } from '~/src/server/plugins/engine/components/helpers/components.js'
 import { answer } from '~/src/server/plugins/nunjucks/filters/answer.js'
 
-jest.mock('~/src/server/plugins/engine/components/factory.ts', () => ({
-  getAnswer: jest.fn()
-}))
+jest.mock(
+  '~/src/server/plugins/engine/components/helpers/components.ts',
+  () => ({
+    getAnswer: jest.fn()
+  })
+)
 
 describe('answer Nunjucks filter', () => {
   /** @type { NunjucksContext } */

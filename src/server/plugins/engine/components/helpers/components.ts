@@ -4,7 +4,7 @@ import { Marked, type Token } from 'marked'
 import { config } from '~/src/config/index.js'
 import { type ComponentBase } from '~/src/server/plugins/engine/components/ComponentBase.js'
 import { ListFormComponent } from '~/src/server/plugins/engine/components/ListFormComponent.js'
-import { escapeMarkdown } from '~/src/server/plugins/engine/components/helpers.js'
+import { escapeMarkdown } from '~/src/server/plugins/engine/components/helpers/index.js'
 import * as Components from '~/src/server/plugins/engine/components/index.js'
 import { type FormState } from '~/src/server/plugins/engine/types.js'
 

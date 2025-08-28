@@ -9,7 +9,7 @@ import { type ResponseToolkit, type RouteOptions } from '@hapi/hapi'
 
 import { ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
 import { FileUploadField } from '~/src/server/plugins/engine/components/FileUploadField.js'
-import { getAnswer } from '~/src/server/plugins/engine/components/factory.js'
+import { getAnswer } from '~/src/server/plugins/engine/components/helpers/components.js'
 import {
   checkEmailAddressForLiveFormSubmission,
   checkFormStatus,

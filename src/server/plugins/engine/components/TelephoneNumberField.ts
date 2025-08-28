@@ -2,7 +2,7 @@ import { type TelephoneNumberFieldComponent } from '@defra/forms-model'
 import joi, { type StringSchema } from 'joi'
 
 import { FormComponent } from '~/src/server/plugins/engine/components/FormComponent.js'
-import { addClassOptionIfNone } from '~/src/server/plugins/engine/components/helpers.js'
+import { addClassOptionIfNone } from '~/src/server/plugins/engine/components/helpers/index.js'
 import { messageTemplate } from '~/src/server/plugins/engine/pageControllers/validationOptions.js'
 import {
   type ErrorMessageTemplateList,

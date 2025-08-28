@@ -4,7 +4,7 @@ import { ComponentCollection } from '~/src/server/plugins/engine/components/Comp
 import {
   getAnswer,
   type Field
-} from '~/src/server/plugins/engine/components/factory.js'
+} from '~/src/server/plugins/engine/components/helpers/components.js'
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import { listYesNoExamples } from '~/test/fixtures/list.js'
 import definition from '~/test/form/definitions/blank.js'

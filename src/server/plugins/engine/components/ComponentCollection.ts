@@ -15,11 +15,11 @@ import {
   type Component,
   type Field,
   type Guidance
-} from '~/src/server/plugins/engine/components/factory.js'
+} from '~/src/server/plugins/engine/components/helpers/components.js'
 import { type ComponentViewModel } from '~/src/server/plugins/engine/components/types.js'
 import { getErrors } from '~/src/server/plugins/engine/helpers.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
-import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/factory.js'
+import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers/pages.js'
 import { validationOptions as opts } from '~/src/server/plugins/engine/pageControllers/validationOptions.js'
 import {
   type FormPayload,
