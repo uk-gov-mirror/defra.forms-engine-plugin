@@ -41,11 +41,7 @@ export type {
   UploadStatusResponse
 } from '~/src/server/plugins/engine/types.js'
 
-export {
-  FileStatus,
-  FormAdapterSubmissionSchemaVersion,
-  UploadStatus
-} from '~/src/server/plugins/engine/types.js'
+export { FileStatus, UploadStatus } from '~/src/server/plugins/engine/types.js'
 
 export type {
   Detail,
@@ -94,3 +90,4 @@ export type {
 export type { RichFormValue } from '~/src/server/plugins/engine/outputFormatters/machine/v2.js'
 
 export * from '~/src/server/plugins/engine/types/schema.js'
+export { FormAdapterSubmissionSchemaVersion } from '~/src/server/plugins/engine/types/enums.js'
