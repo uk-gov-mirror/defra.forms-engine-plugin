@@ -1,12 +1,12 @@
 import { FormStatus } from '@defra/forms-model'
 
+import { FormAdapterSubmissionSchemaVersion } from '~/src/server/plugins/engine/types/enums.js'
 import {
   formAdapterSubmissionMessageDataSchema,
   formAdapterSubmissionMessageMetaSchema,
   formAdapterSubmissionMessagePayloadSchema
 } from '~/src/server/plugins/engine/types/schema.js'
 import {
-  FormAdapterSubmissionSchemaVersion,
   type FormAdapterSubmissionMessageData,
   type FormAdapterSubmissionMessageMeta,
   type FormAdapterSubmissionMessagePayload

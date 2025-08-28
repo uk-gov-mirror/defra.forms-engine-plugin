@@ -21,6 +21,11 @@ import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { type RichFormValue } from '~/src/server/plugins/engine/outputFormatters/machine/v2.js'
 import { type PageController } from '~/src/server/plugins/engine/pageControllers/PageController.js'
 import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers/pages.js'
+import {
+  type FileStatus,
+  type FormAdapterSubmissionSchemaVersion,
+  type UploadStatus
+} from '~/src/server/plugins/engine/types/enums.js'
 import { type ViewContext } from '~/src/server/plugins/nunjucks/types.js'
 import {
   type FormAction,
@@ -190,17 +195,10 @@ export interface UploadInitiateResponse {
   statusUrl: string
 }
 
-export enum UploadStatus {
-  initiated = 'initiated',
-  pending = 'pending',
-  ready = 'ready'
-}
-
-export enum FileStatus {
-  complete = 'complete',
-  rejected = 'rejected',
-  pending = 'pending'
-}
+export {
+  FileStatus,
+  UploadStatus
+} from '~/src/server/plugins/engine/types/enums.js'
 
 export type UploadState = FileState[]
 
@@ -412,10 +410,6 @@ export interface FormAdapterSubmissionMessageData {
   main: Record<string, RichFormValue>
   repeaters: Record<string, Record<string, RichFormValue>[]>
   files: Record<string, Record<string, string>[]>
-}
-
-export enum FormAdapterSubmissionSchemaVersion {
-  V1 = 1
 }
 
 export interface FormAdapterSubmissionMessagePayload {

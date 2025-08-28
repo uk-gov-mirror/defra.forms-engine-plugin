@@ -10,9 +10,9 @@ import {
 } from '~/src/server/plugins/engine/models/types.js'
 import { format } from '~/src/server/plugins/engine/outputFormatters/adapter/v1.js'
 import { buildFormContextRequest } from '~/src/server/plugins/engine/pageControllers/__stubs__/request.js'
+import { FormAdapterSubmissionSchemaVersion } from '~/src/server/plugins/engine/types/index.js'
 import {
   FileStatus,
-  FormAdapterSubmissionSchemaVersion,
   UploadStatus,
   type FileState,
   type FormAdapterSubmissionMessagePayload

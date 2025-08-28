@@ -7,8 +7,8 @@ import { type checkFormStatus } from '~/src/server/plugins/engine/helpers.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import { type DetailItem } from '~/src/server/plugins/engine/models/types.js'
 import { format as machineV2 } from '~/src/server/plugins/engine/outputFormatters/machine/v2.js'
+import { FormAdapterSubmissionSchemaVersion } from '~/src/server/plugins/engine/types/enums.js'
 import {
-  FormAdapterSubmissionSchemaVersion,
   type FormAdapterSubmissionMessageData,
   type FormAdapterSubmissionMessagePayload,
   type FormContext

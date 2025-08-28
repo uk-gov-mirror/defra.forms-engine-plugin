@@ -7,8 +7,8 @@ import {
 } from '@defra/forms-model'
 import Joi from 'joi'
 
+import { FormAdapterSubmissionSchemaVersion } from '~/src/server/plugins/engine/types/enums.js'
 import {
-  FormAdapterSubmissionSchemaVersion,
   type FormAdapterSubmissionMessageData,
   type FormAdapterSubmissionMessageMeta,
   type FormAdapterSubmissionMessagePayload
