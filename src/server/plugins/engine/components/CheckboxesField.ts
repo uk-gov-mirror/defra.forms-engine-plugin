@@ -75,7 +75,7 @@ export class CheckboxesField extends SelectionControlField {
       .join(', ')
   }
 
-  getContextValueFormFormValue(
+  getContextValueFromFormValue(
     values: (string | number | boolean)[] | undefined
   ): (string | number | boolean)[] {
     /**
@@ -103,7 +103,7 @@ export class CheckboxesField extends SelectionControlField {
   getContextValueFromState(state: FormSubmissionState) {
     const values = this.getFormValueFromState(state)
 
-    return this.getContextValueFormFormValue(values)
+    return this.getContextValueFromFormValue(values)
   }
 
   isValue(value?: FormStateValue | FormState): value is Item['value'][] {

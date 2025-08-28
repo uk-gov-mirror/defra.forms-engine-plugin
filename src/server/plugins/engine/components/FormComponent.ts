@@ -169,7 +169,7 @@ export class FormComponent extends ComponentBase {
     return this.getDisplayStringFromFormValue(value)
   }
 
-  getContextValueFormFormValue(
+  getContextValueFromFormValue(
     value: FormValue | FormPayload
   ): Item['value'] | Item['value'][] | null {
     // Filter object field values
@@ -191,7 +191,7 @@ export class FormComponent extends ComponentBase {
   ): Item['value'] | Item['value'][] | null {
     const value = this.getFormValueFromState(state)
 
-    return this.getContextValueFormFormValue(value)
+    return this.getContextValueFromFormValue(value)
   }
 
   isValue(

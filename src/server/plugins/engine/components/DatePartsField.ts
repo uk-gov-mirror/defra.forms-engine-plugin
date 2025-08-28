@@ -126,7 +126,7 @@ export class DatePartsField extends FormComponent {
     return this.getDisplayStringFromFormValue(value)
   }
 
-  getContextValueFormFormValue(value: DatePartsState | undefined) {
+  getContextValueFromFormValue(value: DatePartsState | undefined) {
     if (
       !value ||
       !isValid(
@@ -147,7 +147,7 @@ export class DatePartsField extends FormComponent {
   getContextValueFromState(state: FormSubmissionState) {
     const value = this.getFormValueFromState(state)
 
-    return this.getContextValueFormFormValue(value)
+    return this.getContextValueFromFormValue(value)
   }
 
   getViewModel(payload: FormPayload, errors?: FormSubmissionError[]) {

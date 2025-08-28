@@ -121,7 +121,7 @@ export class MonthYearField extends FormComponent {
     return this.getDisplayStringFromFormValue(value)
   }
 
-  getContextValueFormFormValue(
+  getContextValueFromFormValue(
     value: MonthYearState | undefined
   ): string | null {
     if (
@@ -144,7 +144,7 @@ export class MonthYearField extends FormComponent {
   getContextValueFromState(state: FormSubmissionState) {
     const value = this.getFormValueFromState(state)
 
-    return this.getContextValueFormFormValue(value)
+    return this.getContextValueFromFormValue(value)
   }
 
   getViewModel(payload: FormPayload, errors?: FormSubmissionError[]) {
