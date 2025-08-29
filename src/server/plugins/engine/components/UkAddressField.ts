@@ -110,18 +110,28 @@ export class UkAddressField extends FormComponent {
     return this.isState(value) ? value : undefined
   }
 
-  getDisplayStringFromState(state: FormSubmissionState) {
-    return this.getContextValueFromState(state)?.join(', ') ?? ''
-  }
-
-  getContextValueFromState(state: FormSubmissionState) {
-    const value = this.getFormValueFromState(state)
-
+  getContextValueFromFormValue(value: UkAddressState | undefined) {
     if (!value) {
       return null
     }
 
     return Object.values(value).filter(Boolean)
+  }
+
+  getContextValueFromState(state: FormSubmissionState) {
+    const value = this.getFormValueFromState(state)
+
+    return this.getContextValueFromFormValue(value)
+  }
+
+  getDisplayStringFromFormValue(value: UkAddressState | undefined): string {
+    return this.getContextValueFromFormValue(value)?.join(', ') ?? ''
+  }
+
+  getDisplayStringFromState(state: FormSubmissionState) {
+    const value = this.getFormValueFromState(state)
+
+    return this.getDisplayStringFromFormValue(value)
   }
 
   /**

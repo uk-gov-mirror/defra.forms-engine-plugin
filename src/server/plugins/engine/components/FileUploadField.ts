@@ -149,8 +149,7 @@ export class FileUploadField extends FormComponent {
     return this.isValue(value) ? value : undefined
   }
 
-  getDisplayStringFromState(state: FormSubmissionState) {
-    const files = this.getFormValueFromState(state)
+  getDisplayStringFromFormValue(files: FileState[] | undefined): string {
     if (!files?.length) {
       return ''
     }
@@ -159,9 +158,21 @@ export class FileUploadField extends FormComponent {
     return `Uploaded ${files.length} ${unit}`
   }
 
+  getDisplayStringFromState(state: FormSubmissionState) {
+    const files = this.getFormValueFromState(state)
+
+    return this.getDisplayStringFromFormValue(files)
+  }
+
+  getContextValueFromFormValue(
+    files: UploadState | undefined
+  ): string[] | null {
+    return files?.map(({ status }) => status.form.file.fileId) ?? null
+  }
+
   getContextValueFromState(state: FormSubmissionState) {
     const files = this.getFormValueFromState(state)
-    return files?.map(({ status }) => status.form.file.fileId) ?? null
+    return this.getContextValueFromFormValue(files)
   }
 
   getViewModel(

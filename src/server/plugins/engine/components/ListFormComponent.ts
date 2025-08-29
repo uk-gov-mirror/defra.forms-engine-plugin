@@ -99,17 +99,24 @@ export class ListFormComponent extends FormComponent {
     return selected.at(0)?.value
   }
 
-  getDisplayStringFromState(state: FormSubmissionState) {
+  getDisplayStringFromFormValue(
+    value: string | number | boolean | Item['value'][] | undefined
+  ): string {
     const { items } = this
 
-    // Allow for array values via subclass
-    const value = this.getFormValueFromState(state)
     const values = [value ?? []].flat()
 
     return items
       .filter((item) => values.includes(item.value))
       .map((item) => item.text)
       .join(', ')
+  }
+
+  getDisplayStringFromState(state: FormSubmissionState) {
+    // Allow for array values via subclass
+    const value = this.getFormValueFromState(state)
+
+    return this.getDisplayStringFromFormValue(value)
   }
 
   getViewModel(payload: FormPayload, errors?: FormSubmissionError[]) {
