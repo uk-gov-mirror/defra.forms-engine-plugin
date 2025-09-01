@@ -69,7 +69,8 @@ export function format(
  *      fileComponentName: [
  *        {
  *          fileId: '123-456-789',
- *          link: 'https://forms-designer/file-download/123-456-789'
+ *          fileName: 'example.pdf',
+ *          userDownloadLink: 'https://forms-designer/file-download/123-456-789'
  *        }
  *      ]
  *    }
@@ -79,7 +80,10 @@ function categoriseData(items: DetailItem[]) {
   const output: {
     main: Record<string, RichFormValue>
     repeaters: Record<string, Record<string, RichFormValue>[]>
-    files: Record<string, Record<string, string>[]>
+    files: Record<
+      string,
+      { fileId: string; fileName: string; userDownloadLink: string }[]
+    >
   } = { main: {}, repeaters: {}, files: {} }
 
   items.forEach((item) => {
@@ -127,12 +131,14 @@ function extractRepeaters(item: DetailItemRepeat) {
  * @returns the file upload data
  */
 function extractFileUploads(item: FileUploadFieldDetailitem) {
-  const fileUploadState = item.field.getContextValueFromState(item.state) ?? []
+  const fileUploadState = item.field.getFormValueFromState(item.state) ?? []
 
-  return fileUploadState.map((fileId) => {
+  return fileUploadState.map((fileState) => {
+    const { file } = fileState.status.form
     return {
-      fileId,
-      userDownloadLink: `${designerUrl}/file-download/${fileId}`
+      fileId: file.fileId,
+      fileName: file.filename,
+      userDownloadLink: `${designerUrl}/file-download/${file.fileId}`
     }
   })
 }

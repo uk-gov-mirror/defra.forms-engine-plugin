@@ -270,10 +270,12 @@ describe('Adapter v1 formatter', () => {
         exampleFile1: [
           {
             fileId: '123-456-789',
+            fileName: 'foobar.txt',
             userDownloadLink: 'https://forms-designer/file-download/123-456-789'
           },
           {
             fileId: '456-789-123',
+            fileName: 'bazbuzz.txt',
             userDownloadLink: 'https://forms-designer/file-download/456-789-123'
           }
         ]
@@ -560,10 +562,12 @@ describe('Adapter v1 formatter', () => {
     expect(parsedBody.data.files.exampleFile1).toEqual([
       {
         fileId: '123-456-789',
+        fileName: 'foobar.txt',
         userDownloadLink: 'https://forms-designer/file-download/123-456-789'
       },
       {
         fileId: '456-789-123',
+        fileName: 'bazbuzz.txt',
         userDownloadLink: 'https://forms-designer/file-download/456-789-123'
       }
     ])
