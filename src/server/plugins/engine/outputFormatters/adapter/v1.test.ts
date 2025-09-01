@@ -255,15 +255,11 @@ describe('Adapter v1 formatter', () => {
       repeaters: {
         exampleRepeat: [
           {
-            state: {
-              subItem1_1: 'hello world',
-              subItem1_2: 'hello world'
-            }
+            subItem1_1: 'hello world',
+            subItem1_2: 'hello world'
           },
           {
-            state: {
-              subItem2_1: 'hello world'
-            }
+            subItem2_1: 'hello world'
           }
         ]
       },
@@ -549,18 +545,14 @@ describe('Adapter v1 formatter', () => {
       exampleField2: 'hello world'
     })
 
-    // Check that repeater data uses new state structure
+    // Check that repeater data uses direct field structure
     expect(parsedBody.data.repeaters.exampleRepeat).toEqual([
       {
-        state: {
-          subItem1_1: 'hello world',
-          subItem1_2: 'hello world'
-        }
+        subItem1_1: 'hello world',
+        subItem1_2: 'hello world'
       },
       {
-        state: {
-          subItem2_1: 'hello world'
-        }
+        subItem2_1: 'hello world'
       }
     ])
 
@@ -620,15 +612,11 @@ describe('Adapter v1 formatter', () => {
 
     expect(parsedBody.data.repeaters.exampleRepeat).toEqual([
       {
-        state: {
-          subItem1_1: 'hello world',
-          subItem1_2: 'hello world'
-        }
+        subItem1_1: 'hello world',
+        subItem1_2: 'hello world'
       },
       {
-        state: {
-          subItem2_1: 'hello world'
-        }
+        subItem2_1: 'hello world'
       }
     ])
   })
@@ -664,18 +652,14 @@ describe('Adapter v1 formatter', () => {
       exampleField2: 'hello world'
     })
 
-    // Repeaters should use state structure
+    // Repeaters should use direct field structure
     expect(parsedBody.data.repeaters.exampleRepeat).toEqual([
       {
-        state: {
-          subItem1_1: 'hello world',
-          subItem1_2: 'hello world'
-        }
+        subItem1_1: 'hello world',
+        subItem1_2: 'hello world'
       },
       {
-        state: {
-          subItem2_1: 'hello world'
-        }
+        subItem2_1: 'hello world'
       }
     ])
 
