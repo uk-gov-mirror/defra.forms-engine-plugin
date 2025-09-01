@@ -6,7 +6,10 @@ import {
 import { type checkFormStatus } from '~/src/server/plugins/engine/helpers.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import { type DetailItem } from '~/src/server/plugins/engine/models/types.js'
-import { format as machineV2 } from '~/src/server/plugins/engine/outputFormatters/machine/v2.js'
+import {
+  format as machineV2,
+  type RichFormValue
+} from '~/src/server/plugins/engine/outputFormatters/machine/v2.js'
 import { FormAdapterSubmissionSchemaVersion } from '~/src/server/plugins/engine/types/enums.js'
 import {
   type FormAdapterSubmissionMessageData,
@@ -14,6 +17,24 @@ import {
   type FormContext
 } from '~/src/server/plugins/engine/types.js'
 import { FormStatus } from '~/src/server/routes/types.js'
+
+interface CsvFiles {
+  main?: string
+  repeaters: Record<string, string>
+}
+
+interface TransformedData
+  extends Omit<FormAdapterSubmissionMessageData, 'repeaters'> {
+  repeaters: Record<string, { state: Record<string, RichFormValue> }[]>
+}
+
+interface AdapterPayload {
+  meta: FormAdapterSubmissionMessagePayload['meta']
+  data: TransformedData
+  result: {
+    files: CsvFiles
+  }
+}
 
 export function format(
   context: FormContext,
@@ -34,7 +55,11 @@ export function format(
     data: FormAdapterSubmissionMessageData
   }
 
-  const payload: FormAdapterSubmissionMessagePayload = {
+  const csvFiles = extractCsvFiles(submitResponse)
+
+  const transformedData = transformRepeaters(v2DataParsed.data)
+
+  const payload: AdapterPayload = {
     meta: {
       schemaVersion: FormAdapterSubmissionSchemaVersion.V1,
       timestamp: new Date(),
@@ -46,8 +71,42 @@ export function format(
       isPreview: formStatus.isPreview,
       notificationEmail: formMetadata?.notificationEmail ?? ''
     },
-    data: v2DataParsed.data
+    data: transformedData,
+    result: {
+      files: csvFiles
+    }
   }
 
   return JSON.stringify(payload)
+}
+
+function extractCsvFiles(submitResponse: SubmitResponsePayload): CsvFiles {
+  const result = submitResponse.result as {
+    files?: {
+      main?: string
+      repeaters?: Record<string, string>
+    }
+  }
+
+  return {
+    main: result.files?.main,
+    repeaters: result.files?.repeaters ?? {}
+  }
+}
+
+function transformRepeaters(
+  data: FormAdapterSubmissionMessageData
+): TransformedData {
+  const transformedData: TransformedData = {
+    ...data,
+    repeaters: {}
+  }
+
+  Object.entries(data.repeaters).forEach(([repeaterName, items]) => {
+    transformedData.repeaters[repeaterName] = items.map((item) => ({
+      state: item
+    }))
+  })
+
+  return transformedData
 }

@@ -20,13 +20,22 @@ import {
 import { FormStatus } from '~/src/server/routes/types.js'
 import definition from '~/test/form/definitions/repeat-mixed.js'
 
+interface AdapterTestPayload extends FormAdapterSubmissionMessagePayload {
+  result: {
+    files: {
+      main?: string
+      repeaters: Record<string, string>
+    }
+  }
+}
+
 const submitResponse = {
   message: 'Submit completed',
   result: {
     files: {
       main: '00000000-0000-0000-0000-000000000000',
       repeaters: {
-        pizza: '11111111-1111-1111-1111-111111111111'
+        exampleRepeat: '11111111-1111-1111-1111-111111111111'
       }
     }
   }
@@ -224,7 +233,7 @@ describe('Adapter v1 formatter', () => {
       formStatus,
       formMetadata
     )
-    const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
+    const parsedBody = JSON.parse(body) as AdapterTestPayload
 
     expect(parsedBody.meta).toEqual({
       schemaVersion: FormAdapterSubmissionSchemaVersion.V1,
@@ -246,11 +255,15 @@ describe('Adapter v1 formatter', () => {
       repeaters: {
         exampleRepeat: [
           {
-            subItem1_1: 'hello world',
-            subItem1_2: 'hello world'
+            state: {
+              subItem1_1: 'hello world',
+              subItem1_2: 'hello world'
+            }
           },
           {
-            subItem2_1: 'hello world'
+            state: {
+              subItem2_1: 'hello world'
+            }
           }
         ]
       },
@@ -265,6 +278,15 @@ describe('Adapter v1 formatter', () => {
             userDownloadLink: 'https://forms-designer/file-download/456-789-123'
           }
         ]
+      }
+    })
+
+    expect(parsedBody.result).toEqual({
+      files: {
+        main: '00000000-0000-0000-0000-000000000000',
+        repeaters: {
+          exampleRepeat: '11111111-1111-1111-1111-111111111111'
+        }
       }
     })
   })
@@ -380,11 +402,19 @@ describe('Adapter v1 formatter', () => {
     }
 
     const body = format(context, [], model, submitResponse, formStatus)
-    const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
+    const parsedBody = JSON.parse(body) as AdapterTestPayload
 
     expect(parsedBody.data.main).toEqual({})
     expect(parsedBody.data.repeaters).toEqual({})
     expect(parsedBody.data.files).toEqual({})
+    expect(parsedBody.result).toEqual({
+      files: {
+        main: '00000000-0000-0000-0000-000000000000',
+        repeaters: {
+          exampleRepeat: '11111111-1111-1111-1111-111111111111'
+        }
+      }
+    })
   })
 
   it('should handle different form statuses', () => {
@@ -502,5 +532,159 @@ describe('Adapter v1 formatter', () => {
     expect(parsedBody.meta.formId).toBe('')
     expect(parsedBody.meta.formSlug).toBe('')
     expect(parsedBody.meta.notificationEmail).toBe('only-email@example.com')
+  })
+
+  it('should include CSV file IDs from submitResponse.result.files', () => {
+    const formStatus = {
+      isPreview: false,
+      state: FormStatus.Live
+    }
+
+    const body = format(context, items, model, submitResponse, formStatus)
+    const parsedBody = JSON.parse(body) as AdapterTestPayload
+
+    // Check that main data has no CSV file IDs (they're in result.files)
+    expect(parsedBody.data.main).toEqual({
+      exampleField: 'hello world',
+      exampleField2: 'hello world'
+    })
+
+    // Check that repeater data uses new state structure
+    expect(parsedBody.data.repeaters.exampleRepeat).toEqual([
+      {
+        state: {
+          subItem1_1: 'hello world',
+          subItem1_2: 'hello world'
+        }
+      },
+      {
+        state: {
+          subItem2_1: 'hello world'
+        }
+      }
+    ])
+
+    // Files section should remain unchanged
+    expect(parsedBody.data.files.exampleFile1).toEqual([
+      {
+        fileId: '123-456-789',
+        userDownloadLink: 'https://forms-designer/file-download/123-456-789'
+      },
+      {
+        fileId: '456-789-123',
+        userDownloadLink: 'https://forms-designer/file-download/456-789-123'
+      }
+    ])
+
+    // CSV file IDs should be in result.files
+    expect(parsedBody.result).toEqual({
+      files: {
+        main: '00000000-0000-0000-0000-000000000000',
+        repeaters: {
+          exampleRepeat: '11111111-1111-1111-1111-111111111111'
+        }
+      }
+    })
+  })
+
+  it('should handle submitResponse without CSV file IDs gracefully', () => {
+    const submitResponseWithoutFiles = {
+      message: 'Submit completed',
+      result: {
+        files: {
+          main: '',
+          repeaters: {}
+        }
+      }
+    }
+
+    const formStatus = {
+      isPreview: false,
+      state: FormStatus.Live
+    }
+
+    const body = format(
+      context,
+      items,
+      model,
+      submitResponseWithoutFiles,
+      formStatus
+    )
+    const parsedBody = JSON.parse(body) as AdapterTestPayload
+
+    // Should work normally without CSV file IDs
+    expect(parsedBody.data.main).toEqual({
+      exampleField: 'hello world',
+      exampleField2: 'hello world'
+    })
+
+    expect(parsedBody.data.repeaters.exampleRepeat).toEqual([
+      {
+        state: {
+          subItem1_1: 'hello world',
+          subItem1_2: 'hello world'
+        }
+      },
+      {
+        state: {
+          subItem2_1: 'hello world'
+        }
+      }
+    ])
+  })
+
+  it('should handle submitResponse with only main CSV file ID', () => {
+    const submitResponseWithMainOnly = {
+      message: 'Submit completed',
+      result: {
+        files: {
+          main: 'main-only-file-id',
+          repeaters: {}
+        }
+      }
+    }
+
+    const formStatus = {
+      isPreview: false,
+      state: FormStatus.Live
+    }
+
+    const body = format(
+      context,
+      items,
+      model,
+      submitResponseWithMainOnly,
+      formStatus
+    )
+    const parsedBody = JSON.parse(body) as AdapterTestPayload
+
+    // Should work normally
+    expect(parsedBody.data.main).toEqual({
+      exampleField: 'hello world',
+      exampleField2: 'hello world'
+    })
+
+    // Repeaters should use state structure
+    expect(parsedBody.data.repeaters.exampleRepeat).toEqual([
+      {
+        state: {
+          subItem1_1: 'hello world',
+          subItem1_2: 'hello world'
+        }
+      },
+      {
+        state: {
+          subItem2_1: 'hello world'
+        }
+      }
+    ])
+
+    // CSV file IDs should be in result.files
+    expect(parsedBody.result).toEqual({
+      files: {
+        main: 'main-only-file-id',
+        repeaters: {}
+      }
+    })
   })
 })
