@@ -405,16 +405,29 @@ export type FormAdapterSubmissionMessageMetaSerialised = Omit<
   status: string
   timestamp: string
 }
+export interface FormAdapterFile {
+  fileName: string
+  fileId: string
+  userDownloadLink: string
+}
+
+export interface FormAdapterSubmissionMessageResult {
+  files: {
+    main: string
+    repeaters: Record<string, string>
+  }
+}
 
 export interface FormAdapterSubmissionMessageData {
   main: Record<string, RichFormValue>
   repeaters: Record<string, Record<string, RichFormValue>[]>
-  files: Record<string, Record<string, string>[]>
+  files: Record<string, FormAdapterFile[]>
 }
 
 export interface FormAdapterSubmissionMessagePayload {
   meta: FormAdapterSubmissionMessageMeta
   data: FormAdapterSubmissionMessageData
+  result: FormAdapterSubmissionMessageResult
 }
 
 export interface FormAdapterSubmissionMessage

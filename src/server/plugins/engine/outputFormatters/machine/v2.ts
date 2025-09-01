@@ -15,6 +15,7 @@ import {
   type DetailItemRepeat
 } from '~/src/server/plugins/engine/models/types.js'
 import {
+  type FormAdapterFile,
   type FormContext,
   type FormPayload,
   type FormValue
@@ -130,7 +131,9 @@ function extractRepeaters(item: DetailItemRepeat) {
  * @param item - the file upload item in the form
  * @returns the file upload data
  */
-function extractFileUploads(item: FileUploadFieldDetailitem) {
+function extractFileUploads(
+  item: FileUploadFieldDetailitem
+): FormAdapterFile[] {
   const fileUploadState = item.field.getFormValueFromState(item.state) ?? []
 
   return fileUploadState.map((fileState) => {

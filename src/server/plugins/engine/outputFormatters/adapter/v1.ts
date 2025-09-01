@@ -10,23 +10,12 @@ import { format as machineV2 } from '~/src/server/plugins/engine/outputFormatter
 import { FormAdapterSubmissionSchemaVersion } from '~/src/server/plugins/engine/types/enums.js'
 import {
   type FormAdapterSubmissionMessageData,
+  type FormAdapterSubmissionMessageMeta,
   type FormAdapterSubmissionMessagePayload,
+  type FormAdapterSubmissionMessageResult,
   type FormContext
 } from '~/src/server/plugins/engine/types.js'
 import { FormStatus } from '~/src/server/routes/types.js'
-
-interface CsvFiles {
-  main?: string
-  repeaters: Record<string, string>
-}
-
-interface AdapterPayload {
-  meta: FormAdapterSubmissionMessagePayload['meta']
-  data: FormAdapterSubmissionMessageData
-  result: {
-    files: CsvFiles
-  }
-}
 
 export function format(
   context: FormContext,
@@ -51,37 +40,40 @@ export function format(
 
   const transformedData = v2DataParsed.data
 
-  const payload: AdapterPayload = {
-    meta: {
-      schemaVersion: FormAdapterSubmissionSchemaVersion.V1,
-      timestamp: new Date(),
-      referenceNumber: context.referenceNumber,
-      formName: model.name,
-      formId: formMetadata?.id ?? '',
-      formSlug: formMetadata?.slug ?? '',
-      status: formStatus.isPreview ? FormStatus.Draft : FormStatus.Live,
-      isPreview: formStatus.isPreview,
-      notificationEmail: formMetadata?.notificationEmail ?? ''
-    },
-    data: transformedData,
-    result: {
-      files: csvFiles
-    }
+  const meta: FormAdapterSubmissionMessageMeta = {
+    schemaVersion: FormAdapterSubmissionSchemaVersion.V1,
+    timestamp: new Date(),
+    referenceNumber: context.referenceNumber,
+    formName: model.name,
+    formId: formMetadata?.id ?? '',
+    formSlug: formMetadata?.slug ?? '',
+    status: formStatus.isPreview ? FormStatus.Draft : FormStatus.Live,
+    isPreview: formStatus.isPreview,
+    notificationEmail: formMetadata?.notificationEmail ?? ''
+  }
+  const data: FormAdapterSubmissionMessageData = transformedData
+
+  const result: FormAdapterSubmissionMessageResult = {
+    files: csvFiles
+  }
+
+  const payload: FormAdapterSubmissionMessagePayload = {
+    meta,
+    data,
+    result
   }
 
   return JSON.stringify(payload)
 }
 
-function extractCsvFiles(submitResponse: SubmitResponsePayload): CsvFiles {
-  const result = submitResponse.result as {
-    files?: {
-      main?: string
-      repeaters?: Record<string, string>
-    }
-  }
+function extractCsvFiles(
+  submitResponse: SubmitResponsePayload
+): FormAdapterSubmissionMessageResult['files'] {
+  const result =
+    submitResponse.result as Partial<FormAdapterSubmissionMessageResult>
 
   return {
-    main: result.files?.main,
+    main: result.files?.main ?? '',
     repeaters: result.files?.repeaters ?? {}
   }
 }

@@ -23,15 +23,6 @@ import {
 import { FormStatus } from '~/src/server/routes/types.js'
 import definition from '~/test/form/definitions/repeat-mixed.js'
 
-interface AdapterTestPayload extends FormAdapterSubmissionMessagePayload {
-  result: {
-    files: {
-      main?: string
-      repeaters: Record<string, string>
-    }
-  }
-}
-
 const submitResponse = {
   message: 'Submit completed',
   result: {
@@ -236,7 +227,7 @@ describe('Adapter v1 formatter', () => {
       formStatus,
       formMetadata
     )
-    const parsedBody = JSON.parse(body) as AdapterTestPayload
+    const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
     expect(parsedBody.meta).toEqual({
       schemaVersion: FormAdapterSubmissionSchemaVersion.V1,
@@ -403,7 +394,7 @@ describe('Adapter v1 formatter', () => {
     }
 
     const body = format(context, [], model, submitResponse, formStatus)
-    const parsedBody = JSON.parse(body) as AdapterTestPayload
+    const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
     expect(parsedBody.data.main).toEqual({})
     expect(parsedBody.data.repeaters).toEqual({})
@@ -542,7 +533,7 @@ describe('Adapter v1 formatter', () => {
     }
 
     const body = format(context, items, model, submitResponse, formStatus)
-    const parsedBody = JSON.parse(body) as AdapterTestPayload
+    const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
     expect(parsedBody.data.main).toEqual({
       exampleField: 'hello world',
@@ -605,7 +596,7 @@ describe('Adapter v1 formatter', () => {
       submitResponseWithoutFiles,
       formStatus
     )
-    const parsedBody = JSON.parse(body) as AdapterTestPayload
+    const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
     expect(parsedBody.data.main).toEqual({
       exampleField: 'hello world',
@@ -646,7 +637,7 @@ describe('Adapter v1 formatter', () => {
       submitResponseWithMainOnly,
       formStatus
     )
-    const parsedBody = JSON.parse(body) as AdapterTestPayload
+    const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
     expect(parsedBody.data.main).toEqual({
       exampleField: 'hello world',
@@ -693,7 +684,7 @@ describe('Adapter v1 formatter', () => {
       submitResponseWithoutRepeaters as unknown as SubmitResponsePayload,
       formStatus
     )
-    const parsedBody = JSON.parse(body) as AdapterTestPayload
+    const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
     expect(parsedBody.result).toEqual({
       files: {
