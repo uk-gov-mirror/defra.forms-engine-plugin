@@ -1,4 +1,7 @@
-import { type FormMetadata } from '@defra/forms-model'
+import {
+  type FormMetadata,
+  type SubmitResponsePayload
+} from '@defra/forms-model'
 
 import { FileUploadField } from '~/src/server/plugins/engine/components/FileUploadField.js'
 import { type Field } from '~/src/server/plugins/engine/components/helpers/components.js'
@@ -539,13 +542,11 @@ describe('Adapter v1 formatter', () => {
     const body = format(context, items, model, submitResponse, formStatus)
     const parsedBody = JSON.parse(body) as AdapterTestPayload
 
-    // Check that main data has no CSV file IDs (they're in result.files)
     expect(parsedBody.data.main).toEqual({
       exampleField: 'hello world',
       exampleField2: 'hello world'
     })
 
-    // Check that repeater data uses direct field structure
     expect(parsedBody.data.repeaters.exampleRepeat).toEqual([
       {
         subItem1_1: 'hello world',
@@ -556,7 +557,6 @@ describe('Adapter v1 formatter', () => {
       }
     ])
 
-    // Files section should remain unchanged
     expect(parsedBody.data.files.exampleFile1).toEqual([
       {
         fileId: '123-456-789',
@@ -568,7 +568,6 @@ describe('Adapter v1 formatter', () => {
       }
     ])
 
-    // CSV file IDs should be in result.files
     expect(parsedBody.result).toEqual({
       files: {
         main: '00000000-0000-0000-0000-000000000000',
@@ -604,7 +603,6 @@ describe('Adapter v1 formatter', () => {
     )
     const parsedBody = JSON.parse(body) as AdapterTestPayload
 
-    // Should work normally without CSV file IDs
     expect(parsedBody.data.main).toEqual({
       exampleField: 'hello world',
       exampleField2: 'hello world'
@@ -646,13 +644,11 @@ describe('Adapter v1 formatter', () => {
     )
     const parsedBody = JSON.parse(body) as AdapterTestPayload
 
-    // Should work normally
     expect(parsedBody.data.main).toEqual({
       exampleField: 'hello world',
       exampleField2: 'hello world'
     })
 
-    // Repeaters should use direct field structure
     expect(parsedBody.data.repeaters.exampleRepeat).toEqual([
       {
         subItem1_1: 'hello world',
@@ -663,7 +659,38 @@ describe('Adapter v1 formatter', () => {
       }
     ])
 
-    // CSV file IDs should be in result.files
+    expect(parsedBody.result).toEqual({
+      files: {
+        main: 'main-only-file-id',
+        repeaters: {}
+      }
+    })
+  })
+
+  it('should handle submitResponse with missing repeaters property', () => {
+    const submitResponseWithoutRepeaters = {
+      message: 'Submit completed',
+      result: {
+        files: {
+          main: 'main-only-file-id'
+        }
+      }
+    }
+
+    const formStatus = {
+      isPreview: false,
+      state: FormStatus.Live
+    }
+
+    const body = format(
+      context,
+      items,
+      model,
+      submitResponseWithoutRepeaters as unknown as SubmitResponsePayload,
+      formStatus
+    )
+    const parsedBody = JSON.parse(body) as AdapterTestPayload
+
     expect(parsedBody.result).toEqual({
       files: {
         main: 'main-only-file-id',
