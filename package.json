@@ -1,6 +1,6 @@
 {
   "name": "@defra/forms-engine-plugin",
-  "version": "2.1.4",
+  "version": "2.1.8",
   "description": "Defra forms engine",
   "type": "module",
   "files": [
@@ -13,6 +13,11 @@
       "sass": "./.server/client/stylesheets/shared.scss",
       "import": "./.server/server/plugins/engine/index.js",
       "default": "./.server/server/plugins/engine/index.js"
+    },
+    "./types": {
+      "types": "./.server/server/plugins/engine/types/index.d.ts",
+      "import": "./.server/server/plugins/engine/types/index.js",
+      "default": "./.server/server/plugins/engine/types/index.js"
     },
     "./shared.js": "./.server/client/javascripts/shared.js",
     "./shared.min.js": "./.public/javascripts/shared.min.js",

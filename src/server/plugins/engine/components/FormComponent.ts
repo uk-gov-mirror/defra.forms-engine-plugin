@@ -157,17 +157,21 @@ export class FormComponent extends ComponentBase {
     }
   }
 
-  getDisplayStringFromState(state: FormSubmissionState): string {
-    const value = this.getFormValueFromState(state)
+  getDisplayStringFromFormValue(value: FormValue | FormPayload): string {
+    // Map selected values to text
     // eslint-disable-next-line @typescript-eslint/no-base-to-string
     return this.isValue(value) ? value.toString() : ''
   }
 
-  getContextValueFromState(
-    state: FormSubmissionState
-  ): Item['value'] | Item['value'][] | null {
+  getDisplayStringFromState(state: FormSubmissionState): string {
     const value = this.getFormValueFromState(state)
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
+    return this.getDisplayStringFromFormValue(value)
+  }
 
+  getContextValueFromFormValue(
+    value: FormValue | FormPayload
+  ): Item['value'] | Item['value'][] | null {
     // Filter object field values
     if (this.isState(value)) {
       const values = Object.values(value).filter(isFormValue)
@@ -180,6 +184,14 @@ export class FormComponent extends ComponentBase {
     }
 
     return this.isValue(value) ? value : null
+  }
+
+  getContextValueFromState(
+    state: FormSubmissionState
+  ): Item['value'] | Item['value'][] | null {
+    const value = this.getFormValueFromState(state)
+
+    return this.getContextValueFromFormValue(value)
   }
 
   isValue(

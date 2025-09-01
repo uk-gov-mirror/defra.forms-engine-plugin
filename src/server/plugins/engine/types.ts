@@ -11,21 +11,28 @@ import { type PluginProperties, type Request } from '@hapi/hapi'
 import { type JoiExpression, type ValidationErrorItem } from 'joi'
 
 import { FormComponent } from '~/src/server/plugins/engine/components/FormComponent.js'
-import { type Component } from '~/src/server/plugins/engine/components/helpers.js'
+import { type Component } from '~/src/server/plugins/engine/components/helpers/components.js'
 import {
   type BackLink,
   type ComponentText,
   type ComponentViewModel
 } from '~/src/server/plugins/engine/components/types.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
+import { type RichFormValue } from '~/src/server/plugins/engine/outputFormatters/machine/v2.js'
 import { type PageController } from '~/src/server/plugins/engine/pageControllers/PageController.js'
-import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers.js'
+import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers/pages.js'
+import {
+  type FileStatus,
+  type FormAdapterSubmissionSchemaVersion,
+  type UploadStatus
+} from '~/src/server/plugins/engine/types/enums.js'
 import { type ViewContext } from '~/src/server/plugins/nunjucks/types.js'
 import {
   type FormAction,
   type FormParams,
   type FormRequest,
-  type FormRequestPayload
+  type FormRequestPayload,
+  type FormStatus
 } from '~/src/server/routes/types.js'
 import { type RequestOptions } from '~/src/server/services/httpService.js'
 import { type Services } from '~/src/server/types.js'
@@ -188,17 +195,10 @@ export interface UploadInitiateResponse {
   statusUrl: string
 }
 
-export enum UploadStatus {
-  initiated = 'initiated',
-  pending = 'pending',
-  ready = 'ready'
-}
-
-export enum FileStatus {
-  complete = 'complete',
-  rejected = 'rejected',
-  pending = 'pending'
-}
+export {
+  FileStatus,
+  UploadStatus
+} from '~/src/server/plugins/engine/types/enums.js'
 
 export type UploadState = FileState[]
 
@@ -383,4 +383,48 @@ export interface PluginOptions {
   preparePageEventRequestOptions?: PreparePageEventRequestOptions
   onRequest?: OnRequestCallback
   baseUrl: string // base URL of the application, protocol and hostname e.g. "https://myapp.com"
+}
+
+export interface FormAdapterSubmissionMessageMeta {
+  schemaVersion: FormAdapterSubmissionSchemaVersion
+  timestamp: Date
+  referenceNumber: string
+  formName: string
+  formId: string
+  formSlug: string
+  status: FormStatus
+  isPreview: boolean
+  notificationEmail: string
+}
+
+export type FormAdapterSubmissionMessageMetaSerialised = Omit<
+  FormAdapterSubmissionMessageMeta,
+  'schemaVersion' | 'timestamp' | 'status'
+> & {
+  schemaVersion: number
+  status: string
+  timestamp: string
+}
+
+export interface FormAdapterSubmissionMessageData {
+  main: Record<string, RichFormValue>
+  repeaters: Record<string, Record<string, RichFormValue>[]>
+  files: Record<string, Record<string, string>[]>
+}
+
+export interface FormAdapterSubmissionMessagePayload {
+  meta: FormAdapterSubmissionMessageMeta
+  data: FormAdapterSubmissionMessageData
+}
+
+export interface FormAdapterSubmissionMessage
+  extends FormAdapterSubmissionMessagePayload {
+  messageId: string
+  recordCreatedAt: Date
+}
+
+export interface FormAdapterSubmissionService {
+  handleFormSubmission: (
+    submissionMessage: FormAdapterSubmissionMessage
+  ) => unknown
 }

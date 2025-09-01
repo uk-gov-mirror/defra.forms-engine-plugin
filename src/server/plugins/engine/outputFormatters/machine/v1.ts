@@ -1,7 +1,10 @@
-import { type SubmitResponsePayload } from '@defra/forms-model'
+import {
+  type FormMetadata,
+  type SubmitResponsePayload
+} from '@defra/forms-model'
 
 import { config } from '~/src/config/index.js'
-import { getAnswer } from '~/src/server/plugins/engine/components/helpers.js'
+import { getAnswer } from '~/src/server/plugins/engine/components/helpers/components.js'
 import { FileUploadField } from '~/src/server/plugins/engine/components/index.js'
 import { type checkFormStatus } from '~/src/server/plugins/engine/helpers.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
@@ -19,7 +22,8 @@ export function format(
   items: DetailItem[],
   model: FormModel,
   _submitResponse: SubmitResponsePayload,
-  _formStatus: ReturnType<typeof checkFormStatus>
+  _formStatus: ReturnType<typeof checkFormStatus>,
+  _formMetadata?: FormMetadata
 ) {
   const now = new Date()
 

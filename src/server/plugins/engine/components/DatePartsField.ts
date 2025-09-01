@@ -109,19 +109,24 @@ export class DatePartsField extends FormComponent {
     return this.isState(value) ? value : undefined
   }
 
-  getDisplayStringFromState(state: FormSubmissionState) {
-    const value = this.getFormValueFromState(state)
-
-    if (!value) {
+  getDisplayStringFromFormValue(formValue: DatePartsState | undefined) {
+    if (!formValue) {
       return ''
     }
 
-    return format(`${value.year}-${value.month}-${value.day}`, 'd MMMM yyyy')
+    return format(
+      `${formValue.year}-${formValue.month}-${formValue.day}`,
+      'd MMMM yyyy'
+    )
   }
 
-  getContextValueFromState(state: FormSubmissionState) {
+  getDisplayStringFromState(state: FormSubmissionState) {
     const value = this.getFormValueFromState(state)
 
+    return this.getDisplayStringFromFormValue(value)
+  }
+
+  getContextValueFromFormValue(value: DatePartsState | undefined) {
     if (
       !value ||
       !isValid(
@@ -137,6 +142,12 @@ export class DatePartsField extends FormComponent {
     }
 
     return format(`${value.year}-${value.month}-${value.day}`, 'yyyy-MM-dd')
+  }
+
+  getContextValueFromState(state: FormSubmissionState) {
+    const value = this.getFormValueFromState(state)
+
+    return this.getContextValueFromFormValue(value)
   }
 
   getViewModel(payload: FormPayload, errors?: FormSubmissionError[]) {

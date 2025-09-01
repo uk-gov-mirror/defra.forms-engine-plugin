@@ -4,48 +4,9 @@ import { Marked, type Token } from 'marked'
 import { config } from '~/src/config/index.js'
 import { type ComponentBase } from '~/src/server/plugins/engine/components/ComponentBase.js'
 import { ListFormComponent } from '~/src/server/plugins/engine/components/ListFormComponent.js'
+import { escapeMarkdown } from '~/src/server/plugins/engine/components/helpers/index.js'
 import * as Components from '~/src/server/plugins/engine/components/index.js'
 import { type FormState } from '~/src/server/plugins/engine/types.js'
-
-const designerUrl = config.get('designerUrl')
-
-const markdown = new Marked({
-  breaks: true,
-  gfm: true,
-
-  /**
-   * Render paragraphs without `<p>` wrappers
-   * for check answers summary list `<dd>`
-   */
-  extensions: [
-    {
-      name: 'paragraph',
-      renderer({ tokens = [] }) {
-        const text = this.parser.parseInline(tokens)
-        return tokens.length > 1 ? `${text}<br>` : text
-      }
-    }
-  ],
-
-  /**
-   * Restrict allowed Markdown tokens
-   */
-  walkTokens(token) {
-    const tokens: Token['type'][] = [
-      'br',
-      'escape',
-      'list',
-      'list_item',
-      'paragraph',
-      'space',
-      'text'
-    ]
-
-    if (!tokens.includes(token.type)) {
-      token.type = 'text'
-    }
-  }
-})
 
 // All component instances
 export type Component = InstanceType<
@@ -87,6 +48,46 @@ export type ListField = InstanceType<
   | typeof Components.SelectField
   | typeof Components.YesNoField
 >
+
+export const designerUrl = config.get('designerUrl')
+
+export const markdown = new Marked({
+  breaks: true,
+  gfm: true,
+
+  /**
+   * Render paragraphs without `<p>` wrappers
+   * for check answers summary list `<dd>`
+   */
+  extensions: [
+    {
+      name: 'paragraph',
+      renderer({ tokens = [] }) {
+        const text = this.parser.parseInline(tokens)
+        return tokens.length > 1 ? `${text}<br>` : text
+      }
+    }
+  ],
+
+  /**
+   * Restrict allowed Markdown tokens
+   */
+  walkTokens(token) {
+    const tokens: Token['type'][] = [
+      'br',
+      'escape',
+      'list',
+      'list_item',
+      'paragraph',
+      'space',
+      'text'
+    ]
+
+    if (!tokens.includes(token.type)) {
+      token.type = 'text'
+    }
+  }
+})
 
 /**
  * Filter known components with lists
@@ -327,41 +328,4 @@ export function getAnswerMarkdown(
   }
 
   return answerEscaped
-}
-
-/**
- * Prevent Markdown formatting
- * @see {@link https://pandoc.org/chunkedhtml-demo/8.11-backslash-escapes.html}
- */
-export function escapeMarkdown(answer: string) {
-  const punctuation = [
-    '`',
-    "'",
-    '*',
-    '_',
-    '{',
-    '}',
-    '[',
-    ']',
-    '(',
-    ')',
-    '#',
-    '+',
-    '-',
-    '.',
-    '!'
-  ]
-
-  for (const character of punctuation) {
-    answer = answer.toString().replaceAll(character, `\\${character}`)
-  }
-
-  return answer
-}
-
-export const addClassOptionIfNone = (
-  options: Extract<ComponentDef, { options: { classes?: string } }>['options'],
-  className: string
-) => {
-  options.classes ??= className
 }

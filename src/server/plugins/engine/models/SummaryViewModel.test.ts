@@ -9,7 +9,7 @@ import { serverWithSaveAndExit } from '~/src/server/plugins/engine/pageControlle
 import {
   createPage,
   type PageControllerClass
-} from '~/src/server/plugins/engine/pageControllers/helpers.js'
+} from '~/src/server/plugins/engine/pageControllers/helpers/pages.js'
 import {
   type FormContext,
   type FormContextRequest,

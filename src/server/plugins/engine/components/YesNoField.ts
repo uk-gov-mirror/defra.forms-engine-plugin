@@ -6,7 +6,7 @@ import {
 } from '@defra/forms-model'
 
 import { SelectionControlField } from '~/src/server/plugins/engine/components/SelectionControlField.js'
-import { addClassOptionIfNone } from '~/src/server/plugins/engine/components/helpers.js'
+import { addClassOptionIfNone } from '~/src/server/plugins/engine/components/helpers/index.js'
 import { messageTemplate } from '~/src/server/plugins/engine/pageControllers/validationOptions.js'
 import { type ErrorMessageTemplateList } from '~/src/server/plugins/engine/types.js'
 import { convertToLanguageMessages } from '~/src/server/utils/type-utils.js'
