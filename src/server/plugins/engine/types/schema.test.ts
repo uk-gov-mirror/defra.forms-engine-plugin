@@ -1,6 +1,5 @@
 import { FormStatus } from '@defra/forms-model'
 
-import { type RichFormValue } from '~/src/server/plugins/engine/outputFormatters/machine/v2.js'
 import { FormAdapterSubmissionSchemaVersion } from '~/src/server/plugins/engine/types/enums.js'
 import {
   formAdapterSubmissionMessageDataSchema,
@@ -10,7 +9,8 @@ import {
 import {
   type FormAdapterSubmissionMessageData,
   type FormAdapterSubmissionMessageMeta,
-  type FormAdapterSubmissionMessagePayload
+  type FormAdapterSubmissionMessagePayload,
+  type RichFormValue
 } from '~/src/server/plugins/engine/types.js'
 
 describe('Schema validation', () => {

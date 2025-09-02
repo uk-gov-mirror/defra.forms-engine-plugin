@@ -11,14 +11,18 @@ import { type PluginProperties, type Request } from '@hapi/hapi'
 import { type JoiExpression, type ValidationErrorItem } from 'joi'
 
 import { FormComponent } from '~/src/server/plugins/engine/components/FormComponent.js'
+import { type UkAddressState } from '~/src/server/plugins/engine/components/UkAddressField.js'
 import { type Component } from '~/src/server/plugins/engine/components/helpers/components.js'
+import { type FileUploadField } from '~/src/server/plugins/engine/components/index.js'
 import {
   type BackLink,
   type ComponentText,
-  type ComponentViewModel
+  type ComponentViewModel,
+  type DatePartsState,
+  type MonthYearState
 } from '~/src/server/plugins/engine/components/types.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
-import { type RichFormValue } from '~/src/server/plugins/engine/outputFormatters/machine/v2.js'
+import { type DetailItemField } from '~/src/server/plugins/engine/models/types.js'
 import { type PageController } from '~/src/server/plugins/engine/pageControllers/PageController.js'
 import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers/pages.js'
 import {
@@ -417,6 +421,19 @@ export interface FormAdapterSubmissionMessageResult {
     repeaters: Record<string, string>
   }
 }
+
+/**
+ * A detail item specifically for files
+ */
+export type FileUploadFieldDetailitem = Omit<DetailItemField, 'field'> & {
+  field: FileUploadField
+}
+export type RichFormValue =
+  | FormValue
+  | FormPayload
+  | DatePartsState
+  | MonthYearState
+  | UkAddressState
 
 export interface FormAdapterSubmissionMessageData {
   main: Record<string, RichFormValue>

@@ -1,12 +1,7 @@
 import { type SubmitResponsePayload } from '@defra/forms-model'
 
 import { config } from '~/src/config/index.js'
-import { type UkAddressState } from '~/src/server/plugins/engine/components/UkAddressField.js'
 import { FileUploadField } from '~/src/server/plugins/engine/components/index.js'
-import {
-  type DatePartsState,
-  type MonthYearState
-} from '~/src/server/plugins/engine/components/types.js'
 import { type checkFormStatus } from '~/src/server/plugins/engine/helpers.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import {
@@ -15,10 +10,10 @@ import {
   type DetailItemRepeat
 } from '~/src/server/plugins/engine/models/types.js'
 import {
+  type FileUploadFieldDetailitem,
   type FormAdapterFile,
   type FormContext,
-  type FormPayload,
-  type FormValue
+  type RichFormValue
 } from '~/src/server/plugins/engine/types.js'
 
 const designerUrl = config.get('designerUrl')
@@ -151,17 +146,3 @@ function isFileUploadFieldItem(
 ): item is FileUploadFieldDetailitem {
   return item.field instanceof FileUploadField
 }
-
-/**
- * A detail item specifically for files
- */
-type FileUploadFieldDetailitem = Omit<DetailItemField, 'field'> & {
-  field: FileUploadField
-}
-
-export type RichFormValue =
-  | FormValue
-  | FormPayload
-  | DatePartsState
-  | MonthYearState
-  | UkAddressState
