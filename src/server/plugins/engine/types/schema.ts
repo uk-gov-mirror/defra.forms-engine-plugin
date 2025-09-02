@@ -11,7 +11,8 @@ import { FormAdapterSubmissionSchemaVersion } from '~/src/server/plugins/engine/
 import {
   type FormAdapterSubmissionMessageData,
   type FormAdapterSubmissionMessageMeta,
-  type FormAdapterSubmissionMessagePayload
+  type FormAdapterSubmissionMessagePayload,
+  type FormAdapterSubmissionMessageResult
 } from '~/src/server/plugins/engine/types.js'
 
 export const formAdapterSubmissionMessageMetaSchema =
@@ -35,11 +36,31 @@ export const formAdapterSubmissionMessageDataSchema =
   Joi.object<FormAdapterSubmissionMessageData>().keys({
     main: Joi.object(),
     repeaters: Joi.object(),
+    files: Joi.object().pattern(
+      Joi.string(),
+      Joi.array().items(
+        Joi.object().keys({
+          fileName: Joi.string().required(),
+          fileId: Joi.string().required(),
+          userDownloadLink: Joi.string().required()
+        })
+      )
+    )
+  })
+
+export const formAdapterSubmissionMessageResultSchema =
+  Joi.object<FormAdapterSubmissionMessageResult>().keys({
     files: Joi.object()
+      .keys({
+        main: Joi.string().required(),
+        repeaters: Joi.object()
+      })
+      .required()
   })
 
 export const formAdapterSubmissionMessagePayloadSchema =
   Joi.object<FormAdapterSubmissionMessagePayload>().keys({
     meta: formAdapterSubmissionMessageMetaSchema.required(),
-    data: formAdapterSubmissionMessageDataSchema.required()
+    data: formAdapterSubmissionMessageDataSchema.required(),
+    result: formAdapterSubmissionMessageResultSchema.required()
   })

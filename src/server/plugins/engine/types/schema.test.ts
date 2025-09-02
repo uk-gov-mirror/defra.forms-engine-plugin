@@ -9,10 +9,56 @@ import {
 import {
   type FormAdapterSubmissionMessageData,
   type FormAdapterSubmissionMessageMeta,
-  type FormAdapterSubmissionMessagePayload
+  type FormAdapterSubmissionMessagePayload,
+  type RichFormValue
 } from '~/src/server/plugins/engine/types.js'
 
 describe('Schema validation', () => {
+  const main: Record<string, RichFormValue> = {
+    QMwMir: 'Roman Pizza',
+    duOEvZ: 'Small',
+    DzEODf: ['Mozzarella'],
+    juiCfC: ['Pepperoni', 'Sausage', 'Onions', 'Basil'],
+    YEpypP: 'None',
+    JumNVc: 'Joe Bloggs',
+    ALNehP: '+441234567890',
+    vAqTmg: {
+      addressLine1: '1 Anywhere Street',
+      town: 'Anywhereville',
+      postcode: 'AN1 2WH'
+    },
+    IbXVGY: {
+      day: 22,
+      month: 8,
+      year: 2025
+    },
+    HGBWLt: ['Garlic sauce']
+  }
+
+  const value1: Record<string, RichFormValue> = {
+    IEKzko: 'dsfsdfsdf'
+  }
+  const value2: Record<string, RichFormValue> = {
+    IEKzko: 'dfghfgh'
+  }
+
+  const validData: FormAdapterSubmissionMessageData = {
+    main,
+    repeaters: {
+      qLVLgb: [value1, value2]
+    },
+    files: {
+      dLzALM: [
+        {
+          fileId: '489ecc1b-a145-4618-ba5a-b4a0d5ee2dbd',
+          fileName: 'file-name.json',
+          userDownloadLink:
+            'http://localhost:3005/file-download/489ecc1b-a145-4618-ba5a-b4a0d5ee2dbd'
+        }
+      ]
+    }
+  }
+
   describe('formAdapterSubmissionMessageMetaSchema', () => {
     const validMeta: FormAdapterSubmissionMessageMeta = {
       schemaVersion: FormAdapterSubmissionSchemaVersion.V1,
@@ -49,31 +95,6 @@ describe('Schema validation', () => {
   })
 
   describe('formAdapterSubmissionMessageDataSchema', () => {
-    const validData: FormAdapterSubmissionMessageData = {
-      main: {
-        QMwMir: 'Roman Pizza',
-        duOEvZ: 'Small',
-        DzEODf: ['Mozzarella'],
-        juiCfC: ['Pepperoni', 'Sausage', 'Onions', 'Basil'],
-        YEpypP: 'None',
-        JumNVc: 'Joe Bloggs',
-        ALNehP: '+441234567890',
-        vAqTmg: {
-          addressLine1: '1 Anywhere Street',
-          town: 'Anywhereville',
-          postcode: 'AN1 2WH'
-        },
-        IbXVGY: {
-          day: 22,
-          month: 8,
-          year: 2025
-        },
-        HGBWLt: ['Garlic sauce']
-      },
-      repeaters: {},
-      files: {}
-    }
-
     it('should validate valid data object', () => {
       const { error } =
         formAdapterSubmissionMessageDataSchema.validate(validData)
@@ -89,41 +110,28 @@ describe('Schema validation', () => {
   })
 
   describe('formAdapterSubmissionMessagePayloadSchema', () => {
+    const meta: FormAdapterSubmissionMessageMeta = {
+      schemaVersion: FormAdapterSubmissionSchemaVersion.V1,
+      timestamp: new Date('2025-08-22T18:15:10.785Z'),
+      referenceNumber: '576-225-943',
+      formName: 'Order a pizza',
+      formId: '68a8b0449ab460290c28940a',
+      formSlug: 'order-a-pizza',
+      status: FormStatus.Live,
+      isPreview: false,
+      notificationEmail: 'info@example.com'
+    }
+
     const validPayload: FormAdapterSubmissionMessagePayload = {
-      meta: {
-        schemaVersion: FormAdapterSubmissionSchemaVersion.V1,
-        timestamp: new Date('2025-08-22T18:15:10.785Z'),
-        referenceNumber: '576-225-943',
-        formName: 'Order a pizza',
-        formId: '68a8b0449ab460290c28940a',
-        formSlug: 'order-a-pizza',
-        status: FormStatus.Live,
-        isPreview: false,
-        notificationEmail: 'info@example.com'
-      },
-      data: {
-        main: {
-          QMwMir: 'Roman Pizza',
-          duOEvZ: 'Small',
-          DzEODf: ['Mozzarella'],
-          juiCfC: ['Pepperoni', 'Sausage', 'Onions', 'Basil'],
-          YEpypP: 'None',
-          JumNVc: 'Joe Bloggs',
-          ALNehP: '+441234567890',
-          vAqTmg: {
-            addressLine1: '1 Anywhere Street',
-            town: 'Anywhereville',
-            postcode: 'AN1 2WH'
-          },
-          IbXVGY: {
-            day: 22,
-            month: 8,
-            year: 2025
-          },
-          HGBWLt: ['Garlic sauce']
-        },
-        repeaters: {},
-        files: {}
+      meta,
+      data: validData,
+      result: {
+        files: {
+          main: '3d289230-83a3-4852-a68a-cb3569e9b0fe',
+          repeaters: {
+            ImxIOP: 'Joe Bloggs'
+          }
+        }
       }
     }
 

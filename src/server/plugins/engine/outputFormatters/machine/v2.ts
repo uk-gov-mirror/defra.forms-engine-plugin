@@ -1,12 +1,7 @@
 import { type SubmitResponsePayload } from '@defra/forms-model'
 
 import { config } from '~/src/config/index.js'
-import { type UkAddressState } from '~/src/server/plugins/engine/components/UkAddressField.js'
 import { FileUploadField } from '~/src/server/plugins/engine/components/index.js'
-import {
-  type DatePartsState,
-  type MonthYearState
-} from '~/src/server/plugins/engine/components/types.js'
 import { type checkFormStatus } from '~/src/server/plugins/engine/helpers.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import {
@@ -15,9 +10,10 @@ import {
   type DetailItemRepeat
 } from '~/src/server/plugins/engine/models/types.js'
 import {
+  type FileUploadFieldDetailitem,
+  type FormAdapterFile,
   type FormContext,
-  type FormPayload,
-  type FormValue
+  type RichFormValue
 } from '~/src/server/plugins/engine/types.js'
 
 const designerUrl = config.get('designerUrl')
@@ -69,7 +65,8 @@ export function format(
  *      fileComponentName: [
  *        {
  *          fileId: '123-456-789',
- *          link: 'https://forms-designer/file-download/123-456-789'
+ *          fileName: 'example.pdf',
+ *          userDownloadLink: 'https://forms-designer/file-download/123-456-789'
  *        }
  *      ]
  *    }
@@ -79,7 +76,10 @@ function categoriseData(items: DetailItem[]) {
   const output: {
     main: Record<string, RichFormValue>
     repeaters: Record<string, Record<string, RichFormValue>[]>
-    files: Record<string, Record<string, string>[]>
+    files: Record<
+      string,
+      { fileId: string; fileName: string; userDownloadLink: string }[]
+    >
   } = { main: {}, repeaters: {}, files: {} }
 
   items.forEach((item) => {
@@ -126,13 +126,17 @@ function extractRepeaters(item: DetailItemRepeat) {
  * @param item - the file upload item in the form
  * @returns the file upload data
  */
-function extractFileUploads(item: FileUploadFieldDetailitem) {
-  const fileUploadState = item.field.getContextValueFromState(item.state) ?? []
+function extractFileUploads(
+  item: FileUploadFieldDetailitem
+): FormAdapterFile[] {
+  const fileUploadState = item.field.getFormValueFromState(item.state) ?? []
 
-  return fileUploadState.map((fileId) => {
+  return fileUploadState.map((fileState) => {
+    const { file } = fileState.status.form
     return {
-      fileId,
-      userDownloadLink: `${designerUrl}/file-download/${fileId}`
+      fileId: file.fileId,
+      fileName: file.filename,
+      userDownloadLink: `${designerUrl}/file-download/${file.fileId}`
     }
   })
 }
@@ -142,17 +146,3 @@ function isFileUploadFieldItem(
 ): item is FileUploadFieldDetailitem {
   return item.field instanceof FileUploadField
 }
-
-/**
- * A detail item specifically for files
- */
-type FileUploadFieldDetailitem = Omit<DetailItemField, 'field'> & {
-  field: FileUploadField
-}
-
-export type RichFormValue =
-  | FormValue
-  | FormPayload
-  | DatePartsState
-  | MonthYearState
-  | UkAddressState

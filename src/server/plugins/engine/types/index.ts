@@ -87,7 +87,5 @@ export type {
   Services
 } from '~/src/server/types.js'
 
-export type { RichFormValue } from '~/src/server/plugins/engine/outputFormatters/machine/v2.js'
-
 export * from '~/src/server/plugins/engine/types/schema.js'
 export { FormAdapterSubmissionSchemaVersion } from '~/src/server/plugins/engine/types/enums.js'
