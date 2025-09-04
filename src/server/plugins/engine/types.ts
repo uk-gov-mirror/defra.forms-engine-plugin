@@ -376,7 +376,7 @@ export interface PluginOptions {
   model?: FormModel
   services?: Services
   controllers?: Record<string, typeof PageController>
-  cacheName?: string
+  cache?: CacheService | string
   globals?: Record<string, GlobalFunction>
   filters?: Record<string, FilterFunction>
   saveAndExit?: SaveAndExitHandler
@@ -388,8 +388,7 @@ export interface PluginOptions {
   viewContext: PluginProperties['forms-engine-plugin']['viewContext']
   preparePageEventRequestOptions?: PreparePageEventRequestOptions
   onRequest?: OnRequestCallback
-  baseUrl: string // base URL of the application, protocol and hostname e.g. "https://myapp.com",
-  cacheServiceClass?: typeof CacheService
+  baseUrl: string // base URL of the application, protocol and hostname e.g. "https://myapp.com"
 }
 
 export interface FormAdapterSubmissionMessageMeta {
