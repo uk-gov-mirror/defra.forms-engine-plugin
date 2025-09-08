@@ -3,6 +3,7 @@ import {
   type Event,
   type FormDefinition,
   type FormMetadata,
+  type FormVersionMetadata,
   type Item,
   type List,
   type Page
@@ -405,6 +406,7 @@ export interface FormAdapterSubmissionMessageMeta {
   status: FormStatus
   isPreview: boolean
   notificationEmail: string
+  versionMetadata?: FormVersionMetadata
 }
 
 export type FormAdapterSubmissionMessageMetaSerialised = Omit<

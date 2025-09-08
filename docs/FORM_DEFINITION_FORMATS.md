@@ -52,4 +52,19 @@ pages:
 }
 ```
 
+## Version Metadata
+
+Form definitions can optionally include a `versionMetadata` field to track versioning information:
+
+```jsonc
+{
+  "name": "Form name",
+  "versionMetadata": {
+    "version": 19,
+    "createdAt": "2025-09-08T09:28:15.576Z"
+  },
+  // ... rest of form definition
+}
+```
+
 See the [Custom Services guide](features/code-based/CUSTOM_SERVICES.md) for complete documentation on using the `FileFormService` class with the loader pattern, or for implementing custom `formsService` solutions for more complex requirements.

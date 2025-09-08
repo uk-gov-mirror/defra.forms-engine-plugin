@@ -693,4 +693,68 @@ describe('Adapter v1 formatter', () => {
       }
     })
   })
+
+  it('should include versionMetadata when present in form definition', () => {
+    const modelWithVersion = new FormModel(definition, {
+      basePath: 'test'
+    })
+
+    modelWithVersion.def.versionMetadata = {
+      version: 19,
+      createdAt: '2025-09-08T09:28:15.576Z'
+    }
+
+    const formMetadata: FormMetadata = {
+      id: 'form-123',
+      slug: 'test-form',
+      title: 'Test Form',
+      notificationEmail: 'test@example.com'
+    } as FormMetadata
+
+    const formStatus = {
+      isPreview: false,
+      state: FormStatus.Live
+    }
+
+    const body = format(
+      context,
+      items,
+      modelWithVersion,
+      submitResponse,
+      formStatus,
+      formMetadata
+    )
+    const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
+
+    expect(parsedBody.meta.versionMetadata).toEqual({
+      version: 19,
+      createdAt: '2025-09-08T09:28:15.576Z'
+    })
+  })
+
+  it('should handle missing versionMetadata gracefully', () => {
+    const formMetadata: FormMetadata = {
+      id: 'form-123',
+      slug: 'test-form',
+      title: 'Test Form',
+      notificationEmail: 'test@example.com'
+    } as FormMetadata
+
+    const formStatus = {
+      isPreview: false,
+      state: FormStatus.Live
+    }
+
+    const body = format(
+      context,
+      items,
+      model,
+      submitResponse,
+      formStatus,
+      formMetadata
+    )
+    const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
+
+    expect(parsedBody.meta.versionMetadata).toBeUndefined()
+  })
 })

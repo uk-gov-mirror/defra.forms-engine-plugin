@@ -3,7 +3,8 @@ import {
   idSchema,
   notificationEmailAddressSchema,
   slugSchema,
-  titleSchema
+  titleSchema,
+  type FormVersionMetadata
 } from '@defra/forms-model'
 import Joi from 'joi'
 
@@ -29,7 +30,13 @@ export const formAdapterSubmissionMessageMetaSchema =
       .valid(...Object.values(FormStatus))
       .required(),
     isPreview: Joi.boolean().required(),
-    notificationEmail: notificationEmailAddressSchema.required()
+    notificationEmail: notificationEmailAddressSchema.required(),
+    versionMetadata: Joi.object<FormVersionMetadata>()
+      .keys({
+        version: Joi.number().required(),
+        createdAt: Joi.string().required()
+      })
+      .optional()
   })
 
 export const formAdapterSubmissionMessageDataSchema =

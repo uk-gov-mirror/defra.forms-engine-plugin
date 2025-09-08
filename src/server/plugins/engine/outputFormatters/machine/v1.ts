@@ -34,7 +34,10 @@ export function format(
       schemaVersion: '1',
       timestamp: now.toISOString(),
       referenceNumber: context.referenceNumber,
-      definition: model.def
+      definition: model.def,
+      ...(model.def.versionMetadata && {
+        versionMetadata: model.def.versionMetadata
+      })
     },
     data: categorisedData
   }
