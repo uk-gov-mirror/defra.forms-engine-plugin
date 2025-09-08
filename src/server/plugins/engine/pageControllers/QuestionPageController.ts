@@ -9,7 +9,7 @@ import {
   type Page
 } from '@defra/forms-model'
 import Boom from '@hapi/boom'
-import { type ResponseToolkit, type RouteOptions } from '@hapi/hapi'
+import { type RouteOptions } from '@hapi/hapi'
 import { type ValidationErrorItem } from 'joi'
 
 import { ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
@@ -18,13 +18,14 @@ import { type BackLink } from '~/src/server/plugins/engine/components/types.js'
 import {
   getCacheService,
   getErrors,
-  getSaveAndReturnHelpers,
+  getSaveAndExitHelpers,
   normalisePath,
   proceed
 } from '~/src/server/plugins/engine/helpers.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { PageController } from '~/src/server/plugins/engine/pageControllers/PageController.js'
 import {
+  type AnyFormRequest,
   type FormContext,
   type FormContextRequest,
   type FormPageViewModel,
@@ -39,7 +40,8 @@ import {
   type FormRequest,
   type FormRequestPayload,
   type FormRequestPayloadRefs,
-  type FormRequestRefs
+  type FormRequestRefs,
+  type FormResponseToolkit
 } from '~/src/server/routes/types.js'
 import {
   actionSchema,
@@ -51,7 +53,7 @@ import { merge } from '~/src/server/services/cacheService.js'
 export class QuestionPageController extends PageController {
   collection: ComponentCollection
   errorSummaryTitle = 'There is a problem'
-  allowSaveAndReturn = true
+  allowSaveAndExit = true
 
   constructor(model: FormModel, pageDef: Page) {
     super(model, pageDef)
@@ -177,14 +179,11 @@ export class QuestionPageController extends PageController {
       showTitle,
       components,
       errors,
-      allowSaveAndReturn: this.shouldShowSaveAndReturn(request.server)
+      allowSaveAndExit: this.shouldShowSaveAndExit(request.server)
     }
   }
 
-  getRelevantPath(
-    request: FormRequest | FormRequestPayload,
-    context: FormContext
-  ) {
+  getRelevantPath(request: AnyFormRequest, context: FormContext) {
     const { paths } = context
 
     const startPath = this.getStartPath()
@@ -296,7 +295,7 @@ export class QuestionPageController extends PageController {
     return getErrors(details)
   }
 
-  async getState(request: FormRequest | FormRequestPayload) {
+  async getState(request: AnyFormRequest) {
     const { query } = request
 
     // Skip get for preview URL direct access
@@ -309,10 +308,7 @@ export class QuestionPageController extends PageController {
     return cacheService.getState(request)
   }
 
-  async setState(
-    request: FormRequest | FormRequestPayload,
-    state: FormSubmissionState
-  ) {
+  async setState(request: AnyFormRequest, state: FormSubmissionState) {
     const { query } = request
 
     // Skip set for preview URL direct access
@@ -326,7 +322,7 @@ export class QuestionPageController extends PageController {
   }
 
   async mergeState(
-    request: FormRequest | FormRequestPayload,
+    request: AnyFormRequest,
     state: FormSubmissionState,
     update: object
   ) {
@@ -397,7 +393,7 @@ export class QuestionPageController extends PageController {
     return async (
       request: FormRequest,
       context: FormContext,
-      h: Pick<ResponseToolkit, 'redirect' | 'view'>
+      h: FormResponseToolkit
     ) => {
       const { collection, model, viewName } = this
       const { evaluationState } = context
@@ -492,7 +488,7 @@ export class QuestionPageController extends PageController {
     return async (
       request: FormRequestPayload,
       context: FormContext,
-      h: Pick<ResponseToolkit, 'redirect' | 'view'>
+      h: FormResponseToolkit
     ) => {
       const { collection, viewName, model } = this
       const { isForceAccess, state, evaluationState } = context
@@ -515,10 +511,10 @@ export class QuestionPageController extends PageController {
         return h.view(viewName, viewModel)
       }
 
-      // Check if this is a save-and-return action
+      // Check if this is a save-and-exit action
       const { action } = request.payload
-      if (action === FormAction.SaveAndReturn) {
-        return this.handleSaveAndReturn(request, context, h)
+      if (action === FormAction.SaveAndExit) {
+        return this.handleSaveAndExit(request, context, h)
       }
 
       // Save and proceed
@@ -529,7 +525,7 @@ export class QuestionPageController extends PageController {
 
   proceed(
     request: FormContextRequest,
-    h: Pick<ResponseToolkit, 'redirect' | 'view'>,
+    h: FormResponseToolkit,
     nextPath?: string
   ) {
     const nextUrl = nextPath
@@ -540,28 +536,20 @@ export class QuestionPageController extends PageController {
   }
 
   /**
-   * Handle save-and-return action by processing form data and redirecting to exit page
+   * Handle save-and-exit action
    */
-  async handleSaveAndReturn(
+  handleSaveAndExit(
     request: FormRequestPayload,
     context: FormContext,
-    h: Pick<ResponseToolkit, 'redirect' | 'view'>
+    h: FormResponseToolkit
   ) {
-    const { state } = context
+    const saveAndExit = getSaveAndExitHelpers(request.server)
 
-    // Save the current state and redirect to exit page
-    const saveAndReturn = getSaveAndReturnHelpers(request.server)
-
-    if (!saveAndReturn?.sessionPersister) {
-      throw Boom.internal('Server misconfigured for save and return')
+    if (!saveAndExit) {
+      throw Boom.internal('Server misconfigured for save and exit')
     }
 
-    await saveAndReturn.sessionPersister(state, request)
-
-    const cacheService = getCacheService(request.server)
-    await cacheService.clearState(request)
-
-    return h.redirect(this.getHref('/exit'))
+    return saveAndExit(request, h, context)
   }
 
   /**

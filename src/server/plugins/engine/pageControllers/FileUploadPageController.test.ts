@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import { ComponentType, type ComponentDef } from '@defra/forms-model'
-import { type ResponseToolkit } from '@hapi/hapi'
 import { type ValidationErrorItem, type ValidationResult } from 'joi'
 
 import { tempItemSchema } from '~/src/server/plugins/engine/components/FileUploadField.js'
@@ -14,7 +13,7 @@ import {
   prepareStatus
 } from '~/src/server/plugins/engine/pageControllers/FileUploadPageController.js'
 import { QuestionPageController } from '~/src/server/plugins/engine/pageControllers/QuestionPageController.js'
-import { serverWithSaveAndReturn } from '~/src/server/plugins/engine/pageControllers/__stubs__/server.js'
+import { serverWithSaveAndExit } from '~/src/server/plugins/engine/pageControllers/__stubs__/server.js'
 import * as pageHelpers from '~/src/server/plugins/engine/pageControllers/helpers/index.js'
 import * as uploadService from '~/src/server/plugins/engine/services/uploadService.js'
 import {
@@ -30,7 +29,8 @@ import {
 } from '~/src/server/plugins/engine/types.js'
 import {
   type FormRequest,
-  type FormRequestPayload
+  type FormRequestPayload,
+  type FormResponseToolkit
 } from '~/src/server/routes/types.js'
 import { type CacheService } from '~/src/server/services/index.js'
 import definition from '~/test/form/definitions/file-upload-basic.js'
@@ -1040,7 +1040,7 @@ describe('FileUploadPageController', () => {
       } as unknown as FormRequest
 
       const context = { state } as unknown as FormContext
-      const h = {} as unknown as Pick<ResponseToolkit, 'redirect' | 'view'>
+      const h = {} as unknown as FormResponseToolkit
 
       const handler = controller.makeGetItemDeleteRouteHandler()
 
@@ -1058,7 +1058,7 @@ describe('FileUploadPageController', () => {
 
       const h = {
         redirect: jest.fn()
-      } as unknown as Pick<ResponseToolkit, 'redirect' | 'view'>
+      } as unknown as FormResponseToolkit
 
       const context = {
         state: {}
@@ -1119,11 +1119,9 @@ describe('FileUploadPageController', () => {
     })
   })
 
-  describe('shouldShowSaveAndReturn', () => {
-    it('should return true when save and return is enabled', () => {
-      expect(controller.shouldShowSaveAndReturn(serverWithSaveAndReturn)).toBe(
-        true
-      )
+  describe('shouldShowSaveAndExit', () => {
+    it('should return true when save and exit is enabled', () => {
+      expect(controller.shouldShowSaveAndExit(serverWithSaveAndExit)).toBe(true)
     })
   })
 })

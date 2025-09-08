@@ -6,17 +6,12 @@ import {
   type Section
 } from '@defra/forms-model'
 import Boom from '@hapi/boom'
-import {
-  type Lifecycle,
-  type ResponseToolkit,
-  type RouteOptions,
-  type Server
-} from '@hapi/hapi'
+import { type Lifecycle, type RouteOptions, type Server } from '@hapi/hapi'
 
 import { type ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
 import {
   encodeUrl,
-  getSaveAndReturnHelpers,
+  getSaveAndExitHelpers,
   getStartPath,
   normalisePath
 } from '~/src/server/plugins/engine/helpers.js'
@@ -30,7 +25,8 @@ import {
   type FormRequest,
   type FormRequestPayload,
   type FormRequestPayloadRefs,
-  type FormRequestRefs
+  type FormRequestRefs,
+  type FormResponseToolkit
 } from '~/src/server/routes/types.js'
 
 export class PageController {
@@ -47,7 +43,7 @@ export class PageController {
   events?: Events
   collection?: ComponentCollection
   viewName = 'index'
-  allowSaveAndReturn = false
+  allowSaveAndExit = false
 
   constructor(model: FormModel, pageDef: Page) {
     const { def } = model
@@ -171,7 +167,7 @@ export class PageController {
   makeGetRouteHandler(): (
     request: FormRequest,
     context: FormContext,
-    h: Pick<ResponseToolkit, 'redirect' | 'view'>
+    h: FormResponseToolkit
   ) => ReturnType<Lifecycle.Method<FormRequestRefs>> {
     return (request, context, h) => {
       const { viewModel, viewName } = this
@@ -182,14 +178,12 @@ export class PageController {
   makePostRouteHandler(): (
     request: FormRequestPayload,
     context: FormContext,
-    h: Pick<ResponseToolkit, 'redirect' | 'view'>
+    h: FormResponseToolkit
   ) => ReturnType<Lifecycle.Method<FormRequestPayloadRefs>> {
     throw Boom.badRequest('Unsupported POST route handler for this page')
   }
 
-  shouldShowSaveAndReturn(server: Server): boolean {
-    return (
-      getSaveAndReturnHelpers(server) !== undefined && this.allowSaveAndReturn
-    )
+  shouldShowSaveAndExit(server: Server): boolean {
+    return getSaveAndExitHelpers(server) !== undefined && this.allowSaveAndExit
   }
 }

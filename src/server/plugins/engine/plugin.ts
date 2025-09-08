@@ -8,7 +8,6 @@ import {
 
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { validatePluginOptions } from '~/src/server/plugins/engine/options.js'
-import { getRoutes as getSaveAndReturnExitRoutes } from '~/src/server/plugins/engine/routes/exit.js'
 import { getRoutes as getFileUploadStatusRoutes } from '~/src/server/plugins/engine/routes/file-upload.js'
 import { makeLoadFormPreHandler } from '~/src/server/plugins/engine/routes/index.js'
 import { getRoutes as getQuestionRoutes } from '~/src/server/plugins/engine/routes/questions.js'
@@ -31,28 +30,24 @@ export const plugin = {
 
     const {
       model,
-      cacheName,
-      saveAndReturn,
+      cache,
+      saveAndExit,
       nunjucks: nunjucksOptions,
       viewContext,
       preparePageEventRequestOptions
     } = options
 
-    const cacheService = new CacheService({
-      server,
-      cacheName,
-      options: {
-        keyGenerator: saveAndReturn?.keyGenerator,
-        sessionHydrator: saveAndReturn?.sessionHydrator
-      }
-    })
+    const cacheService =
+      typeof cache === 'string'
+        ? new CacheService({ server, cacheName: cache })
+        : cache
 
     await registerVision(server, options)
 
     server.expose('baseLayoutPath', nunjucksOptions.baseLayoutPath)
     server.expose('viewContext', viewContext)
     server.expose('cacheService', cacheService)
-    server.expose('saveAndReturn', saveAndReturn)
+    server.expose('saveAndExit', saveAndExit)
 
     server.app.model = model
 
@@ -92,7 +87,6 @@ export const plugin = {
       ),
       ...getRepeaterSummaryRoutes(getRouteOptions, postRouteOptions),
       ...getRepeaterItemDeleteRoutes(getRouteOptions, postRouteOptions),
-      ...getSaveAndReturnExitRoutes(getRouteOptions),
       ...getFileUploadStatusRoutes()
     ]
 

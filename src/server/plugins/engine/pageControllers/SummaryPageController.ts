@@ -5,7 +5,7 @@ import {
   type SubmitPayload
 } from '@defra/forms-model'
 import Boom from '@hapi/boom'
-import { type ResponseToolkit, type RouteOptions } from '@hapi/hapi'
+import { type RouteOptions } from '@hapi/hapi'
 
 import { ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
 import { FileUploadField } from '~/src/server/plugins/engine/components/FileUploadField.js'
@@ -30,13 +30,16 @@ import {
   type FormSubmissionState
 } from '~/src/server/plugins/engine/types.js'
 import {
+  FormAction,
   type FormRequest,
   type FormRequestPayload,
-  type FormRequestPayloadRefs
+  type FormRequestPayloadRefs,
+  type FormResponseToolkit
 } from '~/src/server/routes/types.js'
 
 export class SummaryPageController extends QuestionPageController {
   declare pageDef: Page
+  allowSaveAndExit = true
 
   /**
    * The controller which is used when Page["controller"] is defined as "./pages/summary.js"
@@ -69,7 +72,7 @@ export class SummaryPageController extends QuestionPageController {
     viewModel.feedbackLink = this.feedbackLink
     viewModel.phaseTag = this.phaseTag
     viewModel.components = components
-    viewModel.allowSaveAndReturn = this.shouldShowSaveAndReturn(request.server)
+    viewModel.allowSaveAndExit = this.shouldShowSaveAndExit(request.server)
 
     return viewModel
   }
@@ -81,7 +84,7 @@ export class SummaryPageController extends QuestionPageController {
     return async (
       request: FormRequest,
       context: FormContext,
-      h: Pick<ResponseToolkit, 'redirect' | 'view'>
+      h: FormResponseToolkit
     ) => {
       const { viewName } = this
 
@@ -102,10 +105,17 @@ export class SummaryPageController extends QuestionPageController {
     return async (
       request: FormRequestPayload,
       context: FormContext,
-      h: Pick<ResponseToolkit, 'redirect' | 'view'>
+      h: FormResponseToolkit
     ) => {
       const { model } = this
       const { params } = request
+
+      // Check if this is a save-and-exit action
+      const { action } = request.payload
+      if (action === FormAction.SaveAndExit) {
+        return this.handleSaveAndExit(request, context, h)
+      }
+
       const cacheService = getCacheService(request.server)
 
       const { formsService } = this.model.services
