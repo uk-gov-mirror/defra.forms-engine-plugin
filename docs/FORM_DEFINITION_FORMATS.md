@@ -54,17 +54,35 @@ pages:
 
 ## Version Metadata
 
-Form definitions can optionally include a `versionMetadata` field to track versioning information:
+Version information is automatically included in the formatted submission data when available. The `versionMetadata` field appears in the `meta` section of the submission payload, not in the form definition itself.
+
+When form metadata includes version information, the submission payload will include:
 
 ```jsonc
 {
-  "name": "Form name",
-  "versionMetadata": {
-    "version": 19,
-    "createdAt": "2025-09-08T09:28:15.576Z"
+  "meta": {
+    "schemaVersion": "v1",
+    "timestamp": "2025-09-08T09:28:15.576Z",
+    "referenceNumber": "REF-123456",
+    "formName": "Form name",
+    "formId": "form-123",
+    "formSlug": "form-slug",
+    "status": "Live",
+    "isPreview": false,
+    "notificationEmail": "admin@example.com",
+    "versionMetadata": {
+      "versionNumber": 19,
+      "createdAt": "2025-09-08T09:28:15.576Z"
+    }
   },
-  // ... rest of form definition
+  "data": { /* form submission data */ },
+  "result": { /* file attachments */ }
 }
 ```
+
+The version metadata is determined by:
+
+1. The specific version number submitted (if `submittedVersionNumber` is provided and matches a version)
+2. The first available version (as a fallback)
 
 See the [Custom Services guide](features/code-based/CUSTOM_SERVICES.md) for complete documentation on using the `FileFormService` class with the loader pattern, or for implementing custom `formsService` solutions for more complex requirements.

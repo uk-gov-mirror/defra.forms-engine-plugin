@@ -210,7 +210,7 @@ describe('Adapter v1 formatter', () => {
   })
 
   it('should return the adapter v1 output with complete formMetadata', () => {
-    const formMetadata: FormMetadata = {
+    const formMetadata: Partial<FormMetadata> = {
       id: 'form-123',
       slug: 'test-form',
       title: 'Test Form',
@@ -228,7 +228,7 @@ describe('Adapter v1 formatter', () => {
       model,
       submitResponse,
       formStatus,
-      formMetadata
+      formMetadata as FormMetadata
     )
     const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
@@ -287,7 +287,7 @@ describe('Adapter v1 formatter', () => {
   })
 
   it('should handle preview form status correctly', () => {
-    const formMetadata: FormMetadata = {
+    const formMetadata: Partial<FormMetadata> = {
       id: 'form-123',
       slug: 'test-form',
       title: 'Test Form',
@@ -305,7 +305,7 @@ describe('Adapter v1 formatter', () => {
       model,
       submitResponse,
       formStatus,
-      formMetadata
+      formMetadata as FormMetadata
     )
     const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
@@ -330,7 +330,7 @@ describe('Adapter v1 formatter', () => {
   })
 
   it('should handle partial formMetadata', () => {
-    const formMetadata: FormMetadata = {
+    const formMetadata: Partial<FormMetadata> = {
       id: 'form-456',
       slug: 'partial-form',
       title: 'Partial Form'
@@ -347,7 +347,7 @@ describe('Adapter v1 formatter', () => {
       model,
       submitResponse,
       formStatus,
-      formMetadata
+      formMetadata as FormMetadata
     )
     const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
@@ -455,7 +455,7 @@ describe('Adapter v1 formatter', () => {
   })
 
   it('should handle formMetadata with only id', () => {
-    const formMetadata: FormMetadata = {
+    const formMetadata: Partial<FormMetadata> = {
       id: 'only-id-form'
     } as FormMetadata
 
@@ -470,7 +470,7 @@ describe('Adapter v1 formatter', () => {
       model,
       submitResponse,
       formStatus,
-      formMetadata
+      formMetadata as FormMetadata
     )
     const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
@@ -480,7 +480,7 @@ describe('Adapter v1 formatter', () => {
   })
 
   it('should handle formMetadata with only slug', () => {
-    const formMetadata: FormMetadata = {
+    const formMetadata: Partial<FormMetadata> = {
       slug: 'only-slug-form'
     } as FormMetadata
 
@@ -495,7 +495,7 @@ describe('Adapter v1 formatter', () => {
       model,
       submitResponse,
       formStatus,
-      formMetadata
+      formMetadata as FormMetadata
     )
     const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
@@ -505,7 +505,7 @@ describe('Adapter v1 formatter', () => {
   })
 
   it('should handle formMetadata with only notificationEmail', () => {
-    const formMetadata: FormMetadata = {
+    const formMetadata: Partial<FormMetadata> = {
       notificationEmail: 'only-email@example.com'
     } as FormMetadata
 
@@ -520,7 +520,7 @@ describe('Adapter v1 formatter', () => {
       model,
       submitResponse,
       formStatus,
-      formMetadata
+      formMetadata as FormMetadata
     )
     const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
@@ -698,7 +698,7 @@ describe('Adapter v1 formatter', () => {
   })
 
   it('should handle missing versionMetadata gracefully', () => {
-    const formMetadata: FormMetadata = {
+    const formMetadata: Partial<FormMetadata> = {
       id: 'form-123',
       slug: 'test-form',
       title: 'Test Form',
@@ -716,7 +716,7 @@ describe('Adapter v1 formatter', () => {
       model,
       submitResponse,
       formStatus,
-      formMetadata
+      formMetadata as FormMetadata
     )
     const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
@@ -725,7 +725,7 @@ describe('Adapter v1 formatter', () => {
 
   describe('version metadata handling', () => {
     it('should include versionMetadata when context has submittedVersionNumber and formMetadata has versions', () => {
-      const formMetadata = {
+      const formMetadata: Partial<FormMetadata> = {
         id: 'form-123',
         slug: 'test-form',
         title: 'Test Form',
@@ -740,7 +740,7 @@ describe('Adapter v1 formatter', () => {
             createdAt: new Date('2024-01-15T00:00:00.000Z')
           }
         ]
-      } as unknown as FormMetadata
+      }
 
       const modelWithVersion = new FormModel(definition, {
         basePath: 'test',
@@ -760,7 +760,7 @@ describe('Adapter v1 formatter', () => {
         modelWithVersion,
         submitResponse,
         formStatus,
-        formMetadata
+        formMetadata as FormMetadata
       )
       const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
@@ -771,7 +771,7 @@ describe('Adapter v1 formatter', () => {
     })
 
     it('should use first version as fallback when submittedVersionNumber is undefined', () => {
-      const formMetadata = {
+      const formMetadata: Partial<FormMetadata> = {
         id: 'form-123',
         slug: 'test-form',
         title: 'Test Form',
@@ -786,7 +786,7 @@ describe('Adapter v1 formatter', () => {
             createdAt: new Date('2024-01-15T00:00:00.000Z')
           }
         ]
-      } as unknown as FormMetadata
+      }
 
       const formStatus = {
         isPreview: false,
@@ -799,7 +799,7 @@ describe('Adapter v1 formatter', () => {
         model,
         submitResponse,
         formStatus,
-        formMetadata
+        formMetadata as FormMetadata
       )
       const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
@@ -810,12 +810,12 @@ describe('Adapter v1 formatter', () => {
     })
 
     it('should not include versionMetadata when submittedVersionNumber is undefined and no versions exist', () => {
-      const formMetadata = {
+      const formMetadata: Partial<FormMetadata> = {
         id: 'form-123',
         slug: 'test-form',
         title: 'Test Form',
         notificationEmail: 'test@example.com'
-      } as unknown as FormMetadata
+      }
 
       const formStatus = {
         isPreview: false,
@@ -828,7 +828,7 @@ describe('Adapter v1 formatter', () => {
         model,
         submitResponse,
         formStatus,
-        formMetadata
+        formMetadata as FormMetadata
       )
       const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
@@ -836,13 +836,13 @@ describe('Adapter v1 formatter', () => {
     })
 
     it('should not include versionMetadata when submittedVersionNumber is undefined and versions array is empty', () => {
-      const formMetadata = {
+      const formMetadata: Partial<FormMetadata> = {
         id: 'form-123',
         slug: 'test-form',
         title: 'Test Form',
         notificationEmail: 'test@example.com',
         versions: []
-      } as unknown as FormMetadata
+      }
 
       const formStatus = {
         isPreview: false,
@@ -855,7 +855,7 @@ describe('Adapter v1 formatter', () => {
         model,
         submitResponse,
         formStatus,
-        formMetadata
+        formMetadata as FormMetadata
       )
       const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
@@ -863,7 +863,7 @@ describe('Adapter v1 formatter', () => {
     })
 
     it('should not include versionMetadata when submittedVersionNumber does not match any version', () => {
-      const formMetadata = {
+      const formMetadata: Partial<FormMetadata> = {
         id: 'form-123',
         slug: 'test-form',
         title: 'Test Form',
@@ -878,7 +878,7 @@ describe('Adapter v1 formatter', () => {
             createdAt: new Date('2024-01-15T00:00:00.000Z')
           }
         ]
-      } as unknown as FormMetadata
+      }
 
       const modelWithVersion = new FormModel(definition, {
         basePath: 'test',
@@ -898,7 +898,7 @@ describe('Adapter v1 formatter', () => {
         modelWithVersion,
         submitResponse,
         formStatus,
-        formMetadata
+        formMetadata as FormMetadata
       )
       const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
@@ -910,7 +910,7 @@ describe('Adapter v1 formatter', () => {
     })
 
     it('should use first version as fallback when submittedVersionNumber does not match any version', () => {
-      const formMetadata = {
+      const formMetadata: Partial<FormMetadata> = {
         id: 'form-123',
         slug: 'test-form',
         title: 'Test Form',
@@ -925,7 +925,7 @@ describe('Adapter v1 formatter', () => {
             createdAt: new Date('2024-01-15T00:00:00.000Z')
           }
         ]
-      } as unknown as FormMetadata
+      }
 
       const modelWithVersion = new FormModel(definition, {
         basePath: 'test',
@@ -945,7 +945,7 @@ describe('Adapter v1 formatter', () => {
         modelWithVersion,
         submitResponse,
         formStatus,
-        formMetadata
+        formMetadata as FormMetadata
       )
       const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
@@ -957,7 +957,7 @@ describe('Adapter v1 formatter', () => {
     })
 
     it('should handle single version in versions array', () => {
-      const formMetadata = {
+      const formMetadata: Partial<FormMetadata> = {
         id: 'form-123',
         slug: 'test-form',
         title: 'Test Form',
@@ -968,7 +968,7 @@ describe('Adapter v1 formatter', () => {
             createdAt: new Date('2024-02-01T00:00:00.000Z')
           }
         ]
-      } as unknown as FormMetadata
+      }
 
       const formStatus = {
         isPreview: false,
@@ -981,7 +981,7 @@ describe('Adapter v1 formatter', () => {
         model,
         submitResponse,
         formStatus,
-        formMetadata
+        formMetadata as FormMetadata
       )
       const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
@@ -993,7 +993,7 @@ describe('Adapter v1 formatter', () => {
   })
 
   describe('getVersionMetadata', () => {
-    const mockFormMetadata: FormMetadata = {
+    const mockFormMetadata: Partial<FormMetadata> = {
       id: 'form-123',
       slug: 'test-form',
       title: 'Test Form',
@@ -1012,7 +1012,7 @@ describe('Adapter v1 formatter', () => {
           createdAt: new Date('2024-01-03T00:00:00.000Z')
         }
       ]
-    } as unknown as FormMetadata
+    }
 
     it('should return undefined when no form metadata provided', () => {
       const result = getVersionMetadata(1, undefined)
@@ -1020,20 +1020,23 @@ describe('Adapter v1 formatter', () => {
     })
 
     it('should return undefined when form metadata has no versions', () => {
-      const formMetadataWithoutVersions = {
+      const formMetadataWithoutVersions: Partial<FormMetadata> = {
         ...mockFormMetadata,
         versions: undefined
-      } as unknown as FormMetadata
+      }
 
-      const result = getVersionMetadata(1, formMetadataWithoutVersions)
+      const result = getVersionMetadata(
+        1,
+        formMetadataWithoutVersions as FormMetadata
+      )
       expect(result).toBeUndefined()
     })
 
     it('should return undefined when versions array is empty', () => {
-      const formMetadataWithEmptyVersions = {
+      const formMetadataWithEmptyVersions: Partial<FormMetadata> = {
         ...mockFormMetadata,
         versions: []
-      } as unknown as FormMetadata
+      }
 
       const result = getVersionMetadata(1, formMetadataWithEmptyVersions)
       expect(result).toBeUndefined()
@@ -1064,7 +1067,7 @@ describe('Adapter v1 formatter', () => {
     })
 
     it('should handle single version in versions array', () => {
-      const singleVersionMetadata = {
+      const singleVersionMetadata: Partial<FormMetadata> = {
         ...mockFormMetadata,
         versions: [
           {
@@ -1072,7 +1075,7 @@ describe('Adapter v1 formatter', () => {
             createdAt: new Date('2024-02-01T00:00:00.000Z')
           }
         ]
-      } as unknown as FormMetadata
+      }
 
       const result = getVersionMetadata(undefined, singleVersionMetadata)
       expect(result).toEqual({
@@ -1082,7 +1085,7 @@ describe('Adapter v1 formatter', () => {
     })
 
     it('should return correct version when submittedVersionNumber is 0', () => {
-      const metadataWithVersionZero = {
+      const metadataWithVersionZero: Partial<FormMetadata> = {
         ...mockFormMetadata,
         versions: [
           {
@@ -1094,7 +1097,7 @@ describe('Adapter v1 formatter', () => {
             createdAt: new Date('2024-01-02T00:00:00.000Z')
           }
         ]
-      } as unknown as FormMetadata
+      }
 
       const result = getVersionMetadata(0, metadataWithVersionZero)
       expect(result).toEqual({
