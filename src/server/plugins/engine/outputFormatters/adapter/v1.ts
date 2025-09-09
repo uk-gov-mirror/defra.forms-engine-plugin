@@ -51,6 +51,11 @@ export function format(
         versionNumber: submittedVersion.versionNumber,
         createdAt: submittedVersion.createdAt
       }
+    } else if (formMetadata.versions.length > 0) {
+      versionMetadata = {
+        versionNumber: formMetadata.versions[0].versionNumber,
+        createdAt: formMetadata.versions[0].createdAt
+      }
     }
   } else if (formMetadata?.versions && formMetadata.versions.length > 0) {
     versionMetadata = {

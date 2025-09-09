@@ -763,7 +763,7 @@ describe('Adapter v1 formatter', () => {
 
       expect(parsedBody.meta.versionMetadata).toEqual({
         versionNumber: 2,
-        createdAt: new Date('2024-01-15T00:00:00.000Z')
+        createdAt: '2024-01-15T00:00:00.000Z'
       })
     })
 
@@ -802,7 +802,7 @@ describe('Adapter v1 formatter', () => {
 
       expect(parsedBody.meta.versionMetadata).toEqual({
         versionNumber: 1,
-        createdAt: new Date('2024-01-01T00:00:00.000Z')
+        createdAt: '2024-01-01T00:00:00.000Z'
       })
     })
 
@@ -899,7 +899,11 @@ describe('Adapter v1 formatter', () => {
       )
       const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
-      expect(parsedBody.meta.versionMetadata).toBeUndefined()
+      // Should fall back to first version since submittedVersionNumber doesn't match
+      expect(parsedBody.meta.versionMetadata).toEqual({
+        versionNumber: 1,
+        createdAt: '2024-01-01T00:00:00.000Z'
+      })
     })
 
     it('should use first version as fallback when submittedVersionNumber does not match any version', () => {
@@ -945,7 +949,7 @@ describe('Adapter v1 formatter', () => {
       // Should fall back to first version since submittedVersionNumber doesn't match
       expect(parsedBody.meta.versionMetadata).toEqual({
         versionNumber: 1,
-        createdAt: new Date('2024-01-01T00:00:00.000Z')
+        createdAt: '2024-01-01T00:00:00.000Z'
       })
     })
 
@@ -980,7 +984,7 @@ describe('Adapter v1 formatter', () => {
 
       expect(parsedBody.meta.versionMetadata).toEqual({
         versionNumber: 5,
-        createdAt: new Date('2024-02-01T00:00:00.000Z')
+        createdAt: '2024-02-01T00:00:00.000Z'
       })
     })
   })
