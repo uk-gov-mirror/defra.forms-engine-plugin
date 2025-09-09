@@ -33,10 +33,7 @@ export function format(
     schemaVersion: '2',
     timestamp: now.toISOString(),
     definition: model.def,
-    referenceNumber: context.referenceNumber,
-    ...(model.def.versionMetadata && {
-      versionMetadata: model.def.versionMetadata
-    })
+    referenceNumber: context.referenceNumber
   }
 
   const data = {

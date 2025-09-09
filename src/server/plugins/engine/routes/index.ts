@@ -151,10 +151,12 @@ export function makeLoadFormPreHandler(server: Server, options: PluginOptions) {
           : `${prefix}/${slug}`
       ).substring(1)
 
+      const versionNumber = metadata.versions?.[0]?.versionNumber
+
       // Construct the form model
       const model = new FormModel(
         definition,
-        { basePath },
+        { basePath, versionNumber },
         services,
         controllers
       )

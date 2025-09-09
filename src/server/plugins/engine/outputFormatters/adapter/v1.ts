@@ -40,6 +40,25 @@ export function format(
 
   const transformedData = v2DataParsed.data
 
+  let versionMetadata: { versionNumber: number; createdAt: Date } | undefined
+
+  if (context.submittedVersionNumber !== undefined && formMetadata?.versions) {
+    const submittedVersion = formMetadata.versions.find(
+      (v) => v.versionNumber === context.submittedVersionNumber
+    )
+    if (submittedVersion) {
+      versionMetadata = {
+        versionNumber: submittedVersion.versionNumber,
+        createdAt: submittedVersion.createdAt
+      }
+    }
+  } else if (formMetadata?.versions && formMetadata.versions.length > 0) {
+    versionMetadata = {
+      versionNumber: formMetadata.versions[0].versionNumber,
+      createdAt: formMetadata.versions[0].createdAt
+    }
+  }
+
   const meta: FormAdapterSubmissionMessageMeta = {
     schemaVersion: FormAdapterSubmissionSchemaVersion.V1,
     timestamp: new Date(),
@@ -50,9 +69,7 @@ export function format(
     status: formStatus.isPreview ? FormStatus.Draft : FormStatus.Live,
     isPreview: formStatus.isPreview,
     notificationEmail: formMetadata?.notificationEmail ?? '',
-    ...(model.def.versionMetadata && {
-      versionMetadata: model.def.versionMetadata
-    })
+    ...(versionMetadata && { versionMetadata })
   }
   const data: FormAdapterSubmissionMessageData = transformedData
 

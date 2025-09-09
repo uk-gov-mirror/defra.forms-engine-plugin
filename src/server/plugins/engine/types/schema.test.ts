@@ -163,8 +163,8 @@ describe('Schema validation', () => {
         meta: {
           ...validPayload.meta,
           versionMetadata: {
-            version: 19,
-            createdAt: '2025-09-08T09:28:15.576Z'
+            versionNumber: 19,
+            createdAt: new Date('2025-09-08T09:28:15.576Z')
           }
         }
       }
@@ -185,8 +185,8 @@ describe('Schema validation', () => {
         meta: {
           ...validPayload.meta,
           versionMetadata: {
-            version: 'not-a-number', // Invalid - should be number
-            createdAt: '2025-09-08T09:28:15.576Z'
+            versionNumber: 'not-a-number', // Invalid - should be number
+            createdAt: new Date('2025-09-08T09:28:15.576Z')
           }
         }
       }
