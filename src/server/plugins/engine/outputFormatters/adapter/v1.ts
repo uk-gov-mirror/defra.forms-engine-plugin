@@ -40,29 +40,10 @@ export function format(
 
   const transformedData = v2DataParsed.data
 
-  let versionMetadata: { versionNumber: number; createdAt: Date } | undefined
-
-  if (context.submittedVersionNumber !== undefined && formMetadata?.versions) {
-    const submittedVersion = formMetadata.versions.find(
-      (v) => v.versionNumber === context.submittedVersionNumber
-    )
-    if (submittedVersion) {
-      versionMetadata = {
-        versionNumber: submittedVersion.versionNumber,
-        createdAt: submittedVersion.createdAt
-      }
-    } else if (formMetadata.versions.length > 0) {
-      versionMetadata = {
-        versionNumber: formMetadata.versions[0].versionNumber,
-        createdAt: formMetadata.versions[0].createdAt
-      }
-    }
-  } else if (formMetadata?.versions && formMetadata.versions.length > 0) {
-    versionMetadata = {
-      versionNumber: formMetadata.versions[0].versionNumber,
-      createdAt: formMetadata.versions[0].createdAt
-    }
-  }
+  const versionMetadata = getVersionMetadata(
+    context.submittedVersionNumber,
+    formMetadata
+  )
 
   const meta: FormAdapterSubmissionMessageMeta = {
     schemaVersion: FormAdapterSubmissionSchemaVersion.V1,
@@ -89,6 +70,32 @@ export function format(
   }
 
   return JSON.stringify(payload)
+}
+
+export function getVersionMetadata(
+  submittedVersionNumber: number | undefined,
+  formMetadata?: FormMetadata
+): { versionNumber: number; createdAt: Date } | undefined {
+  if (!formMetadata?.versions?.length) return undefined
+
+  if (submittedVersionNumber !== undefined) {
+    const submittedVersion = formMetadata.versions.find(
+      (v) => v.versionNumber === submittedVersionNumber
+    )
+    if (submittedVersion) {
+      return {
+        versionNumber: submittedVersion.versionNumber,
+        createdAt: submittedVersion.createdAt
+      }
+    }
+  }
+
+  // fallback to first available version
+  const firstVersion = formMetadata.versions[0]
+  return {
+    versionNumber: firstVersion.versionNumber,
+    createdAt: firstVersion.createdAt
+  }
 }
 
 function extractCsvFiles(

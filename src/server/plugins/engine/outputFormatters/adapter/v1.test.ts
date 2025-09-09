@@ -11,7 +11,10 @@ import {
   type DetailItemField,
   type DetailItemRepeat
 } from '~/src/server/plugins/engine/models/types.js'
-import { format } from '~/src/server/plugins/engine/outputFormatters/adapter/v1.js'
+import {
+  format,
+  getVersionMetadata
+} from '~/src/server/plugins/engine/outputFormatters/adapter/v1.js'
 import { buildFormContextRequest } from '~/src/server/plugins/engine/pageControllers/__stubs__/request.js'
 import { FormAdapterSubmissionSchemaVersion } from '~/src/server/plugins/engine/types/index.js'
 import {
@@ -985,6 +988,126 @@ describe('Adapter v1 formatter', () => {
       expect(parsedBody.meta.versionMetadata).toEqual({
         versionNumber: 5,
         createdAt: '2024-02-01T00:00:00.000Z'
+      })
+    })
+  })
+
+  describe('getVersionMetadata', () => {
+    const mockFormMetadata: FormMetadata = {
+      id: 'form-123',
+      slug: 'test-form',
+      title: 'Test Form',
+      notificationEmail: 'test@example.com',
+      versions: [
+        {
+          versionNumber: 1,
+          createdAt: new Date('2024-01-01T00:00:00.000Z')
+        },
+        {
+          versionNumber: 2,
+          createdAt: new Date('2024-01-02T00:00:00.000Z')
+        },
+        {
+          versionNumber: 3,
+          createdAt: new Date('2024-01-03T00:00:00.000Z')
+        }
+      ]
+    } as unknown as FormMetadata
+
+    it('should return undefined when no form metadata provided', () => {
+      const result = getVersionMetadata(1, undefined)
+      expect(result).toBeUndefined()
+    })
+
+    it('should return undefined when form metadata has no versions', () => {
+      const formMetadataWithoutVersions = {
+        ...mockFormMetadata,
+        versions: undefined
+      } as unknown as FormMetadata
+
+      const result = getVersionMetadata(1, formMetadataWithoutVersions)
+      expect(result).toBeUndefined()
+    })
+
+    it('should return undefined when versions array is empty', () => {
+      const formMetadataWithEmptyVersions = {
+        ...mockFormMetadata,
+        versions: []
+      } as unknown as FormMetadata
+
+      const result = getVersionMetadata(1, formMetadataWithEmptyVersions)
+      expect(result).toBeUndefined()
+    })
+
+    it('should return specific version when submittedVersionNumber matches', () => {
+      const result = getVersionMetadata(2, mockFormMetadata)
+      expect(result).toEqual({
+        versionNumber: 2,
+        createdAt: new Date('2024-01-02T00:00:00.000Z')
+      })
+    })
+
+    it('should return first version when submittedVersionNumber not found', () => {
+      const result = getVersionMetadata(999, mockFormMetadata)
+      expect(result).toEqual({
+        versionNumber: 1,
+        createdAt: new Date('2024-01-01T00:00:00.000Z')
+      })
+    })
+
+    it('should return first version when no submittedVersionNumber provided', () => {
+      const result = getVersionMetadata(undefined, mockFormMetadata)
+      expect(result).toEqual({
+        versionNumber: 1,
+        createdAt: new Date('2024-01-01T00:00:00.000Z')
+      })
+    })
+
+    it('should handle single version in versions array', () => {
+      const singleVersionMetadata = {
+        ...mockFormMetadata,
+        versions: [
+          {
+            versionNumber: 5,
+            createdAt: new Date('2024-02-01T00:00:00.000Z')
+          }
+        ]
+      } as unknown as FormMetadata
+
+      const result = getVersionMetadata(undefined, singleVersionMetadata)
+      expect(result).toEqual({
+        versionNumber: 5,
+        createdAt: new Date('2024-02-01T00:00:00.000Z')
+      })
+    })
+
+    it('should return correct version when submittedVersionNumber is 0', () => {
+      const metadataWithVersionZero = {
+        ...mockFormMetadata,
+        versions: [
+          {
+            versionNumber: 0,
+            createdAt: new Date('2024-01-01T00:00:00.000Z')
+          },
+          {
+            versionNumber: 1,
+            createdAt: new Date('2024-01-02T00:00:00.000Z')
+          }
+        ]
+      } as unknown as FormMetadata
+
+      const result = getVersionMetadata(0, metadataWithVersionZero)
+      expect(result).toEqual({
+        versionNumber: 0,
+        createdAt: new Date('2024-01-01T00:00:00.000Z')
+      })
+    })
+
+    it('should handle negative submittedVersionNumber by falling back to first version', () => {
+      const result = getVersionMetadata(-1, mockFormMetadata)
+      expect(result).toEqual({
+        versionNumber: 1,
+        createdAt: new Date('2024-01-01T00:00:00.000Z')
       })
     })
   })
