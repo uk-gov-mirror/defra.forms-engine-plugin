@@ -1,5 +1,6 @@
 import {
   FormStatus,
+  formVersionMetadataSchema,
   idSchema,
   notificationEmailAddressSchema,
   slugSchema,
@@ -29,7 +30,8 @@ export const formAdapterSubmissionMessageMetaSchema =
       .valid(...Object.values(FormStatus))
       .required(),
     isPreview: Joi.boolean().required(),
-    notificationEmail: notificationEmailAddressSchema.required()
+    notificationEmail: notificationEmailAddressSchema.required(),
+    versionMetadata: formVersionMetadataSchema.optional()
   })
 
 export const formAdapterSubmissionMessageDataSchema =

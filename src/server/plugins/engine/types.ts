@@ -3,6 +3,7 @@ import {
   type Event,
   type FormDefinition,
   type FormMetadata,
+  type FormVersionMetadata,
   type Item,
   type List,
   type Page
@@ -179,6 +180,7 @@ export interface FormContext {
   pageMap: Map<string, PageControllerClass>
   componentMap: Map<string, Component>
   referenceNumber: string
+  submittedVersionNumber?: number
 }
 
 export type FormContextRequest = (
@@ -405,6 +407,7 @@ export interface FormAdapterSubmissionMessageMeta {
   status: FormStatus
   isPreview: boolean
   notificationEmail: string
+  versionMetadata?: FormVersionMetadata
 }
 
 export type FormAdapterSubmissionMessageMetaSerialised = Omit<

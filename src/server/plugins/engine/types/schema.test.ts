@@ -156,5 +156,45 @@ describe('Schema validation', () => {
         formAdapterSubmissionMessagePayloadSchema.validate(payloadWithoutData)
       expect(error).toBeDefined()
     })
+
+    it('should validate payload with versionMetadata', () => {
+      const payloadWithVersion = {
+        ...validPayload,
+        meta: {
+          ...validPayload.meta,
+          versionMetadata: {
+            versionNumber: 19,
+            createdAt: new Date('2025-09-08T09:28:15.576Z')
+          }
+        }
+      }
+      const { error } =
+        formAdapterSubmissionMessagePayloadSchema.validate(payloadWithVersion)
+      expect(error).toBeUndefined()
+    })
+
+    it('should validate payload without versionMetadata', () => {
+      const { error } =
+        formAdapterSubmissionMessagePayloadSchema.validate(validPayload)
+      expect(error).toBeUndefined()
+    })
+
+    it('should reject invalid versionMetadata', () => {
+      const payloadWithInvalidVersion = {
+        ...validPayload,
+        meta: {
+          ...validPayload.meta,
+          versionMetadata: {
+            versionNumber: 'not-a-number', // Invalid - should be number
+            createdAt: new Date('2025-09-08T09:28:15.576Z')
+          }
+        }
+      }
+      const { error } = formAdapterSubmissionMessagePayloadSchema.validate(
+        payloadWithInvalidVersion
+      )
+      expect(error).toBeDefined()
+      expect(error?.message).toContain('must be a number')
+    })
   })
 })

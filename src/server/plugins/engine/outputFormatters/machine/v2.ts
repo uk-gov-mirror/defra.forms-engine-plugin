@@ -29,13 +29,15 @@ export function format(
 
   const categorisedData = categoriseData(items)
 
+  const meta: Record<string, unknown> = {
+    schemaVersion: '2',
+    timestamp: now.toISOString(),
+    definition: model.def,
+    referenceNumber: context.referenceNumber
+  }
+
   const data = {
-    meta: {
-      schemaVersion: '2',
-      timestamp: now.toISOString(),
-      definition: model.def,
-      referenceNumber: context.referenceNumber
-    },
+    meta,
     data: categorisedData
   }
 

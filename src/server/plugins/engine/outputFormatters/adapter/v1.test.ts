@@ -11,7 +11,10 @@ import {
   type DetailItemField,
   type DetailItemRepeat
 } from '~/src/server/plugins/engine/models/types.js'
-import { format } from '~/src/server/plugins/engine/outputFormatters/adapter/v1.js'
+import {
+  format,
+  getVersionMetadata
+} from '~/src/server/plugins/engine/outputFormatters/adapter/v1.js'
 import { buildFormContextRequest } from '~/src/server/plugins/engine/pageControllers/__stubs__/request.js'
 import { FormAdapterSubmissionSchemaVersion } from '~/src/server/plugins/engine/types/index.js'
 import {
@@ -207,7 +210,7 @@ describe('Adapter v1 formatter', () => {
   })
 
   it('should return the adapter v1 output with complete formMetadata', () => {
-    const formMetadata: FormMetadata = {
+    const formMetadata: Partial<FormMetadata> = {
       id: 'form-123',
       slug: 'test-form',
       title: 'Test Form',
@@ -225,7 +228,7 @@ describe('Adapter v1 formatter', () => {
       model,
       submitResponse,
       formStatus,
-      formMetadata
+      formMetadata as FormMetadata
     )
     const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
@@ -284,7 +287,7 @@ describe('Adapter v1 formatter', () => {
   })
 
   it('should handle preview form status correctly', () => {
-    const formMetadata: FormMetadata = {
+    const formMetadata: Partial<FormMetadata> = {
       id: 'form-123',
       slug: 'test-form',
       title: 'Test Form',
@@ -302,7 +305,7 @@ describe('Adapter v1 formatter', () => {
       model,
       submitResponse,
       formStatus,
-      formMetadata
+      formMetadata as FormMetadata
     )
     const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
@@ -327,7 +330,7 @@ describe('Adapter v1 formatter', () => {
   })
 
   it('should handle partial formMetadata', () => {
-    const formMetadata: FormMetadata = {
+    const formMetadata: Partial<FormMetadata> = {
       id: 'form-456',
       slug: 'partial-form',
       title: 'Partial Form'
@@ -344,7 +347,7 @@ describe('Adapter v1 formatter', () => {
       model,
       submitResponse,
       formStatus,
-      formMetadata
+      formMetadata as FormMetadata
     )
     const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
@@ -452,7 +455,7 @@ describe('Adapter v1 formatter', () => {
   })
 
   it('should handle formMetadata with only id', () => {
-    const formMetadata: FormMetadata = {
+    const formMetadata: Partial<FormMetadata> = {
       id: 'only-id-form'
     } as FormMetadata
 
@@ -467,7 +470,7 @@ describe('Adapter v1 formatter', () => {
       model,
       submitResponse,
       formStatus,
-      formMetadata
+      formMetadata as FormMetadata
     )
     const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
@@ -477,7 +480,7 @@ describe('Adapter v1 formatter', () => {
   })
 
   it('should handle formMetadata with only slug', () => {
-    const formMetadata: FormMetadata = {
+    const formMetadata: Partial<FormMetadata> = {
       slug: 'only-slug-form'
     } as FormMetadata
 
@@ -492,7 +495,7 @@ describe('Adapter v1 formatter', () => {
       model,
       submitResponse,
       formStatus,
-      formMetadata
+      formMetadata as FormMetadata
     )
     const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
@@ -502,7 +505,7 @@ describe('Adapter v1 formatter', () => {
   })
 
   it('should handle formMetadata with only notificationEmail', () => {
-    const formMetadata: FormMetadata = {
+    const formMetadata: Partial<FormMetadata> = {
       notificationEmail: 'only-email@example.com'
     } as FormMetadata
 
@@ -517,7 +520,7 @@ describe('Adapter v1 formatter', () => {
       model,
       submitResponse,
       formStatus,
-      formMetadata
+      formMetadata as FormMetadata
     )
     const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
 
@@ -691,6 +694,436 @@ describe('Adapter v1 formatter', () => {
         main: 'main-only-file-id',
         repeaters: {}
       }
+    })
+  })
+
+  it('should handle missing versionMetadata gracefully', () => {
+    const formMetadata: Partial<FormMetadata> = {
+      id: 'form-123',
+      slug: 'test-form',
+      title: 'Test Form',
+      notificationEmail: 'test@example.com'
+    } as FormMetadata
+
+    const formStatus = {
+      isPreview: false,
+      state: FormStatus.Live
+    }
+
+    const body = format(
+      context,
+      items,
+      model,
+      submitResponse,
+      formStatus,
+      formMetadata as FormMetadata
+    )
+    const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
+
+    expect(parsedBody.meta.versionMetadata).toBeUndefined()
+  })
+
+  describe('version metadata handling', () => {
+    it('should include versionMetadata when context has submittedVersionNumber and formMetadata has versions', () => {
+      const formMetadata: Partial<FormMetadata> = {
+        id: 'form-123',
+        slug: 'test-form',
+        title: 'Test Form',
+        notificationEmail: 'test@example.com',
+        versions: [
+          {
+            versionNumber: 1,
+            createdAt: new Date('2024-01-01T00:00:00.000Z')
+          },
+          {
+            versionNumber: 2,
+            createdAt: new Date('2024-01-15T00:00:00.000Z')
+          }
+        ]
+      }
+
+      const modelWithVersion = new FormModel(definition, {
+        basePath: 'test',
+        versionNumber: 2
+      })
+
+      const contextWithVersion = modelWithVersion.getFormContext(request, state)
+
+      const formStatus = {
+        isPreview: false,
+        state: FormStatus.Live
+      }
+
+      const body = format(
+        contextWithVersion,
+        items,
+        modelWithVersion,
+        submitResponse,
+        formStatus,
+        formMetadata as FormMetadata
+      )
+      const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
+
+      expect(parsedBody.meta.versionMetadata).toEqual({
+        versionNumber: 2,
+        createdAt: '2024-01-15T00:00:00.000Z'
+      })
+    })
+
+    it('should use first version as fallback when submittedVersionNumber is undefined', () => {
+      const formMetadata: Partial<FormMetadata> = {
+        id: 'form-123',
+        slug: 'test-form',
+        title: 'Test Form',
+        notificationEmail: 'test@example.com',
+        versions: [
+          {
+            versionNumber: 1,
+            createdAt: new Date('2024-01-01T00:00:00.000Z')
+          },
+          {
+            versionNumber: 2,
+            createdAt: new Date('2024-01-15T00:00:00.000Z')
+          }
+        ]
+      }
+
+      const formStatus = {
+        isPreview: false,
+        state: FormStatus.Live
+      }
+
+      const body = format(
+        context,
+        items,
+        model,
+        submitResponse,
+        formStatus,
+        formMetadata as FormMetadata
+      )
+      const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
+
+      expect(parsedBody.meta.versionMetadata).toEqual({
+        versionNumber: 1,
+        createdAt: '2024-01-01T00:00:00.000Z'
+      })
+    })
+
+    it('should not include versionMetadata when submittedVersionNumber is undefined and no versions exist', () => {
+      const formMetadata: Partial<FormMetadata> = {
+        id: 'form-123',
+        slug: 'test-form',
+        title: 'Test Form',
+        notificationEmail: 'test@example.com'
+      }
+
+      const formStatus = {
+        isPreview: false,
+        state: FormStatus.Live
+      }
+
+      const body = format(
+        context,
+        items,
+        model,
+        submitResponse,
+        formStatus,
+        formMetadata as FormMetadata
+      )
+      const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
+
+      expect(parsedBody.meta.versionMetadata).toBeUndefined()
+    })
+
+    it('should not include versionMetadata when submittedVersionNumber is undefined and versions array is empty', () => {
+      const formMetadata: Partial<FormMetadata> = {
+        id: 'form-123',
+        slug: 'test-form',
+        title: 'Test Form',
+        notificationEmail: 'test@example.com',
+        versions: []
+      }
+
+      const formStatus = {
+        isPreview: false,
+        state: FormStatus.Live
+      }
+
+      const body = format(
+        context,
+        items,
+        model,
+        submitResponse,
+        formStatus,
+        formMetadata as FormMetadata
+      )
+      const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
+
+      expect(parsedBody.meta.versionMetadata).toBeUndefined()
+    })
+
+    it('should not include versionMetadata when submittedVersionNumber does not match any version', () => {
+      const formMetadata: Partial<FormMetadata> = {
+        id: 'form-123',
+        slug: 'test-form',
+        title: 'Test Form',
+        notificationEmail: 'test@example.com',
+        versions: [
+          {
+            versionNumber: 1,
+            createdAt: new Date('2024-01-01T00:00:00.000Z')
+          },
+          {
+            versionNumber: 2,
+            createdAt: new Date('2024-01-15T00:00:00.000Z')
+          }
+        ]
+      }
+
+      const modelWithVersion = new FormModel(definition, {
+        basePath: 'test',
+        versionNumber: 99 // Non-existent version
+      })
+
+      const contextWithVersion = modelWithVersion.getFormContext(request, state)
+
+      const formStatus = {
+        isPreview: false,
+        state: FormStatus.Live
+      }
+
+      const body = format(
+        contextWithVersion,
+        items,
+        modelWithVersion,
+        submitResponse,
+        formStatus,
+        formMetadata as FormMetadata
+      )
+      const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
+
+      // Should fall back to first version since submittedVersionNumber doesn't match
+      expect(parsedBody.meta.versionMetadata).toEqual({
+        versionNumber: 1,
+        createdAt: '2024-01-01T00:00:00.000Z'
+      })
+    })
+
+    it('should use first version as fallback when submittedVersionNumber does not match any version', () => {
+      const formMetadata: Partial<FormMetadata> = {
+        id: 'form-123',
+        slug: 'test-form',
+        title: 'Test Form',
+        notificationEmail: 'test@example.com',
+        versions: [
+          {
+            versionNumber: 1,
+            createdAt: new Date('2024-01-01T00:00:00.000Z')
+          },
+          {
+            versionNumber: 2,
+            createdAt: new Date('2024-01-15T00:00:00.000Z')
+          }
+        ]
+      }
+
+      const modelWithVersion = new FormModel(definition, {
+        basePath: 'test',
+        versionNumber: 99 // Non-existent version
+      })
+
+      const contextWithVersion = modelWithVersion.getFormContext(request, state)
+
+      const formStatus = {
+        isPreview: false,
+        state: FormStatus.Live
+      }
+
+      const body = format(
+        contextWithVersion,
+        items,
+        modelWithVersion,
+        submitResponse,
+        formStatus,
+        formMetadata as FormMetadata
+      )
+      const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
+
+      // Should fall back to first version since submittedVersionNumber doesn't match
+      expect(parsedBody.meta.versionMetadata).toEqual({
+        versionNumber: 1,
+        createdAt: '2024-01-01T00:00:00.000Z'
+      })
+    })
+
+    it('should handle single version in versions array', () => {
+      const formMetadata: Partial<FormMetadata> = {
+        id: 'form-123',
+        slug: 'test-form',
+        title: 'Test Form',
+        notificationEmail: 'test@example.com',
+        versions: [
+          {
+            versionNumber: 5,
+            createdAt: new Date('2024-02-01T00:00:00.000Z')
+          }
+        ]
+      }
+
+      const formStatus = {
+        isPreview: false,
+        state: FormStatus.Live
+      }
+
+      const body = format(
+        context,
+        items,
+        model,
+        submitResponse,
+        formStatus,
+        formMetadata as FormMetadata
+      )
+      const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
+
+      expect(parsedBody.meta.versionMetadata).toEqual({
+        versionNumber: 5,
+        createdAt: '2024-02-01T00:00:00.000Z'
+      })
+    })
+  })
+
+  describe('getVersionMetadata', () => {
+    const mockFormMetadata: Partial<FormMetadata> = {
+      id: 'form-123',
+      slug: 'test-form',
+      title: 'Test Form',
+      notificationEmail: 'test@example.com',
+      versions: [
+        {
+          versionNumber: 1,
+          createdAt: new Date('2024-01-01T00:00:00.000Z')
+        },
+        {
+          versionNumber: 2,
+          createdAt: new Date('2024-01-02T00:00:00.000Z')
+        },
+        {
+          versionNumber: 3,
+          createdAt: new Date('2024-01-03T00:00:00.000Z')
+        }
+      ]
+    }
+
+    it('should return undefined when no form metadata provided', () => {
+      const result = getVersionMetadata(1, undefined)
+      expect(result).toBeUndefined()
+    })
+
+    it('should return undefined when form metadata has no versions', () => {
+      const formMetadataWithoutVersions: Partial<FormMetadata> = {
+        ...mockFormMetadata,
+        versions: undefined
+      }
+
+      const result = getVersionMetadata(
+        1,
+        formMetadataWithoutVersions as FormMetadata
+      )
+      expect(result).toBeUndefined()
+    })
+
+    it('should return undefined when versions array is empty', () => {
+      const formMetadataWithEmptyVersions: Partial<FormMetadata> = {
+        ...mockFormMetadata,
+        versions: []
+      }
+
+      const result = getVersionMetadata(
+        1,
+        formMetadataWithEmptyVersions as FormMetadata
+      )
+      expect(result).toBeUndefined()
+    })
+
+    it('should return specific version when submittedVersionNumber matches', () => {
+      const result = getVersionMetadata(2, mockFormMetadata as FormMetadata)
+      expect(result).toEqual({
+        versionNumber: 2,
+        createdAt: new Date('2024-01-02T00:00:00.000Z')
+      })
+    })
+
+    it('should return first version when submittedVersionNumber not found', () => {
+      const result = getVersionMetadata(999, mockFormMetadata as FormMetadata)
+      expect(result).toEqual({
+        versionNumber: 1,
+        createdAt: new Date('2024-01-01T00:00:00.000Z')
+      })
+    })
+
+    it('should return first version when no submittedVersionNumber provided', () => {
+      const result = getVersionMetadata(
+        undefined,
+        mockFormMetadata as FormMetadata
+      )
+      expect(result).toEqual({
+        versionNumber: 1,
+        createdAt: new Date('2024-01-01T00:00:00.000Z')
+      })
+    })
+
+    it('should handle single version in versions array', () => {
+      const singleVersionMetadata: Partial<FormMetadata> = {
+        ...mockFormMetadata,
+        versions: [
+          {
+            versionNumber: 5,
+            createdAt: new Date('2024-02-01T00:00:00.000Z')
+          }
+        ]
+      }
+
+      const result = getVersionMetadata(
+        undefined,
+        singleVersionMetadata as FormMetadata
+      )
+      expect(result).toEqual({
+        versionNumber: 5,
+        createdAt: new Date('2024-02-01T00:00:00.000Z')
+      })
+    })
+
+    it('should return correct version when submittedVersionNumber is 0', () => {
+      const metadataWithVersionZero: Partial<FormMetadata> = {
+        ...mockFormMetadata,
+        versions: [
+          {
+            versionNumber: 0,
+            createdAt: new Date('2024-01-01T00:00:00.000Z')
+          },
+          {
+            versionNumber: 1,
+            createdAt: new Date('2024-01-02T00:00:00.000Z')
+          }
+        ]
+      }
+
+      const result = getVersionMetadata(
+        0,
+        metadataWithVersionZero as FormMetadata
+      )
+      expect(result).toEqual({
+        versionNumber: 0,
+        createdAt: new Date('2024-01-01T00:00:00.000Z')
+      })
+    })
+
+    it('should handle negative submittedVersionNumber by falling back to first version', () => {
+      const result = getVersionMetadata(-1, mockFormMetadata as FormMetadata)
+      expect(result).toEqual({
+        versionNumber: 1,
+        createdAt: new Date('2024-01-01T00:00:00.000Z')
+      })
     })
   })
 })
