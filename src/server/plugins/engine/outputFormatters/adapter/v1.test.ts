@@ -1038,12 +1038,15 @@ describe('Adapter v1 formatter', () => {
         versions: []
       }
 
-      const result = getVersionMetadata(1, formMetadataWithEmptyVersions)
+      const result = getVersionMetadata(
+        1,
+        formMetadataWithEmptyVersions as FormMetadata
+      )
       expect(result).toBeUndefined()
     })
 
     it('should return specific version when submittedVersionNumber matches', () => {
-      const result = getVersionMetadata(2, mockFormMetadata)
+      const result = getVersionMetadata(2, mockFormMetadata as FormMetadata)
       expect(result).toEqual({
         versionNumber: 2,
         createdAt: new Date('2024-01-02T00:00:00.000Z')
@@ -1051,7 +1054,7 @@ describe('Adapter v1 formatter', () => {
     })
 
     it('should return first version when submittedVersionNumber not found', () => {
-      const result = getVersionMetadata(999, mockFormMetadata)
+      const result = getVersionMetadata(999, mockFormMetadata as FormMetadata)
       expect(result).toEqual({
         versionNumber: 1,
         createdAt: new Date('2024-01-01T00:00:00.000Z')
@@ -1059,7 +1062,10 @@ describe('Adapter v1 formatter', () => {
     })
 
     it('should return first version when no submittedVersionNumber provided', () => {
-      const result = getVersionMetadata(undefined, mockFormMetadata)
+      const result = getVersionMetadata(
+        undefined,
+        mockFormMetadata as FormMetadata
+      )
       expect(result).toEqual({
         versionNumber: 1,
         createdAt: new Date('2024-01-01T00:00:00.000Z')
@@ -1077,7 +1083,10 @@ describe('Adapter v1 formatter', () => {
         ]
       }
 
-      const result = getVersionMetadata(undefined, singleVersionMetadata)
+      const result = getVersionMetadata(
+        undefined,
+        singleVersionMetadata as FormMetadata
+      )
       expect(result).toEqual({
         versionNumber: 5,
         createdAt: new Date('2024-02-01T00:00:00.000Z')
@@ -1099,7 +1108,10 @@ describe('Adapter v1 formatter', () => {
         ]
       }
 
-      const result = getVersionMetadata(0, metadataWithVersionZero)
+      const result = getVersionMetadata(
+        0,
+        metadataWithVersionZero as FormMetadata
+      )
       expect(result).toEqual({
         versionNumber: 0,
         createdAt: new Date('2024-01-01T00:00:00.000Z')
@@ -1107,7 +1119,7 @@ describe('Adapter v1 formatter', () => {
     })
 
     it('should handle negative submittedVersionNumber by falling back to first version', () => {
-      const result = getVersionMetadata(-1, mockFormMetadata)
+      const result = getVersionMetadata(-1, mockFormMetadata as FormMetadata)
       expect(result).toEqual({
         versionNumber: 1,
         createdAt: new Date('2024-01-01T00:00:00.000Z')

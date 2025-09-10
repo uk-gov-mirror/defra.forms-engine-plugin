@@ -54,8 +54,11 @@ export function format(
     formSlug: formMetadata?.slug ?? '',
     status: formStatus.isPreview ? FormStatus.Draft : FormStatus.Live,
     isPreview: formStatus.isPreview,
-    notificationEmail: formMetadata?.notificationEmail ?? '',
-    ...(versionMetadata && { versionMetadata })
+    notificationEmail: formMetadata?.notificationEmail ?? ''
+  }
+
+  if (versionMetadata) {
+    meta.versionMetadata = versionMetadata
   }
   const data: FormAdapterSubmissionMessageData = transformedData
 
