@@ -79,7 +79,9 @@ export function getVersionMetadata(
   submittedVersionNumber: number | undefined,
   formMetadata?: FormMetadata
 ): { versionNumber: number; createdAt: Date } | undefined {
-  if (!formMetadata?.versions?.length) return undefined
+  if (!formMetadata?.versions?.length) {
+    return undefined
+  }
 
   if (submittedVersionNumber !== undefined) {
     const submittedVersion = formMetadata.versions.find(
