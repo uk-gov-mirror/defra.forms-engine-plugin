@@ -188,6 +188,7 @@ async function submitForm(
   // Submit data
   request.logger.info(logTags, 'Submitting data')
   const submitResponse = await submitData(
+    formMetadata,
     model,
     items,
     emailAddress,
@@ -246,6 +247,7 @@ async function extendFileRetention(
 }
 
 function submitData(
+  form: FormMetadata,
   model: FormModel,
   items: DetailItem[],
   retrievalKey: string,
@@ -282,7 +284,12 @@ function submitData(
             value: getAnswer(subItem.field, subItem.state, { format: 'data' })
           }))
         )
-      }))
+      })),
+    form: {
+      id: form.id,
+      name: form.title,
+      slug: form.slug
+    }
   }
 
   return submit(payload)

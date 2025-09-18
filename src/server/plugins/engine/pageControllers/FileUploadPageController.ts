@@ -1,4 +1,8 @@
-import { ComponentType, type PageFileUpload } from '@defra/forms-model'
+import {
+  ComponentType,
+  type FormMetadata,
+  type PageFileUpload
+} from '@defra/forms-model'
 import Boom from '@hapi/boom'
 import { wait } from '@hapi/hoek'
 import { type ValidationErrorItem } from 'joi'
@@ -423,6 +427,7 @@ export class FileUploadPageController extends QuestionPageController {
   ) {
     const { fileUpload, href, path } = this
     const { options, schema } = fileUpload
+    const params = request.params
 
     const files = this.getFilesFromState(state)
 
@@ -436,7 +441,19 @@ export class FileUploadPageController extends QuestionPageController {
       const outputEmail =
         this.model.def.outputEmail ?? 'defraforms@defra.gov.uk'
 
-      const newUpload = await initiateUpload(href, outputEmail, options.accept)
+      const { formsService } = this.model.services
+      const { getFormMetadata } = formsService
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      const metadata = params?.slug
+        ? await getFormMetadata(params.slug)
+        : ({} as FormMetadata)
+      const newUpload = await initiateUpload(
+        href,
+        outputEmail,
+        metadata,
+        this.href,
+        options.accept
+      )
 
       if (newUpload === undefined) {
         throw Boom.badRequest('Unexpected empty response from initiateUpload')

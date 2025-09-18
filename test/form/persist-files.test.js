@@ -192,7 +192,12 @@ describe('Submission journey test', () => {
       ],
       repeaters: [],
       retrievalKey: 'enrique.chase@defra.gov.uk',
-      sessionId: expect.any(String)
+      sessionId: expect.any(String),
+      form: {
+        id: '661e4ca5039739ef2902b214',
+        name: 'Test form',
+        slug: 'test-form'
+      }
     })
 
     expect(submitRes.statusCode).toBe(StatusCodes.SEE_OTHER)

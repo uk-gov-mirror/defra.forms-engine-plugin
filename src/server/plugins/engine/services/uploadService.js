@@ -10,9 +10,17 @@ const stagingPrefix = config.get('stagingPrefix')
  * Initiates a CDP file upload
  * @param {string} path - the path of the page in the form
  * @param {string} retrievalKey - the retrieval key for the files
+ * @param {FormMetadata} formMetadata
+ * @param {string} pagePath - the path to the page
  * @param {string} [mimeTypesCsv] - the csv string of accepted mimeTypes
  */
-export async function initiateUpload(path, retrievalKey, mimeTypesCsv) {
+export async function initiateUpload(
+  path,
+  retrievalKey,
+  formMetadata,
+  pagePath,
+  mimeTypesCsv
+) {
   const postJsonByType =
     /** @type {typeof postJson<UploadInitiateResponse>} */ (postJson)
 
@@ -29,7 +37,11 @@ export async function initiateUpload(path, retrievalKey, mimeTypesCsv) {
     s3Bucket: uploaderBucketName,
     s3Path: stagingPrefix,
     metadata: {
-      retrievalKey
+      retrievalKey,
+      formId: formMetadata.id,
+      formSlug: formMetadata.slug,
+      formName: formMetadata.title,
+      pagePath
     },
     mimeTypes
     // maxFileSize: 25 * 1000 * 1000
@@ -60,5 +72,6 @@ export async function getUploadStatus(uploadId) {
 }
 
 /**
+ * @import { FormMetadata } from '@defra/forms-model'
  * @import { UploadInitiateResponse, UploadStatusResponse } from '~/src/server/plugins/engine/types.js'
  */
