@@ -1,20 +1,54 @@
 {% from "partials/components.html" import componentList %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/hint/macro.njk" import govukHint %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% macro UkAddressField(component) %}
+  {% set mode = 'lookup' %}
+  {% set isManualMode = true if mode == 'manual' else false %}
+  {% set isLookupMode = not isManualMode %}
   {% set fieldset = component.model.fieldset %}
-  {% set addressFieldHtml = componentList(component.model.components) %}
+  {% set addressFieldHtml = componentList(component.model.components) if isManualMode else componentList([component.model.components[4]]) %}
 
-  {% if component.model.hint %}
-    {% set addressHintHtml %}
-      {{ govukHint({
-        id: component.model.name + "-hint",
-        text: component.model.hint.text
-      } if fieldset else component.model.hint) }}
+  <hr>
+  Num addresses: {{ component.model.addresses | length }}
+  <hr>
+  {% if isManualMode %}
+    {% if component.model.hint %}
+      {% set addressHintHtml %}
+        {{ govukHint({
+          id: component.model.name + "-hint",
+          text: component.model.hint.text
+        } if fieldset else component.model.hint) }}
+      {% endset %}
+
+      {% set addressFieldHtml = addressHintHtml + addressFieldHtml %}
+    {% endif %}
+  {% else %}
+    {% set addressLookupHtml %}
+      <div class="govuk-button-group">
+        {{ govukButton({
+          id: component.model.name + "-lookup",
+          name: component.model.name + "-lookup",
+          text: "Find address",
+          classes: "govuk-button--secondary",
+          name: "action",
+          value: "postcode-lookup-" + component.model.name
+        }) }}
+        <span class="govuk-body-s">or</span>
+        <a class="govuk-link govuk-link--no-visited-state govuk-!-margin-left-3" href="#">Enter address manually</a>
+        {#
+        {{ govukButton({
+          id: component.model.name + "-lookup",
+          name: component.model.name + "-lookup",
+          href: "#",
+          text: ""
+        }) }}
+        #}
+      </div>
     {% endset %}
 
-    {% set addressFieldHtml = addressHintHtml + addressFieldHtml %}
+    {% set addressFieldHtml = addressFieldHtml + addressLookupHtml %}
   {% endif %}
 
   {{ govukFieldset({

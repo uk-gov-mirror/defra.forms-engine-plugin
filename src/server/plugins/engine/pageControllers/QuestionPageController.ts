@@ -24,6 +24,7 @@ import {
 } from '~/src/server/plugins/engine/helpers.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { PageController } from '~/src/server/plugins/engine/pageControllers/PageController.js'
+import * as placesService from '~/src/server/plugins/engine/services/placesService.js'
 import {
   type AnyFormRequest,
   type FormContext,
@@ -112,11 +113,16 @@ export class QuestionPageController extends PageController {
   ): FormPageViewModel {
     const { collection, viewModel } = this
     const { query } = request
-    const { payload, errors } = context
+    const { payload, errors, addresses } = context
 
     let { pageTitle, showTitle } = viewModel
 
-    const components = collection.getViewModel(payload, errors, query)
+    const components = collection.getViewModel(
+      payload,
+      errors,
+      query,
+      addresses
+    )
     const formComponents = components.filter(
       ({ isFormComponent }) => isFormComponent
     )
@@ -490,14 +496,24 @@ export class QuestionPageController extends PageController {
       context: FormContext,
       h: FormResponseToolkit
     ) => {
+      const { payload } = request
       const { collection, viewName, model } = this
       const { isForceAccess, state, evaluationState } = context
+      const { action } = payload
 
-      /**
-       * If there are any errors, render the page with the parsed errors
-       * @todo Refactor to match POST REDIRECT GET pattern
-       */
+      let addresses
+      if (action?.startsWith(FormAction.PostcodeLookup)) {
+        const name = action.slice(-6)
+        const postcode = payload[`${name}__postcode`]
+        addresses = await placesService.search(postcode)
+        context.addresses = { [name]: addresses }
+      }
+
       if (context.errors || isForceAccess) {
+        /**
+         * If there are any errors, render the page with the parsed errors
+         * @todo Refactor to match POST REDIRECT GET pattern
+         */
         const viewModel = this.getViewModel(request, context)
         viewModel.errors = collection.getViewErrors(viewModel.errors)
 
@@ -515,7 +531,6 @@ export class QuestionPageController extends PageController {
       await this.setState(request, state)
 
       // Check if this is a save-and-exit action
-      const { action } = request.payload
       if (action === FormAction.SaveAndExit) {
         return this.handleSaveAndExit(request, context, h)
       }

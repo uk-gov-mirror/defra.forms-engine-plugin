@@ -233,7 +233,8 @@ export class ComponentCollection {
   getViewModel(
     payload: FormPayload,
     errors?: FormSubmissionError[],
-    query: FormQuery = {}
+    query: FormQuery = {},
+    addresses?: object[]
   ) {
     const { components } = this
 
@@ -242,7 +243,7 @@ export class ComponentCollection {
 
       const model =
         component instanceof FormComponent
-          ? component.getViewModel(payload, errors, query)
+          ? component.getViewModel(payload, errors, query, addresses)
           : component.getViewModel()
 
       return { type, isFormComponent, model }

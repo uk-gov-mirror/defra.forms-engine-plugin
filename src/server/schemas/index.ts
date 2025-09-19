@@ -7,14 +7,17 @@ export const stateSchema = Joi.string<FormStatus>()
   .valid(FormStatus.Draft, FormStatus.Live)
   .required()
 
+// export const actionSchema = Joi.string<FormAction>()
+//   .valid(...Object.values(FormAction), Joi.string().regex(/^postcode-lookup-/))
+//   .default(FormAction.Validate)
+//   .optional()
+
 export const actionSchema = Joi.string<FormAction>()
-  .valid(
-    FormAction.Continue,
-    FormAction.Validate,
-    FormAction.Delete,
-    FormAction.AddAnother,
-    FormAction.Send,
-    FormAction.SaveAndExit
+  .pattern(new RegExp(`^${FormAction.PostcodeLookup}-[a-zA-Z]{6}$`))
+  .allow(
+    ...Object.values(FormAction).filter(
+      (value) => value !== FormAction.PostcodeLookup
+    )
   )
   .default(FormAction.Validate)
   .optional()

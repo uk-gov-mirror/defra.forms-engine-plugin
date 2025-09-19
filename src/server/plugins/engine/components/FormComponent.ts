@@ -119,7 +119,11 @@ export class FormComponent extends ComponentBase {
     return firstError && [firstError]
   }
 
-  getViewModel(payload: FormPayload, errors?: FormSubmissionError[]) {
+  getViewModel(
+    payload: FormPayload,
+    errors?: FormSubmissionError[],
+    _addresses?: object[]
+  ) {
     const { hint, name, options = {}, title, viewModel } = this
 
     const isRequired = !('required' in options) || options.required !== false

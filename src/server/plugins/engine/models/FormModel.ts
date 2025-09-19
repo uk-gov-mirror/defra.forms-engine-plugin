@@ -546,7 +546,9 @@ function validateFormPayload(
   // Skip validation GET requests or other actions
   if (
     !request.payload ||
-    (action && ![FormAction.Validate, FormAction.SaveAndExit].includes(action))
+    (action &&
+      ![FormAction.Validate, FormAction.SaveAndExit].includes(action) &&
+      !action.startsWith(FormAction.PostcodeLookup))
   ) {
     return context
   }
@@ -564,10 +566,22 @@ function validateFormPayload(
     }
   })
 
-  const { value, errors } = collection.validate({
+  const result = collection.validate({
     ...payload,
     ...update
   })
+
+  const value = result.value
+
+  const filter = (errors: FormSubmissionError[] | undefined) => {
+    const name = action?.slice(-6)
+    return errors?.filter((err) => err.name === `${name}__postcode`)
+  }
+
+  // If in postcode lookup, filter errors to only those for the lookup control
+  const errors = action?.startsWith(FormAction.PostcodeLookup)
+    ? filter(result.errors)
+    : result.errors
 
   // Add sanitised payload (ready to save)
   const formState = page.getStateFromValidForm(request, state, value)

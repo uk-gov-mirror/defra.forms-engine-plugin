@@ -146,7 +146,12 @@ export class UkAddressField extends FormComponent {
     )
   }
 
-  getViewModel(payload: FormPayload, errors?: FormSubmissionError[]) {
+  getViewModel(
+    payload: FormPayload,
+    errors?: FormSubmissionError[],
+    query: string,
+    addresses: object[] | undefined
+  ) {
     const { collection, name, options } = this
 
     const viewModel = super.getViewModel(payload, errors)
@@ -173,12 +178,19 @@ export class UkAddressField extends FormComponent {
       }
     }
 
-    components = collection.getViewModel(payload, errors)
+    components = collection.getViewModel(payload, errors, query, addresses)
+
+    let componentAddresses
+    if (addresses?.[name]) {
+      componentAddresses = addresses[name]
+    }
 
     return {
       ...viewModel,
       fieldset,
-      components
+      components,
+      mode: 'lookup',
+      addresses: componentAddresses
     }
   }
 

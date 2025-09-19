@@ -52,11 +52,31 @@ pages:
   - path: '/whats-your-address'
     title: What's your address?
     components:
+      - name: abcdef
+        options:
+          required: true
+        type: TelephoneNumberField
+        title: What is your phone number
+        schema: {}
       - name: wZLWPy
         options:
           required: true
         type: UkAddressField
-        title: Address
+        title: Billing address
+        schema: {}
+        hint: This is a UK address. Users must enter address line 1, town and a postcode
+      - name: uvwxyz
+        options:
+          required: true
+        type: EmailAddressField
+        title: What is your email adress
+        schema: {}
+        hint: This is an email address. An email address must contain an at sign @
+      - name: drGHuj
+        options:
+          required: true
+        type: UkAddressField
+        title: Delivery address
         schema: {}
         hint: This is a UK address. Users must enter address line 1, town and a postcode
     next:

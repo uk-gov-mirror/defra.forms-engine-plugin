@@ -45,7 +45,8 @@ export enum FormAction {
   Delete = 'delete',
   AddAnother = 'add-another',
   Send = 'send',
-  SaveAndExit = 'save-and-exit'
+  SaveAndExit = 'save-and-exit',
+  PostcodeLookup = 'postcode-lookup'
 }
 
 export enum FormStatus {
