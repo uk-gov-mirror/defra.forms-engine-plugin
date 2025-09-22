@@ -9,6 +9,10 @@ import {
   type DetailItemRepeat
 } from '~/src/server/plugins/engine/models/types.js'
 import { format } from '~/src/server/plugins/engine/outputFormatters/machine/v2.js'
+import {
+  SummaryPageController,
+  getFormSubmissionData
+} from '~/src/server/plugins/engine/pageControllers/SummaryPageController.js'
 import { buildFormContextRequest } from '~/src/server/plugins/engine/pageControllers/__stubs__/request.js'
 import {
   FileStatus,
@@ -265,6 +269,43 @@ describe('getPersonalisation', () => {
     expect(parsedBody.meta.timestamp).toBeDateString()
     expect(parsedBody.meta.definition).toEqual(definition)
     expect(parsedBody.meta.referenceNumber).toBe('foobar')
+    expect(parsedBody.data).toEqual(expectedData)
+  })
+
+  it('should return the machine output 2', () => {
+    const pageDef = definition.pages[2]
+    const controller = new SummaryPageController(model, pageDef)
+
+    const summaryViewModel = controller.getSummaryViewModel(request, context)
+
+    const items = getFormSubmissionData(
+      summaryViewModel.context,
+      summaryViewModel.details
+    )
+
+    const body = format(context, items, model, submitResponse, formStatus)
+
+    const parsedBody = JSON.parse(body)
+
+    const expectedData = {
+      main: {
+        orderType: 'delivery'
+      },
+      repeaters: {
+        pizza: [
+          {
+            quantity: 2,
+            toppings: 'Ham'
+          },
+          {
+            quantity: 1,
+            toppings: 'Pepperoni'
+          }
+        ]
+      },
+      files: {}
+    }
+
     expect(parsedBody.data).toEqual(expectedData)
   })
 })

@@ -65,7 +65,9 @@ describe('SummaryViewModel', () => {
         'Pizzas',
         'Pizza'
       ],
-      values: ['Collection', 'Not supplied']
+      values: ['Collection', 'Not supplied'],
+      answers: ['Collection', ''],
+      names: ['orderType', 'pizza']
     },
     {
       description: '1 item',
@@ -87,7 +89,9 @@ describe('SummaryViewModel', () => {
         'Pizzas',
         'Pizza'
       ],
-      values: ['Delivery', 'You added 1 Pizza']
+      values: ['Delivery', 'You added 1 Pizza'],
+      answers: ['Delivery', 'You added 1 Pizza'],
+      names: ['orderType', 'pizza']
     },
     {
       description: '2 items',
@@ -114,142 +118,168 @@ describe('SummaryViewModel', () => {
         'Pizzas',
         'Pizza'
       ],
-      values: ['Delivery', 'You added 2 Pizzas']
+      values: ['Delivery', 'You added 2 Pizzas'],
+      answers: ['Delivery', 'You added 2 Pizzas'],
+      names: ['orderType', 'pizza']
     }
-  ])('Check answers ($description)', ({ state, keys, values }) => {
-    beforeEach(() => {
-      context = model.getFormContext(request, state)
-      summaryViewModel = new SummaryViewModel(request, page, context)
-    })
-
-    it('should add title for each section', () => {
-      const [checkAnswers1, checkAnswers2] = summaryViewModel.checkAnswers
-
-      // 1st summary list has no title
-      expect(checkAnswers1).toHaveProperty('title', undefined)
-
-      // 2nd summary list has section title
-      expect(checkAnswers2).toHaveProperty('title', {
-        text: 'Food'
-      })
-    })
-
-    it('should add summary list for each section', () => {
-      expect(summaryViewModel.checkAnswers).toHaveLength(2)
-
-      const [checkAnswers1, checkAnswers2] = summaryViewModel.checkAnswers
-
-      const { summaryList: summaryList1 } = checkAnswers1
-      const { summaryList: summaryList2 } = checkAnswers2
-
-      expect(summaryList1).toHaveProperty('rows', [
-        {
-          key: {
-            text: keys[2]
-          },
-          value: {
-            classes: 'app-prose-scope',
-            html: values[0]
-          },
-          actions: {
-            items: [
-              {
-                classes: 'govuk-link--no-visited-state',
-                href: `${basePath}/delivery-or-collection?returnUrl=${encodeURIComponent(`${basePath}/summary`)}`,
-                text: 'Change',
-                visuallyHiddenText: keys[0]
-              }
-            ]
-          }
-        }
-      ])
-
-      expect(summaryList2).toHaveProperty('rows', [
-        {
-          key: {
-            text: keys[1]
-          },
-          value: {
-            classes: 'app-prose-scope',
-            html: values[1]
-          },
-          actions: {
-            items: [
-              {
-                classes: 'govuk-link--no-visited-state',
-                href: `${basePath}/pizza-order/summary?returnUrl=${encodeURIComponent(`${basePath}/summary`)}`,
-                text: 'Change',
-                visuallyHiddenText: 'Pizza'
-              }
-            ]
-          }
-        }
-      ])
-    })
-
-    it('should add summary list for each section (preview URL direct access)', () => {
-      request.query.force = '' // Preview URL '?force'
-      context = model.getFormContext(request, state)
-      summaryViewModel = new SummaryViewModel(request, page, context)
-
-      expect(summaryViewModel.checkAnswers).toHaveLength(2)
-
-      const [checkAnswers1, checkAnswers2] = summaryViewModel.checkAnswers
-
-      const { summaryList: summaryList1 } = checkAnswers1
-      const { summaryList: summaryList2 } = checkAnswers2
-
-      expect(summaryList1).toHaveProperty('rows', [
-        {
-          key: {
-            text: keys[2]
-          },
-          value: {
-            classes: 'app-prose-scope',
-            html: values[0]
-          },
-          actions: {
-            items: []
-          }
-        }
-      ])
-
-      expect(summaryList2).toHaveProperty('rows', [
-        {
-          key: {
-            text: keys[1]
-          },
-          value: {
-            classes: 'app-prose-scope',
-            html: values[1]
-          },
-          actions: {
-            items: []
-          }
-        }
-      ])
-    })
-
-    it('should use correct summary labels', () => {
-      request.query.force = '' // Preview URL '?force'
-      context = model.getFormContext(request, state)
-      summaryViewModel = new SummaryViewModel(request, page, context)
-
-      expect(summaryViewModel.details).toHaveLength(2)
-
-      const [details1, details2] = summaryViewModel.details
-
-      expect(details1.items[0]).toMatchObject({
-        title: keys[2],
-        label: keys[0]
+  ])(
+    'Check answers ($description)',
+    ({ state, keys, values, names, answers }) => {
+      beforeEach(() => {
+        context = model.getFormContext(request, state)
+        summaryViewModel = new SummaryViewModel(request, page, context)
       })
 
-      expect(details2.items[0]).toMatchObject({
-        title: keys[1],
-        label: keys[4]
+      it('should add title for each section', () => {
+        const [checkAnswers1, checkAnswers2] = summaryViewModel.checkAnswers
+
+        // 1st summary list has no title
+        expect(checkAnswers1).toHaveProperty('title', undefined)
+
+        // 2nd summary list has section title
+        expect(checkAnswers2).toHaveProperty('title', {
+          text: 'Food'
+        })
       })
-    })
-  })
+
+      it('should add summary list for each section', () => {
+        expect(summaryViewModel.checkAnswers).toHaveLength(2)
+
+        const [checkAnswers1, checkAnswers2] = summaryViewModel.checkAnswers
+
+        const { summaryList: summaryList1 } = checkAnswers1
+        const { summaryList: summaryList2 } = checkAnswers2
+
+        expect(summaryList1).toHaveProperty('rows', [
+          {
+            key: {
+              text: keys[2]
+            },
+            value: {
+              classes: 'app-prose-scope',
+              html: values[0]
+            },
+            actions: {
+              items: [
+                {
+                  classes: 'govuk-link--no-visited-state',
+                  href: `${basePath}/delivery-or-collection?returnUrl=${encodeURIComponent(`${basePath}/summary`)}`,
+                  text: 'Change',
+                  visuallyHiddenText: keys[0]
+                }
+              ]
+            }
+          }
+        ])
+
+        expect(summaryList2).toHaveProperty('rows', [
+          {
+            key: {
+              text: keys[1]
+            },
+            value: {
+              classes: 'app-prose-scope',
+              html: values[1]
+            },
+            actions: {
+              items: [
+                {
+                  classes: 'govuk-link--no-visited-state',
+                  href: `${basePath}/pizza-order/summary?returnUrl=${encodeURIComponent(`${basePath}/summary`)}`,
+                  text: 'Change',
+                  visuallyHiddenText: 'Pizza'
+                }
+              ]
+            }
+          }
+        ])
+      })
+
+      it('should add summary list for each section (preview URL direct access)', () => {
+        request.query.force = '' // Preview URL '?force'
+        context = model.getFormContext(request, state)
+        summaryViewModel = new SummaryViewModel(request, page, context)
+
+        expect(summaryViewModel.checkAnswers).toHaveLength(2)
+
+        const [checkAnswers1, checkAnswers2] = summaryViewModel.checkAnswers
+
+        const { summaryList: summaryList1 } = checkAnswers1
+        const { summaryList: summaryList2 } = checkAnswers2
+
+        expect(summaryList1).toHaveProperty('rows', [
+          {
+            key: {
+              text: keys[2]
+            },
+            value: {
+              classes: 'app-prose-scope',
+              html: values[0]
+            },
+            actions: {
+              items: []
+            }
+          }
+        ])
+
+        expect(summaryList2).toHaveProperty('rows', [
+          {
+            key: {
+              text: keys[1]
+            },
+            value: {
+              classes: 'app-prose-scope',
+              html: values[1]
+            },
+            actions: {
+              items: []
+            }
+          }
+        ])
+      })
+
+      it('should use correct summary labels', () => {
+        request.query.force = '' // Preview URL '?force'
+        context = model.getFormContext(request, state)
+        summaryViewModel = new SummaryViewModel(request, page, context)
+
+        expect(summaryViewModel.details).toHaveLength(2)
+
+        const [details1, details2] = summaryViewModel.details
+
+        expect(details1.items[0]).toMatchObject({
+          name: names[0],
+          value: answers[0],
+          title: keys[2],
+          label: keys[0]
+        })
+
+        expect(details2.items[0]).toMatchObject({
+          name: names[1],
+          value: answers[1],
+          title: keys[1],
+          label: keys[4]
+        })
+
+        const snapshot = [
+          {
+            name: names[0],
+            value: answers[0],
+            title: keys[2],
+            label: keys[0]
+          },
+          {
+            name: names[1],
+            value: answers[1],
+            title: keys[1],
+            label: keys[4]
+          }
+        ]
+
+        expect(snapshot).toMatchSnapshot()
+      })
+    }
+  )
 })
 
 describe('SummaryPageController', () => {
