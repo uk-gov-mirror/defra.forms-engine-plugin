@@ -737,7 +737,7 @@ describe('Adapter v1 formatter', () => {
     }
 
     const dummyField: Field = {
-      getFormValueFromState: (_) => ''
+      getFormValueFromState: (_) => undefined
     } as Field
 
     const items: DetailItem[] = [
