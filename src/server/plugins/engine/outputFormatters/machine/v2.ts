@@ -74,7 +74,7 @@ export function format(
  *    }
  * }
  */
-function categoriseData(items: DetailItem[]) {
+export function categoriseData(items: DetailItem[]) {
   const output: {
     main: Record<string, RichFormValue>
     repeaters: Record<string, Record<string, RichFormValue>[]>
