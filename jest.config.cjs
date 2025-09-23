@@ -22,6 +22,7 @@ module.exports = {
     '<rootDir>/src/**/*.{cjs,js,mjs,ts}',
     '<rootDir>/scripts/**/*.{cjs,js,mjs}'
   ],
+  modulePathIgnorePatterns: ['<rootDir>/coverage/', '<rootDir>/.server/'],
   coveragePathIgnorePatterns: [
     '<rootDir>/node_modules/',
     '<rootDir>/.server',
