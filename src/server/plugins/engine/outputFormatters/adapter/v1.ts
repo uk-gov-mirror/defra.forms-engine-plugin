@@ -6,7 +6,7 @@ import {
 import { type checkFormStatus } from '~/src/server/plugins/engine/helpers.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import { type DetailItem } from '~/src/server/plugins/engine/models/types.js'
-import { format as machineV2 } from '~/src/server/plugins/engine/outputFormatters/machine/v2.js'
+import { categoriseData } from '~/src/server/plugins/engine/outputFormatters/machine/v2.js'
 import { FormAdapterSubmissionSchemaVersion } from '~/src/server/plugins/engine/types/enums.js'
 import {
   type FormAdapterSubmissionMessageData,
@@ -25,20 +25,9 @@ export function format(
   formStatus: ReturnType<typeof checkFormStatus>,
   formMetadata?: FormMetadata
 ): string {
-  const v2DataString = machineV2(
-    context,
-    items,
-    model,
-    submitResponse,
-    formStatus
-  )
-  const v2DataParsed = JSON.parse(v2DataString) as {
-    data: FormAdapterSubmissionMessageData
-  }
-
   const csvFiles = extractCsvFiles(submitResponse)
 
-  const transformedData = v2DataParsed.data
+  const { main: v2Main, ...v2Data } = categoriseData(items)
 
   const versionMetadata = getVersionMetadata(
     context.submittedVersionNumber,
@@ -60,7 +49,21 @@ export function format(
   if (versionMetadata) {
     meta.versionMetadata = versionMetadata
   }
-  const data: FormAdapterSubmissionMessageData = transformedData
+
+  const main = Object.fromEntries(
+    Object.entries(v2Main).map(([key, value]) => {
+      if (!value) {
+        return [key, null]
+      }
+
+      return [key, value]
+    })
+  )
+
+  const data: FormAdapterSubmissionMessageData = {
+    main,
+    ...v2Data
+  }
 
   const result: FormAdapterSubmissionMessageResult = {
     files: csvFiles
