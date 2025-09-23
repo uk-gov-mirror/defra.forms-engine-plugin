@@ -723,6 +723,46 @@ describe('Adapter v1 formatter', () => {
     expect(parsedBody.meta.versionMetadata).toBeUndefined()
   })
 
+  it('should handle optional fields that are undefined', () => {
+    const formMetadata: Partial<FormMetadata> = {
+      id: 'form-123',
+      slug: 'test-form',
+      title: 'Test Form',
+      notificationEmail: 'test@example.com'
+    } as FormMetadata
+
+    const formStatus = {
+      isPreview: false,
+      state: FormStatus.Live
+    }
+
+    const dummyField: Field = {
+      getFormValueFromState: (_) => undefined
+    } as Field
+
+    const items: DetailItem[] = [
+      {
+        name: 'exampleField3',
+        label: 'Example Field 3',
+        href: '/example-field-3',
+        title: 'Example Field 3 Title',
+        field: dummyField,
+        value: ''
+      } as DetailItemField
+    ]
+
+    const body = format(
+      context,
+      items,
+      model,
+      submitResponse,
+      formStatus,
+      formMetadata as FormMetadata
+    )
+    const parsedBody = JSON.parse(body) as FormAdapterSubmissionMessagePayload
+    expect(parsedBody.data.main).toEqual({ exampleField3: null })
+  })
+
   describe('version metadata handling', () => {
     it('should include versionMetadata when context has submittedVersionNumber and formMetadata has versions', () => {
       const formMetadata: Partial<FormMetadata> = {

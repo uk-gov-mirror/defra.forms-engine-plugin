@@ -446,7 +446,7 @@ export type RichFormValue =
   | UkAddressState
 
 export interface FormAdapterSubmissionMessageData {
-  main: Record<string, RichFormValue>
+  main: Record<string, RichFormValue | null>
   repeaters: Record<string, Record<string, RichFormValue>[]>
   files: Record<string, FormAdapterFile[]>
 }
