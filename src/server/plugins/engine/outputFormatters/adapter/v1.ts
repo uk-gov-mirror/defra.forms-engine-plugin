@@ -52,7 +52,7 @@ export function format(
 
   const main = Object.fromEntries(
     Object.entries(v2Main).map(([key, value]) => {
-      if (!value) {
+      if (value === undefined) {
         return [key, null]
       }
 
