@@ -5,6 +5,7 @@ import {
   hasComponents,
   hasNext,
   hasRepeater,
+  isListType,
   type Link,
   type Page
 } from '@defra/forms-model'
@@ -209,8 +210,7 @@ export class QuestionPageController extends PageController {
     // TODO - handle multiple row conditions
     const correctedState = { ...state }
     const listFields = condition.value.conditions.filter(
-      (cond) =>
-        'field' in cond && cond.field.type === ComponentType.CheckboxesField
+      (cond) => 'field' in cond && isListType(cond.field.type)
     )
     for (const row of listFields) {
       const fieldName = 'field' in row ? row.field.name : undefined
@@ -250,7 +250,6 @@ export class QuestionPageController extends PageController {
               condition,
               evaluationState
             )
-
             const conditionResult = condition.fn(evalStateCorrected)
 
             if (!conditionResult) {
