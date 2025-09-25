@@ -1,13 +1,6 @@
-import {
-  ComponentType,
-  ConditionType,
-  type ConditionData,
-  type ConditionsModelData,
-  type PageQuestion
-} from '@defra/forms-model'
+import { type PageQuestion } from '@defra/forms-model'
 
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
-import { type ExecutableCondition } from '~/src/server/plugins/engine/models/types.js'
 import { QuestionPageController } from '~/src/server/plugins/engine/pageControllers/QuestionPageController.js'
 import {
   buildFormContextRequest,
@@ -1460,109 +1453,6 @@ describe('Save and Exit functionality', () => {
       await postHandler(request, context, mockH)
 
       expect(controller1.handleSaveAndExit).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('correctConditionEvaluationState', () => {
-    const conditionOne = {
-      field: {
-        name: 'abc123',
-        type: ComponentType.CheckboxesField,
-        display: 'displayName'
-      },
-      operator: 'is',
-      value: {
-        type: ConditionType.Value,
-        value: 'string',
-        display: 'string'
-      }
-    } as ConditionData
-
-    const model = {
-      name: '',
-      conditions: [conditionOne]
-    } as ConditionsModelData
-
-    const testCondition = {
-      name: '',
-      displayName: '',
-      value: model
-    } as ExecutableCondition
-
-    test('should handle no state', () => {
-      const state = {}
-      const model = {
-        name: '',
-        conditions: []
-      } as ConditionsModelData
-      const condition = {
-        name: '',
-        displayName: '',
-        value: model
-      } as ExecutableCondition
-      expect(
-        controller1.correctConditionEvaluationState(condition, state)
-      ).toEqual({})
-    })
-
-    test('should handle empty checkbox state', () => {
-      const state = {
-        abc123: null
-      }
-      const condition = structuredClone(testCondition)
-      expect(
-        controller1.correctConditionEvaluationState(condition, state)
-      ).toEqual({
-        abc123: []
-      })
-    })
-
-    test('should handle empty radio state', () => {
-      const state = {
-        abc123: null
-      }
-
-      const condition = structuredClone(testCondition)
-      // @ts-expect-error - force embedded types
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      condition.value.conditions[0].field.type = ComponentType.RadiosField
-      expect(
-        controller1.correctConditionEvaluationState(condition, state)
-      ).toEqual({
-        abc123: []
-      })
-    })
-
-    test('should handle other state', () => {
-      const state = {
-        abc123: null,
-        def456: '123',
-        ghi789: null
-      }
-
-      const condition = structuredClone(testCondition)
-      expect(
-        controller1.correctConditionEvaluationState(condition, state)
-      ).toEqual({
-        abc123: [],
-        def456: '123',
-        ghi789: null
-      })
-    })
-
-    test('should handle missing field name', () => {
-      const state = {
-        abc123: null
-      }
-
-      const condition = structuredClone(testCondition)
-      // @ts-expect-error - force embedded types
-      delete condition.value.conditions[0].field
-      expect(
-        controller1.correctConditionEvaluationState(condition, state)
-      ).toEqual({
-        abc123: null
-      })
     })
   })
 })

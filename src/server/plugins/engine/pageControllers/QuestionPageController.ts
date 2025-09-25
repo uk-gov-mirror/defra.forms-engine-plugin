@@ -5,7 +5,6 @@ import {
   hasComponents,
   hasNext,
   hasRepeater,
-  isListType,
   type Link,
   type Page
 } from '@defra/forms-model'
@@ -24,7 +23,6 @@ import {
   proceed
 } from '~/src/server/plugins/engine/helpers.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
-import { type ExecutableCondition } from '~/src/server/plugins/engine/models/types.js'
 import { PageController } from '~/src/server/plugins/engine/pageControllers/PageController.js'
 import {
   type AnyFormRequest,
@@ -197,32 +195,6 @@ export class QuestionPageController extends PageController {
   }
 
   /**
-   * Checkboxes need to retain a state value of null if not yet filled in, yet the conditions may report an
-   * incorrect result if null is passed in (especially 'does not contain'). So we override any null value
-   * checkboxes to be an empty array, so that the conditions evaluate correctly
-   * @param condition
-   * @param state
-   */
-  correctConditionEvaluationState(
-    condition: ExecutableCondition,
-    state: Partial<Record<string, FormStateValue>>
-  ) {
-    // TODO - handle multiple row conditions
-    const correctedState = { ...state }
-    const listFields = condition.value.conditions.filter(
-      (cond) => 'field' in cond && isListType(cond.field.type)
-    )
-    for (const row of listFields) {
-      const fieldName = 'field' in row ? row.field.name : undefined
-      if (fieldName) {
-        correctedState[fieldName] = state[fieldName] ?? []
-      }
-    }
-
-    return correctedState
-  }
-
-  /**
    * Apply conditions to evaluation state to determine next page path
    */
   getNextPath(context: FormContext) {
@@ -246,11 +218,7 @@ export class QuestionPageController extends PageController {
           const { condition } = page
 
           if (condition) {
-            const evalStateCorrected = this.correctConditionEvaluationState(
-              condition,
-              evaluationState
-            )
-            const conditionResult = condition.fn(evalStateCorrected)
+            const conditionResult = condition.fn(evaluationState)
 
             if (!conditionResult) {
               return false
@@ -270,15 +238,7 @@ export class QuestionPageController extends PageController {
       const { condition } = link
 
       if (condition) {
-        const lookedUpCondition = model.conditions[condition]
-        if (lookedUpCondition) {
-          const evalStateCorrected = this.correctConditionEvaluationState(
-            lookedUpCondition,
-            evaluationState
-          )
-          return lookedUpCondition.fn(evalStateCorrected)
-        }
-        return false
+        return model.conditions[condition]?.fn(evaluationState) ?? false
       }
 
       defaultPath = link.path
