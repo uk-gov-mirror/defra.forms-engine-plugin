@@ -187,7 +187,7 @@ describe('Form journey', () => {
           '/what-is-or-will-be-your-main-a1-installations-activity-that-you-need-pre-application-advice-about',
         current:
           '/will-you-be-operating-standby-generators-within-a-data-centre',
-        next: '/hydrogen-production-by-electrolysis-of-water'
+        next: '/what-type-of-permit-application-do-you-want-pre-application-advice-about'
       },
 
       fields: [
