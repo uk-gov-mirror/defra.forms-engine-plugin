@@ -270,7 +270,15 @@ export class QuestionPageController extends PageController {
       const { condition } = link
 
       if (condition) {
-        return model.conditions[condition]?.fn(evaluationState) ?? false
+        const lookedUpCondition = model.conditions[condition]
+        if (lookedUpCondition) {
+          const evalStateCorrected = this.correctConditionEvaluationState(
+            lookedUpCondition,
+            evaluationState
+          )
+          return lookedUpCondition.fn(evalStateCorrected)
+        }
+        return false
       }
 
       defaultPath = link.path

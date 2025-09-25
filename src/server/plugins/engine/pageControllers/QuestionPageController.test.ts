@@ -1549,5 +1549,20 @@ describe('Save and Exit functionality', () => {
         ghi789: null
       })
     })
+
+    test('should handle missing field name', () => {
+      const state = {
+        abc123: null
+      }
+
+      const condition = structuredClone(testCondition)
+      // @ts-expect-error - force embedded types
+      delete condition.value.conditions[0].field
+      expect(
+        controller1.correctConditionEvaluationState(condition, state)
+      ).toEqual({
+        abc123: null
+      })
+    })
   })
 })
