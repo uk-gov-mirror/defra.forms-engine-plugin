@@ -363,6 +363,7 @@ export class FormModel {
       // Add page to context
       context.relevantPages.push(nextPage)
 
+      // Engine.V2 is excluded here as this will have already been done in initialiseContext()
       if (this.engine !== Engine.V2) {
         this.assignEvaluationState(context, nextPage)
       }
