@@ -363,7 +363,10 @@ export class FormModel {
       // Add page to context
       context.relevantPages.push(nextPage)
 
-      this.assignEvaluationState(context, nextPage)
+      // Engine.V2 is excluded here as this will have already been done in initialiseContext()
+      if (this.engine !== Engine.V2) {
+        this.assignEvaluationState(context, nextPage)
+      }
 
       this.assignRelevantState(context, nextPage)
 
@@ -389,14 +392,12 @@ export class FormModel {
   }
 
   private initialiseContext(context: FormContext) {
-    // For the V2 engine, we need to initialise `evaluationState` to null
-    // for all keys. This is because the current condition evaluation
-    // library (eval-expr) will throw if an expression uses a key that is undefined.
+    // For the V2 engine, we initialise `evaluationState` for all keys.
+    // This is because the current condition evaluation library (eval-expr)
+    // will throw if an expression uses a key that is undefined.
     if (this.engine === Engine.V2) {
       for (const page of this.pages) {
-        for (const key of page.keys) {
-          context.evaluationState[key] = null
-        }
+        this.assignEvaluationState(context, page)
       }
     }
   }
