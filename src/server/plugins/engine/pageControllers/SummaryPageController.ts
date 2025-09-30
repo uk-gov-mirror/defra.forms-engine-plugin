@@ -1,4 +1,5 @@
 import {
+  ComponentType,
   hasComponentsEvenIfNoNext,
   type FormMetadata,
   type Page,
@@ -6,8 +7,10 @@ import {
 } from '@defra/forms-model'
 import Boom from '@hapi/boom'
 import { type RouteOptions } from '@hapi/hapi'
+import Joi from 'joi'
 
 import { ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
+import { EmailAddressField } from '~/src/server/plugins/engine/components/EmailAddressField.js'
 import { FileUploadField } from '~/src/server/plugins/engine/components/FileUploadField.js'
 import { getAnswer } from '~/src/server/plugins/engine/components/helpers/components.js'
 import {
@@ -27,6 +30,7 @@ import { QuestionPageController } from '~/src/server/plugins/engine/pageControll
 import {
   type FormContext,
   type FormContextRequest,
+  type FormSubmissionError,
   type FormSubmissionState
 } from '~/src/server/plugins/engine/types.js'
 import {
@@ -36,6 +40,14 @@ import {
   type FormRequestPayloadRefs,
   type FormResponseToolkit
 } from '~/src/server/routes/types.js'
+
+const schema = Joi.object({
+  crumb: Joi.string().required(),
+  action: Joi.string().required(),
+  citizenEmail: Joi.string().email().optional().allow('').allow(null).messages({
+    '*': 'Enter your email address in the correct format'
+  })
+})
 
 export class SummaryPageController extends QuestionPageController {
   declare pageDef: Page
@@ -53,6 +65,25 @@ export class SummaryPageController extends QuestionPageController {
     this.collection = new ComponentCollection(
       hasComponentsEvenIfNoNext(pageDef) ? pageDef.components : [],
       { model, page: this }
+    )
+
+    // TODO - insert just before 'declaration' (if one is defined)
+    this.collection.components.push(
+      new EmailAddressField(
+        {
+          title: 'Confirmation email',
+          shortDescription: 'Email address',
+          id: 'citizenEmail',
+          name: 'citizenEmail',
+          type: ComponentType.EmailAddressField,
+          hint: 'Enter your email address to get an email confirming your form has been submitted',
+          options: {
+            required: false,
+            labelClasses: 'govuk-label--m'
+          }
+        },
+        { model }
+      )
     )
   }
 
@@ -73,8 +104,25 @@ export class SummaryPageController extends QuestionPageController {
     viewModel.phaseTag = this.phaseTag
     viewModel.components = components
     viewModel.allowSaveAndExit = this.shouldShowSaveAndExit(request.server)
+    viewModel.errors = errors
 
     return viewModel
+  }
+
+  validateSummary(
+    request: FormContextRequest
+  ): FormSubmissionError[] | undefined {
+    const { error } = schema.validate(request.payload, { abortEarly: false })
+    if (error) {
+      return error.details.map((detail) => ({
+        message: detail.message,
+        path: detail.path,
+        text: detail.message,
+        href: `#${detail.context?.key}`,
+        name: detail.context?.key ?? 'unknown'
+      }))
+    }
+    return undefined
   }
 
   /**
@@ -126,6 +174,18 @@ export class SummaryPageController extends QuestionPageController {
       const { notificationEmail } = formMetadata
       const { isPreview } = checkFormStatus(request.params)
       const emailAddress = notificationEmail ?? this.model.def.outputEmail
+
+      const errors = this.validateSummary(request)
+      if (errors) {
+        cacheService.setFlash(request, { errors })
+        const { viewName } = this
+        const viewModel = this.getSummaryViewModel(request, {
+          ...context,
+          errors,
+          payload: request.payload
+        })
+        return h.view(viewName, viewModel)
+      }
 
       checkEmailAddressForLiveFormSubmission(emailAddress, isPreview)
 

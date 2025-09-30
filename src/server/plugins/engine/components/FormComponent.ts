@@ -149,7 +149,8 @@ export class FormComponent extends ComponentBase {
     return {
       ...viewModel,
       label: {
-        text: label
+        text: label,
+        classes: 'labelClasses' in options ? options.labelClasses : ''
       },
       id: name,
       name,

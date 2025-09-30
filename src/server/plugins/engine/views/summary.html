@@ -12,6 +12,13 @@
         {% include "partials/preview-banner.html" %}
       {% endif %}
 
+      {% if errors %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: checkErrorTemplates(errors)
+        }) }}
+      {% endif %}
+
       {% if hasMissingNotificationEmail %}
         {% include "partials/warn-missing-notification-email.html" %}
       {% endif %}
