@@ -19,7 +19,7 @@ pages:
     section: section
   - title: Summary
     path: '/summary'
-    controller: './pages/summary.js'
+    controller: './pages/summary-with-confirmation-email.js'
     components: []
     next: []
   - path: '/whats-your-email-address'

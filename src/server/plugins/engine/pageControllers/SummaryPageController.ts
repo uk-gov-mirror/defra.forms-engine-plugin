@@ -1,16 +1,12 @@
 import {
-  ComponentType,
   hasComponentsEvenIfNoNext,
   type FormMetadata,
   type Page,
   type SubmitPayload
 } from '@defra/forms-model'
 import Boom from '@hapi/boom'
-import { type RouteOptions } from '@hapi/hapi'
-import Joi from 'joi'
 
 import { ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
-import { EmailAddressField } from '~/src/server/plugins/engine/components/EmailAddressField.js'
 import { FileUploadField } from '~/src/server/plugins/engine/components/FileUploadField.js'
 import { getAnswer } from '~/src/server/plugins/engine/components/helpers/components.js'
 import {
@@ -30,24 +26,15 @@ import { QuestionPageController } from '~/src/server/plugins/engine/pageControll
 import {
   type FormContext,
   type FormContextRequest,
-  type FormSubmissionError,
   type FormSubmissionState
 } from '~/src/server/plugins/engine/types.js'
 import {
   FormAction,
   type FormRequest,
   type FormRequestPayload,
-  type FormRequestPayloadRefs,
   type FormResponseToolkit
 } from '~/src/server/routes/types.js'
-
-const schema = Joi.object({
-  crumb: Joi.string().required(),
-  action: Joi.string().required(),
-  citizenEmail: Joi.string().email().optional().allow('').allow(null).messages({
-    '*': 'Enter your email address in the correct format'
-  })
-})
+import { actionSchema, crumbSchema } from '~/src/server/schemas/index.js'
 
 export class SummaryPageController extends QuestionPageController {
   declare pageDef: Page
@@ -67,24 +54,10 @@ export class SummaryPageController extends QuestionPageController {
       { model, page: this }
     )
 
-    // TODO - insert just before 'declaration' (if one is defined)
-    this.collection.components.push(
-      new EmailAddressField(
-        {
-          title: 'Confirmation email',
-          shortDescription: 'Email address',
-          id: 'citizenEmail',
-          name: 'citizenEmail',
-          type: ComponentType.EmailAddressField,
-          hint: 'Enter your email address to get an email confirming your form has been submitted',
-          options: {
-            required: false,
-            labelClasses: 'govuk-label--m'
-          }
-        },
-        { model }
-      )
-    )
+    this.collection.formSchema = this.collection.formSchema.keys({
+      crumb: crumbSchema,
+      action: actionSchema
+    })
   }
 
   getSummaryViewModel(
@@ -107,22 +80,6 @@ export class SummaryPageController extends QuestionPageController {
     viewModel.errors = errors
 
     return viewModel
-  }
-
-  validateSummary(
-    request: FormContextRequest
-  ): FormSubmissionError[] | undefined {
-    const { error } = schema.validate(request.payload, { abortEarly: false })
-    if (error) {
-      return error.details.map((detail) => ({
-        message: detail.message,
-        path: detail.path,
-        text: detail.message,
-        href: `#${detail.context?.key}`,
-        name: detail.context?.key ?? 'unknown'
-      }))
-    }
-    return undefined
   }
 
   /**
@@ -157,11 +114,23 @@ export class SummaryPageController extends QuestionPageController {
     ) => {
       const { model } = this
       const { params } = request
+      const { viewName } = this
+      const { isForceAccess } = context
 
       // Check if this is a save-and-exit action
       const { action } = request.payload
       if (action === FormAction.SaveAndExit) {
         return this.handleSaveAndExit(request, context, h)
+      }
+
+      /**
+       * If there are any errors, render the page with the parsed errors
+       * @todo Refactor to match POST REDIRECT GET pattern
+       */
+      if (context.errors || isForceAccess) {
+        const viewModel = this.getSummaryViewModel(request, context)
+        viewModel.errors = this.collection.getViewErrors(viewModel.errors)
+        return h.view(viewName, viewModel)
       }
 
       const cacheService = getCacheService(request.server)
@@ -174,18 +143,6 @@ export class SummaryPageController extends QuestionPageController {
       const { notificationEmail } = formMetadata
       const { isPreview } = checkFormStatus(request.params)
       const emailAddress = notificationEmail ?? this.model.def.outputEmail
-
-      const errors = this.validateSummary(request)
-      if (errors) {
-        cacheService.setFlash(request, { errors })
-        const { viewName } = this
-        const viewModel = this.getSummaryViewModel(request, {
-          ...context,
-          errors,
-          payload: request.payload
-        })
-        return h.view(viewName, viewModel)
-      }
 
       checkEmailAddressForLiveFormSubmission(emailAddress, isPreview)
 
@@ -208,18 +165,6 @@ export class SummaryPageController extends QuestionPageController {
       await cacheService.clearState(request)
 
       return this.proceed(request, h, this.getStatusPath())
-    }
-  }
-
-  get postRouteOptions(): RouteOptions<FormRequestPayloadRefs> {
-    return {
-      ext: {
-        onPreHandler: {
-          method(request, h) {
-            return h.continue
-          }
-        }
-      }
     }
   }
 }
