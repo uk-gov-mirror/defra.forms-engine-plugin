@@ -22,7 +22,7 @@ export function addConfirmationEmailAddress(pageDef: Page) {
   if (hasComponentsEvenIfNoNext(pageDef)) {
     // Abort if already added
     if (
-      pageDef.components.find((comp) => comp.id === CONFIRMATION_EMAIL_GUID)
+      pageDef.components.some((comp) => comp.id === CONFIRMATION_EMAIL_GUID)
     ) {
       return
     }
