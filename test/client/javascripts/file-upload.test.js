@@ -1345,21 +1345,61 @@ describe('File Upload Client JS', () => {
   })
 })
 
-describe('buildUploadStatusUrl()', () => {
-  it('builds URL with no prefix for root paths', () => {
-    expect(buildUploadStatusUrl('/', 'abc')).toBe('/upload-status/abc')
-    expect(buildUploadStatusUrl('', 'xyz')).toBe('/upload-status/xyz')
-  })
-
-  it('uses the first segment as prefix', () => {
-    expect(buildUploadStatusUrl('/form/mypage', 'id1')).toBe(
-      '/form/upload-status/id1'
+describe('buildUploadStatusUrl', () => {
+  it('works with no prefix', () => {
+    expect(buildUploadStatusUrl('/my-form/file-upload-page', '123')).toBe(
+      '/upload-status/123'
     )
+
+    expect(
+      buildUploadStatusUrl('/preview/draft/my-form/file-upload-page', '123')
+    ).toBe('/upload-status/123')
+
+    expect(
+      buildUploadStatusUrl('/preview/live/my-form/file-upload-page', '123')
+    ).toBe('/upload-status/123')
   })
 
-  it('trims nested segments and trailing slashes', () => {
-    expect(buildUploadStatusUrl('/one/two/three/', 'id2')).toBe(
-      '/one/upload-status/id2'
+  it('works with a prefix with a single level', () => {
+    expect(buildUploadStatusUrl('/form/my-form/file-upload-page', '123')).toBe(
+      '/form/upload-status/123'
+    )
+
+    expect(
+      buildUploadStatusUrl(
+        '/form/preview/draft/my-form/file-upload-page',
+        '123'
+      )
+    ).toBe('/form/upload-status/123')
+
+    expect(
+      buildUploadStatusUrl('/form/preview/live/my-form/file-upload-page', '123')
+    ).toBe('/form/upload-status/123')
+  })
+
+  it('works with a prefix with multiple levels', () => {
+    expect(
+      buildUploadStatusUrl('/org/form/my-form/file-upload-page', '123')
+    ).toBe('/org/form/upload-status/123')
+
+    expect(
+      buildUploadStatusUrl(
+        '/org/form/preview/draft/my-form/file-upload-page',
+        '123'
+      )
+    ).toBe('/org/form/upload-status/123')
+
+    expect(
+      buildUploadStatusUrl(
+        '/org/form/preview/live/my-form/file-upload-page',
+        '123'
+      )
+    ).toBe('/org/form/upload-status/123')
+  })
+
+  it('trims trailing slashes', () => {
+    expect(buildUploadStatusUrl('/my-form/file-upload-page/', '123')).toBe(
+      '/upload-status/123'
     )
   })
 })
