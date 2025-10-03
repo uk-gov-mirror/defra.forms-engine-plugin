@@ -6,7 +6,7 @@ import {
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import {
   SummaryPageWithConfirmationEmailController,
-  addConfirmationEmailAddress
+  addUserConfirmationEmailAddress
 } from '~/src/server/plugins/engine/pageControllers/SummaryPageWithConfirmationEmailController.js'
 import { buildFormRequest } from '~/src/server/plugins/engine/pageControllers/__stubs__/request.js'
 import { type FormSubmissionState } from '~/src/server/plugins/engine/types.js'
@@ -120,11 +120,11 @@ describe('SummaryPageWithConfirmationEmailController', () => {
     })
   })
 
-  describe('addConfirmationEmailAddress', () => {
+  describe('addUserConfirmationEmailAddress', () => {
     const confirmationEmailField = {
       hint: 'Enter your email address to get an email confirming your form has been submitted',
       id: '20f50a94-2c35-466c-b802-9215753b383b',
-      name: 'confirmationEmailAddress',
+      name: 'userConfirmationEmailAddress',
       options: {
         required: false
       },
@@ -140,7 +140,7 @@ describe('SummaryPageWithConfirmationEmailController', () => {
         controller: ControllerType.SummaryWithConfirmationEmail,
         title: 'Summary'
       } as PageSummaryWithConfirmationEmail
-      addConfirmationEmailAddress(pageDef)
+      addUserConfirmationEmailAddress(pageDef)
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       const components = pageDef.components ?? []
       expect(components).toHaveLength(1)
@@ -154,7 +154,7 @@ describe('SummaryPageWithConfirmationEmailController', () => {
         controller: ControllerType.SummaryWithConfirmationEmail,
         title: 'Summary'
       } as PageSummaryWithConfirmationEmail
-      addConfirmationEmailAddress(pageDef)
+      addUserConfirmationEmailAddress(pageDef)
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       const components = pageDef.components ?? []
       expect(components).toHaveLength(1)
@@ -171,7 +171,7 @@ describe('SummaryPageWithConfirmationEmailController', () => {
         controller: ControllerType.SummaryWithConfirmationEmail,
         title: 'Summary'
       } as PageSummaryWithConfirmationEmail
-      addConfirmationEmailAddress(pageDef)
+      addUserConfirmationEmailAddress(pageDef)
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       const components = pageDef.components ?? []
       expect(components).toHaveLength(4)
