@@ -70,6 +70,8 @@ export class SummaryPageController extends QuestionPageController {
     const { payload, errors } = context
     const components = this.collection.getViewModel(payload, errors, query)
 
+    this.applyLabelOrLegendClass(components)
+
     // We already figure these out in the base page controller. Take them and apply them to our page-specific model.
     // This is a stop-gap until we can add proper inheritance in place.
     viewModel.backLink = this.getBackLink(request, context)

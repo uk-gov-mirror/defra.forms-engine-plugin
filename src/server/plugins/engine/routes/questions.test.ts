@@ -25,9 +25,9 @@ jest.mock('~/src/server/plugins/engine/models/SummaryViewModel', () => ({
   }
 }))
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 jest.mock(
   '~/src/server/plugins/engine/pageControllers/SummaryPageController',
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   () => ({
     ...jest.requireActual(
       '~/src/server/plugins/engine/pageControllers/SummaryPageController'

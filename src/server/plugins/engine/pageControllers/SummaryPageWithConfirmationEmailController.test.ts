@@ -1,5 +1,13 @@
+import {
+  ControllerType,
+  type PageSummaryWithConfirmationEmail
+} from '@defra/forms-model'
+
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
-import { SummaryPageController } from '~/src/server/plugins/engine/pageControllers/SummaryPageController.js'
+import {
+  SummaryPageWithConfirmationEmailController,
+  addConfirmationEmailAddress
+} from '~/src/server/plugins/engine/pageControllers/SummaryPageWithConfirmationEmailController.js'
 import { buildFormRequest } from '~/src/server/plugins/engine/pageControllers/__stubs__/request.js'
 import { type FormSubmissionState } from '~/src/server/plugins/engine/types.js'
 import {
@@ -10,9 +18,9 @@ import {
 import { type CacheService } from '~/src/server/services/cacheService.js'
 import definition from '~/test/form/definitions/basic.js'
 
-describe('SummaryPageController', () => {
+describe('SummaryPageWithConfirmationEmailController', () => {
   let model: FormModel
-  let controller: SummaryPageController
+  let controller: SummaryPageWithConfirmationEmailController
   let requestPage: FormRequest
 
   const response = {
@@ -28,14 +36,13 @@ describe('SummaryPageController', () => {
       basePath: 'test'
     })
 
-    // Create a mock page for SummaryPageController
+    // Create a mock page for SummaryPageWithConfirmationEmailController
     const mockPage = {
       ...definition.pages[0],
-      controller: 'summary'
-    }
+      controller: ControllerType.SummaryWithConfirmationEmail
+    } as unknown as PageSummaryWithConfirmationEmail
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    controller = new SummaryPageController(model, mockPage as any)
+    controller = new SummaryPageWithConfirmationEmailController(model, mockPage)
 
     requestPage = buildFormRequest({
       method: 'get',
@@ -110,6 +117,72 @@ describe('SummaryPageController', () => {
       await postHandler(request, context, h)
 
       expect(saveAndExitMock).toHaveBeenCalledWith(request, h, context)
+    })
+  })
+
+  describe('addConfirmationEmailAddress', () => {
+    const confirmationEmailField = {
+      hint: 'Enter your email address to get an email confirming your form has been submitted',
+      id: '20f50a94-2c35-466c-b802-9215753b383b',
+      name: 'confirmationEmailAddress',
+      options: {
+        required: false
+      },
+      shortDescription: 'Email address',
+      title: 'Confirmation email',
+      type: 'EmailAddressField'
+    }
+
+    test('should add confirmation email', () => {
+      const pageDef = {
+        components: [],
+        path: '/summary',
+        controller: ControllerType.SummaryWithConfirmationEmail,
+        title: 'Summary'
+      } as PageSummaryWithConfirmationEmail
+      addConfirmationEmailAddress(pageDef)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      const components = pageDef.components ?? []
+      expect(components).toHaveLength(1)
+      expect(components).toEqual([confirmationEmailField])
+    })
+
+    test('should not add confirmation email if already exists', () => {
+      const pageDef = {
+        components: [confirmationEmailField],
+        path: '/summary',
+        controller: ControllerType.SummaryWithConfirmationEmail,
+        title: 'Summary'
+      } as PageSummaryWithConfirmationEmail
+      addConfirmationEmailAddress(pageDef)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      const components = pageDef.components ?? []
+      expect(components).toHaveLength(1)
+    })
+
+    test('should insert just before declaration', () => {
+      const pageDef = {
+        components: [
+          { type: 'TextField' },
+          { type: 'RadiosField' },
+          { type: 'Markdown' }
+        ],
+        path: '/summary',
+        controller: ControllerType.SummaryWithConfirmationEmail,
+        title: 'Summary'
+      } as PageSummaryWithConfirmationEmail
+      addConfirmationEmailAddress(pageDef)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      const components = pageDef.components ?? []
+      expect(components).toHaveLength(4)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+      const fieldTypes = components.map((x) => x.type)
+      expect(fieldTypes).toEqual([
+        'TextField',
+        'RadiosField',
+        'EmailAddressField',
+        'Markdown'
+      ])
     })
   })
 })
