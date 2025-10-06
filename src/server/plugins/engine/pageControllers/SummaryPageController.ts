@@ -34,7 +34,6 @@ import {
   type FormRequestPayload,
   type FormResponseToolkit
 } from '~/src/server/routes/types.js'
-import { actionSchema, crumbSchema } from '~/src/server/schemas/index.js'
 
 export class SummaryPageController extends QuestionPageController {
   declare pageDef: Page
@@ -53,11 +52,6 @@ export class SummaryPageController extends QuestionPageController {
       hasComponentsEvenIfNoNext(pageDef) ? pageDef.components : [],
       { model, page: this }
     )
-
-    this.collection.formSchema = this.collection.formSchema.keys({
-      crumb: crumbSchema,
-      action: actionSchema
-    })
   }
 
   getSummaryViewModel(
@@ -69,8 +63,6 @@ export class SummaryPageController extends QuestionPageController {
     const { query } = request
     const { payload, errors } = context
     const components = this.collection.getViewModel(payload, errors, query)
-
-    this.applyLabelOrLegendClass(components)
 
     // We already figure these out in the base page controller. Take them and apply them to our page-specific model.
     // This is a stop-gap until we can add proper inheritance in place.
@@ -114,70 +106,68 @@ export class SummaryPageController extends QuestionPageController {
       context: FormContext,
       h: FormResponseToolkit
     ) => {
-      const { model } = this
-      const { params } = request
-      const { viewName } = this
-      const { isForceAccess } = context
-
       // Check if this is a save-and-exit action
       const { action } = request.payload
       if (action === FormAction.SaveAndExit) {
         return this.handleSaveAndExit(request, context, h)
       }
 
-      /**
-       * If there are any errors, render the page with the parsed errors
-       * @todo Refactor to match POST REDIRECT GET pattern
-       */
-      if (context.errors || isForceAccess) {
-        const viewModel = this.getSummaryViewModel(request, context)
-        viewModel.errors = this.collection.getViewErrors(viewModel.errors)
-        return h.view(viewName, viewModel)
-      }
-
-      const cacheService = getCacheService(request.server)
-
-      const { formsService } = this.model.services
-      const { getFormMetadata } = formsService
-
-      // Get the form metadata using the `slug` param
-      const formMetadata = await getFormMetadata(params.slug)
-      const { notificationEmail } = formMetadata
-      const { isPreview } = checkFormStatus(request.params)
-      const emailAddress = notificationEmail ?? this.model.def.outputEmail
-
-      checkEmailAddressForLiveFormSubmission(emailAddress, isPreview)
-
-      // Send submission email
-      if (emailAddress) {
-        const viewModel = this.getSummaryViewModel(request, context)
-        await submitForm(
-          context,
-          request,
-          viewModel,
-          model,
-          emailAddress,
-          formMetadata
-        )
-      }
-
-      await cacheService.setConfirmationState(request, { confirmed: true })
-
-      // Clear all form data
-      await cacheService.clearState(request)
-
-      return this.proceed(request, h, this.getStatusPath())
+      return this.handleFormSubmit(request, context, h)
     }
+  }
+
+  async handleFormSubmit(
+    request: FormRequestPayload,
+    context: FormContext,
+    h: FormResponseToolkit
+  ) {
+    const { model } = this
+    const { params } = request
+
+    const cacheService = getCacheService(request.server)
+
+    const { formsService } = this.model.services
+    const { getFormMetadata } = formsService
+
+    // Get the form metadata using the `slug` param
+    const formMetadata = await getFormMetadata(params.slug)
+    const { notificationEmail } = formMetadata
+    const { isPreview } = checkFormStatus(request.params)
+    const emailAddress = notificationEmail ?? this.model.def.outputEmail
+
+    checkEmailAddressForLiveFormSubmission(emailAddress, isPreview)
+
+    // Send submission email
+    if (emailAddress) {
+      const viewModel = this.getSummaryViewModel(request, context)
+      await submitForm(
+        context,
+        request,
+        viewModel,
+        model,
+        emailAddress,
+        formMetadata,
+        viewModel.userConfirmationEmailField?.value as string
+      )
+    }
+
+    await cacheService.setConfirmationState(request, { confirmed: true })
+
+    // Clear all form data
+    await cacheService.clearState(request)
+
+    return this.proceed(request, h, this.getStatusPath())
   }
 }
 
-async function submitForm(
+export async function submitForm(
   context: FormContext,
   request: FormRequestPayload,
   summaryViewModel: SummaryViewModel,
   model: FormModel,
   emailAddress: string,
-  formMetadata: FormMetadata
+  formMetadata: FormMetadata,
+  userConfirmationEmailAddress?: string
 ) {
   await extendFileRetention(model, context.state, emailAddress)
 
@@ -212,7 +202,8 @@ async function submitForm(
     emailAddress,
     items,
     submitResponse,
-    formMetadata
+    formMetadata,
+    userConfirmationEmailAddress
   )
 }
 

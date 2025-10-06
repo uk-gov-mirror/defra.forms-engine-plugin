@@ -1,4 +1,4 @@
-import { type Section } from '@defra/forms-model'
+import { type GovukField, type Section } from '@defra/forms-model'
 
 import {
   getAnswer,
@@ -52,6 +52,7 @@ export class SummaryViewModel {
   hasMissingNotificationEmail?: boolean
   components?: ComponentViewModel[]
   allowSaveAndExit = false
+  userConfirmationEmailField?: GovukField
 
   constructor(
     request: FormContextRequest,

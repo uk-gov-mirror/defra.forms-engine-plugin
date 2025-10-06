@@ -63,6 +63,7 @@ export interface OutputService {
     emailAddress: string,
     items: DetailItem[],
     submitResponse: SubmitResponsePayload,
-    formMetadata?: FormMetadata
+    formMetadata?: FormMetadata,
+    userConfirmationEmailAddress?: string
   ) => Promise<void>
 }
