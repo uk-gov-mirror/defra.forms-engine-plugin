@@ -10,6 +10,7 @@ import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { SummaryPageController } from '~/src/server/plugins/engine/pageControllers/SummaryPageController.js'
 
 export const CONFIRMATION_EMAIL_GUID = '20f50a94-2c35-466c-b802-9215753b383b'
+export const CONFIRMATION_EMAIL_FIELD_NAME = 'userConfirmationEmailAddress'
 
 export class SummaryPageWithConfirmationEmailController extends SummaryPageController {
   constructor(model: FormModel, pageDef: Page) {
@@ -31,7 +32,7 @@ export function addUserConfirmationEmailAddress(pageDef: Page) {
       title: 'Confirmation email',
       shortDescription: 'Email address',
       id: CONFIRMATION_EMAIL_GUID,
-      name: 'userConfirmationEmailAddress',
+      name: CONFIRMATION_EMAIL_FIELD_NAME,
       type: ComponentType.EmailAddressField,
       hint: 'Enter your email address to get an email confirming your form has been submitted',
       options: {
