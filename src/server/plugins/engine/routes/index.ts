@@ -6,6 +6,8 @@ import {
 } from '@hapi/hapi'
 import { isEqual } from 'date-fns'
 
+import { CustomerReferenceField } from '../components/index.js'
+
 import { PREVIEW_PATH_PREFIX } from '~/src/server/constants.js'
 import {
   checkEmailAddressForLiveFormSubmission,
@@ -61,6 +63,18 @@ export async function redirectOrMakeHandler(
     const referenceNumber = generateUniqueReference(prefix)
     state = await page.mergeState(request, state, {
       $$__referenceNumber: referenceNumber
+    })
+  }
+
+  if (
+    request.query.component &&
+    request.query.data &&
+    typeof request.query.data === 'string'
+  ) {
+    state = await page.mergeState(request, state, {
+      ...(request.query.data
+        ? { [request.query.component]: JSON.parse(request.query.data) }
+        : {})
     })
   }
 

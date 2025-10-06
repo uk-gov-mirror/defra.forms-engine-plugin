@@ -551,7 +551,12 @@ function validateFormPayload(
   // Skip validation GET requests or other actions
   if (
     !request.payload ||
-    (action && ![FormAction.Validate, FormAction.SaveAndExit].includes(action))
+    (action &&
+      ![
+        FormAction.Validate,
+        FormAction.SaveAndExit,
+        'external-component-edit-customerReferenceNumber'
+      ].includes(action))
   ) {
     return context
   }
@@ -575,6 +580,15 @@ function validateFormPayload(
   })
 
   // Add sanitised payload (ready to save)
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  // const formState = {
+  //   ...page.getStateFromValidForm(request, state, value),
+  //   // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
+  //   ...(request.query.data ? JSON.parse(request.query.data) : {}) // TOOD
+  // }
+
+  // Add sanitised payload (ready to save)
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const formState = page.getStateFromValidForm(request, state, value)
 
   return {

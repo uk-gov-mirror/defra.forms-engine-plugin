@@ -6,6 +6,7 @@ import {
   type ServerRoute
 } from '@hapi/hapi'
 
+import * as Components from '~/src/server/plugins/engine/components/index.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { validatePluginOptions } from '~/src/server/plugins/engine/options.js'
 import { getRoutes as getFileUploadStatusRoutes } from '~/src/server/plugins/engine/routes/file-upload.js'
@@ -79,6 +80,17 @@ export const plugin = {
       ]
     }
 
+    // Collect routes from components with a static getRoutes method
+    const componentRoutes = []
+    for (const comp of Object.values(Components)) {
+      if (typeof comp?.prototype.getRoutes === 'function') {
+        const { routes } = comp.prototype.getRoutes()
+        if (Array.isArray(routes)) {
+          componentRoutes.push(...routes)
+        }
+      }
+    }
+
     const routes = [
       ...getQuestionRoutes(
         getRouteOptions,
@@ -87,7 +99,8 @@ export const plugin = {
       ),
       ...getRepeaterSummaryRoutes(getRouteOptions, postRouteOptions),
       ...getRepeaterItemDeleteRoutes(getRouteOptions, postRouteOptions),
-      ...getFileUploadStatusRoutes()
+      ...getFileUploadStatusRoutes(),
+      ...componentRoutes
     ]
 
     server.route(routes as unknown as ServerRoute[]) // TODO
