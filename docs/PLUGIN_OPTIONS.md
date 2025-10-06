@@ -235,9 +235,8 @@ If provided, the `onRequest` plugin option will be invoked on each request to an
 ```ts
 export type OnRequestCallback = (
   request: AnyFormRequest,
-  params: FormParams,
-  definition: FormDefinition,
-  metadata: FormMetadata
+  h: ResponseToolkit,
+  context: FormContext
 ) => void
 ```
 
@@ -247,12 +246,13 @@ Here's an example of how it could be used to secure access to forms:
 await server.register({
   plugin,
   options: {
-    onRequest: (request , params, definition, metadata) => {
-        const { auth } = request
+    onRequest: (request , h, context) => {
+      const redirectUrl = mapStatusToUrl(applicationStatus, grantCode)
+      if (request.path === redirectUrl) {
+        return h.continue
+      }
 
-        if (!auth.isAuthenticated) {
-          throw Boom.unauthorized()
-        }
+      return h.redirect(redirectUrl).takeover()
       }
   }
 })

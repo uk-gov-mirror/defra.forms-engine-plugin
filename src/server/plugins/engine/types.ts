@@ -1,8 +1,6 @@
 import {
   type ComponentDef,
   type Event,
-  type FormDefinition,
-  type FormMetadata,
   type FormVersionMetadata,
   type Item,
   type List,
@@ -11,7 +9,8 @@ import {
 import {
   type PluginProperties,
   type Request,
-  type ResponseObject
+  type ResponseObject,
+  type ResponseToolkit
 } from '@hapi/hapi'
 import { type JoiExpression, type ValidationErrorItem } from 'joi'
 
@@ -38,7 +37,6 @@ import {
 import { type ViewContext } from '~/src/server/plugins/nunjucks/types.js'
 import {
   type FormAction,
-  type FormParams,
   type FormRequest,
   type FormRequestPayload,
   type FormResponseToolkit,
@@ -368,10 +366,9 @@ export type PreparePageEventRequestOptions = (
 
 export type OnRequestCallback = (
   request: AnyFormRequest,
-  params: FormParams,
-  definition: FormDefinition,
-  metadata: FormMetadata
-) => void
+  h: ResponseToolkit,
+  context: FormContext
+) => Promise<ResponseObject | undefined>
 
 export type SaveAndExitHandler = (
   request: FormRequestPayload,
