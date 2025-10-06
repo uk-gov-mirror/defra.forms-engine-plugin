@@ -22,7 +22,9 @@ export async function getHandler(
       return h.response({ error: 'Status check failed' }).code(400)
     }
 
-    return h.response(status)
+    return h.response({
+      uploadStatus: status.uploadStatus
+    })
   } catch (err) {
     request.logger.error(
       err,
