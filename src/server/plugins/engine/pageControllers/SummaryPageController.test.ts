@@ -50,36 +50,6 @@ describe('SummaryPageController', () => {
     } as FormRequest)
   })
 
-  describe('handle errors', () => {
-    it('should display errors including summary', async () => {
-      const state: FormSubmissionState = {
-        $$__referenceNumber: 'foobar',
-        licenceLength: 365,
-        fullName: 'John Smith'
-      }
-      const request = {
-        ...requestPage,
-        method: 'post',
-        payload: { invalid: '123', action: 'send' }
-      } as unknown as FormRequestPayload
-
-      const context = model.getFormContext(request, state)
-
-      jest.spyOn(controller, 'getState').mockResolvedValue({})
-      jest.spyOn(controller, 'setState').mockResolvedValue(state)
-
-      const postHandler = controller.makePostRouteHandler()
-      await postHandler(request, context, h)
-
-      const viewModel = controller.getSummaryViewModel(request, context)
-
-      expect(h.view).toHaveBeenCalledWith('summary', expect.anything())
-      expect(viewModel.errors).toHaveLength(1)
-      const errorText = viewModel.errors ? viewModel.errors[0].text : ''
-      expect(errorText).toBe('invalid is not allowed')
-    })
-  })
-
   describe('handleSaveAndExit', () => {
     it('should invoke saveAndExit plugin option', async () => {
       const saveAndExitMock = jest.fn(() => ({}))

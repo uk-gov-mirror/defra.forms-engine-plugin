@@ -1,4 +1,4 @@
-import { ComponentType, type GovukField } from '@defra/forms-model'
+import { type GovukField } from '@defra/forms-model'
 import Joi from 'joi'
 
 import { type SummaryViewModel } from '~/src/server/plugins/engine/models/index.js'
@@ -87,14 +87,11 @@ export function getUserConfirmationEmailAddress(
       text: 'Confirmation email (optional)',
       classes: 'govuk-label--m'
     },
-    shortDescription: 'Email address',
     id: CONFIRMATION_EMAIL_FIELD_NAME,
     name: CONFIRMATION_EMAIL_FIELD_NAME,
-    type: ComponentType.EmailAddressField,
     hint: {
       text: 'Enter your email address to get an email confirming your form has been submitted'
     },
-    attributes: {},
     value: payload ? payload[CONFIRMATION_EMAIL_FIELD_NAME] : undefined,
     errorMessage: errors?.length ? errors[0].text : undefined
   } as GovukField

@@ -5,6 +5,7 @@ import {
   type SubmitPayload
 } from '@defra/forms-model'
 import Boom from '@hapi/boom'
+import { type RouteOptions } from '@hapi/hapi'
 
 import { ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
 import { FileUploadField } from '~/src/server/plugins/engine/components/FileUploadField.js'
@@ -32,6 +33,7 @@ import {
   FormAction,
   type FormRequest,
   type FormRequestPayload,
+  type FormRequestPayloadRefs,
   type FormResponseToolkit
 } from '~/src/server/routes/types.js'
 
@@ -157,6 +159,18 @@ export class SummaryPageController extends QuestionPageController {
     await cacheService.clearState(request)
 
     return this.proceed(request, h, this.getStatusPath())
+  }
+
+  get postRouteOptions(): RouteOptions<FormRequestPayloadRefs> {
+    return {
+      ext: {
+        onPreHandler: {
+          method(request, h) {
+            return h.continue
+          }
+        }
+      }
+    }
   }
 }
 

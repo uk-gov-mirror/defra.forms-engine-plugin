@@ -6,7 +6,7 @@ import {
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import {
   SummaryPageWithConfirmationEmailController,
-  addUserConfirmationEmailAddress
+  getUserConfirmationEmailAddress
 } from '~/src/server/plugins/engine/pageControllers/SummaryPageWithConfirmationEmailController.js'
 import { buildFormRequest } from '~/src/server/plugins/engine/pageControllers/__stubs__/request.js'
 import { type FormSubmissionState } from '~/src/server/plugins/engine/types.js'
@@ -83,7 +83,7 @@ describe('SummaryPageWithConfirmationEmailController', () => {
       expect(h.view).toHaveBeenCalledWith('summary', expect.anything())
       expect(viewModel.errors).toHaveLength(1)
       const errorText = viewModel.errors ? viewModel.errors[0].text : ''
-      expect(errorText).toBe('invalid is not allowed')
+      expect(errorText).toBe('"invalid" is not allowed')
     })
   })
 
@@ -120,69 +120,19 @@ describe('SummaryPageWithConfirmationEmailController', () => {
     })
   })
 
-  describe('addUserConfirmationEmailAddress', () => {
-    const confirmationEmailField = {
-      hint: 'Enter your email address to get an email confirming your form has been submitted',
-      id: '20f50a94-2c35-466c-b802-9215753b383b',
-      name: 'userConfirmationEmailAddress',
-      options: {
-        required: false
-      },
-      shortDescription: 'Email address',
-      title: 'Confirmation email',
-      type: 'EmailAddressField'
-    }
-
-    test('should add confirmation email', () => {
-      const pageDef = {
-        components: [],
-        path: '/summary',
-        controller: ControllerType.SummaryWithConfirmationEmail,
-        title: 'Summary'
-      } as PageSummaryWithConfirmationEmail
-      addUserConfirmationEmailAddress(pageDef)
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      const components = pageDef.components ?? []
-      expect(components).toHaveLength(1)
-      expect(components).toEqual([confirmationEmailField])
+  describe('getUserConfirmationEmailAddress', () => {
+    test('should get confirmation email', () => {
+      const field = getUserConfirmationEmailAddress()
+      expect(field.name).toBe('userConfirmationEmailAddress')
+      expect(field.value).toBeUndefined()
     })
 
-    test('should not add confirmation email if already exists', () => {
-      const pageDef = {
-        components: [confirmationEmailField],
-        path: '/summary',
-        controller: ControllerType.SummaryWithConfirmationEmail,
-        title: 'Summary'
-      } as PageSummaryWithConfirmationEmail
-      addUserConfirmationEmailAddress(pageDef)
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      const components = pageDef.components ?? []
-      expect(components).toHaveLength(1)
-    })
-
-    test('should insert just before declaration', () => {
-      const pageDef = {
-        components: [
-          { type: 'TextField' },
-          { type: 'RadiosField' },
-          { type: 'Markdown' }
-        ],
-        path: '/summary',
-        controller: ControllerType.SummaryWithConfirmationEmail,
-        title: 'Summary'
-      } as PageSummaryWithConfirmationEmail
-      addUserConfirmationEmailAddress(pageDef)
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      const components = pageDef.components ?? []
-      expect(components).toHaveLength(4)
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
-      const fieldTypes = components.map((x) => x.type)
-      expect(fieldTypes).toEqual([
-        'TextField',
-        'RadiosField',
-        'EmailAddressField',
-        'Markdown'
-      ])
+    test('should get confirmation email with retained value', () => {
+      const field = getUserConfirmationEmailAddress({
+        userConfirmationEmailAddress: 'emailval'
+      })
+      expect(field.name).toBe('userConfirmationEmailAddress')
+      expect(field.value).toBe('emailval')
     })
   })
 })
