@@ -14,10 +14,7 @@ import { type ValidationErrorItem } from 'joi'
 
 import { ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
 import { optionalText } from '~/src/server/plugins/engine/components/constants.js'
-import {
-  type BackLink,
-  type ComponentViewModel
-} from '~/src/server/plugins/engine/components/types.js'
+import { type BackLink } from '~/src/server/plugins/engine/components/types.js'
 import {
   getCacheService,
   getErrors,
@@ -165,7 +162,14 @@ export class QuestionPageController extends PageController {
     } else if (formComponents.length > 1) {
       // When there is more than one form component,
       // adjust the label/legends to give equal prominence
-      this.applyLabelOrLegendClass(formComponents)
+      for (const { model } of formComponents) {
+        if (model.fieldset?.legend) {
+          model.fieldset.legend.classes = 'govuk-fieldset__legend--m'
+        }
+        if (model.label) {
+          model.label.classes = 'govuk-label--m'
+        }
+      }
     }
 
     return {
@@ -176,17 +180,6 @@ export class QuestionPageController extends PageController {
       components,
       errors,
       allowSaveAndExit: this.shouldShowSaveAndExit(request.server)
-    }
-  }
-
-  applyLabelOrLegendClass(formComponents: ComponentViewModel[]) {
-    for (const { model } of formComponents) {
-      if (model.fieldset?.legend) {
-        model.fieldset.legend.classes = 'govuk-fieldset__legend--m'
-      }
-      if (model.label) {
-        model.label.classes = 'govuk-label--m'
-      }
     }
   }
 
