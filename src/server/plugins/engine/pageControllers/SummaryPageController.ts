@@ -148,9 +148,12 @@ export class SummaryPageController extends QuestionPageController {
         request,
         viewModel,
         model,
-        submissionEmailAddress,
-        formMetadata,
-        viewModel.userConfirmationEmailField?.value as string
+        {
+          submissionEmailAddress,
+          userConfirmationEmailAddress: viewModel.userConfirmationEmailField
+            ?.value as string
+        },
+        formMetadata
       )
     }
 
@@ -180,11 +183,17 @@ export async function submitForm(
   request: FormRequestPayload,
   summaryViewModel: SummaryViewModel,
   model: FormModel,
-  submissionEmailAddress: string,
-  formMetadata: FormMetadata,
-  userConfirmationEmailAddress?: string
+  options: {
+    submissionEmailAddress: string
+    userConfirmationEmailAddress?: string
+  },
+  formMetadata: FormMetadata
 ) {
-  await extendFileRetention(model, context.state, submissionEmailAddress)
+  await extendFileRetention(
+    model,
+    context.state,
+    options.submissionEmailAddress
+  )
 
   const formStatus = checkFormStatus(request.params)
   const logTags = ['submit', 'submissionApi']
@@ -202,7 +211,7 @@ export async function submitForm(
   const submitResponse = await submitData(
     model,
     items,
-    submissionEmailAddress,
+    options.submissionEmailAddress,
     request.yar.id
   )
 
@@ -214,10 +223,7 @@ export async function submitForm(
     context,
     request,
     model,
-    {
-      submissionEmailAddress,
-      userConfirmationEmailAddress
-    },
+    options,
     items,
     submitResponse,
     formMetadata
