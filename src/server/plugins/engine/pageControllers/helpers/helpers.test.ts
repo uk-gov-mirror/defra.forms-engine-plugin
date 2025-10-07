@@ -21,7 +21,6 @@ import {
   StartPageController,
   StatusPageController,
   SummaryPageController,
-  SummaryPageWithConfirmationEmailController,
   TerminalPageController
 } from '~/src/server/plugins/engine/pageControllers/index.js'
 import definition from '~/test/form/definitions/blank.js'
@@ -66,10 +65,6 @@ describe('Page controller helpers', () => {
 
       case ControllerType.Summary:
         controller = SummaryPageController
-        break
-
-      case ControllerType.SummaryWithConfirmationEmail:
-        controller = SummaryPageWithConfirmationEmailController
         break
 
       case ControllerType.Status:

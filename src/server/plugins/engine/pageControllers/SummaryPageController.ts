@@ -135,19 +135,20 @@ export class SummaryPageController extends QuestionPageController {
     const formMetadata = await getFormMetadata(params.slug)
     const { notificationEmail } = formMetadata
     const { isPreview } = checkFormStatus(request.params)
-    const emailAddress = notificationEmail ?? this.model.def.outputEmail
+    const submissionEmailAddress =
+      notificationEmail ?? this.model.def.outputEmail
 
-    checkEmailAddressForLiveFormSubmission(emailAddress, isPreview)
+    checkEmailAddressForLiveFormSubmission(submissionEmailAddress, isPreview)
 
     // Send submission email
-    if (emailAddress) {
+    if (submissionEmailAddress) {
       const viewModel = this.getSummaryViewModel(request, context)
       await submitForm(
         context,
         request,
         viewModel,
         model,
-        emailAddress,
+        submissionEmailAddress,
         formMetadata,
         viewModel.userConfirmationEmailField?.value as string
       )
@@ -179,11 +180,11 @@ export async function submitForm(
   request: FormRequestPayload,
   summaryViewModel: SummaryViewModel,
   model: FormModel,
-  emailAddress: string,
+  submissionEmailAddress: string,
   formMetadata: FormMetadata,
   userConfirmationEmailAddress?: string
 ) {
-  await extendFileRetention(model, context.state, emailAddress)
+  await extendFileRetention(model, context.state, submissionEmailAddress)
 
   const formStatus = checkFormStatus(request.params)
   const logTags = ['submit', 'submissionApi']
@@ -201,7 +202,7 @@ export async function submitForm(
   const submitResponse = await submitData(
     model,
     items,
-    emailAddress,
+    submissionEmailAddress,
     request.yar.id
   )
 
@@ -213,11 +214,13 @@ export async function submitForm(
     context,
     request,
     model,
-    emailAddress,
+    {
+      submissionEmailAddress,
+      userConfirmationEmailAddress
+    },
     items,
     submitResponse,
-    formMetadata,
-    userConfirmationEmailAddress
+    formMetadata
   )
 }
 

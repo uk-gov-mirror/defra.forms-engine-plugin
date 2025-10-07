@@ -52,14 +52,6 @@ export function createPage(model: FormModel, pageDef: Page) {
       controller = new PageControllers.SummaryPageController(model, pageDef)
       break
 
-    case ControllerType.SummaryWithConfirmationEmail:
-      controller =
-        new PageControllers.SummaryPageWithConfirmationEmailController(
-          model,
-          pageDef
-        )
-      break
-
     case ControllerType.Status:
       controller = new PageControllers.StatusPageController(model, pageDef)
       break
