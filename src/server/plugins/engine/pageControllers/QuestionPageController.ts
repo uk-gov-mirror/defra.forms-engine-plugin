@@ -12,15 +12,12 @@ import Boom from '@hapi/boom'
 import { type RouteOptions } from '@hapi/hapi'
 import { type ValidationErrorItem } from 'joi'
 
-import { CustomerReferenceField } from '../components/index.js'
-
 import { ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
 import { optionalText } from '~/src/server/plugins/engine/components/constants.js'
 import { type BackLink } from '~/src/server/plugins/engine/components/types.js'
 import {
   getCacheService,
   getErrors,
-  getPage,
   getSaveAndExitHelpers,
   normalisePath,
   proceed
@@ -38,6 +35,7 @@ import {
   type FormStateValue,
   type FormSubmissionState
 } from '~/src/server/plugins/engine/types.js'
+import { getComponentsByType } from '~/src/server/plugins/engine/validationHelpers.js'
 import {
   FormAction,
   type FormRequest,
@@ -524,25 +522,21 @@ export class QuestionPageController extends PageController {
 
       if (
         action &&
-        action === 'external-component-edit-customerReferenceNumber' &&
-        context.errors
+        action === 'external-component-edit-customerReferenceNumber'
       ) {
-        const errorComponents =
-          context.errors?.map((error) =>
-            request.app.model?.componentMap.get(error.name)
-          ) ?? []
+        const { externalComponents } = getComponentsByType(
+          request.app.model?.componentMap ?? new Map()
+        )
 
         const componentName = action.split('external-component-edit-')[1]
 
-        for (const errorComponent of errorComponents) {
-          if (typeof errorComponent?.getRoutes === 'function') {
-            const { entrypoint } = errorComponent.getRoutes()
-
-            return h.redirect(
-              `${entrypoint}?component=${componentName}&returnUrl=${encodeURI(request.url.href)}`
-            )
-          }
-        }
+        const selectedComponent = externalComponents.get(componentName)
+        const { entrypoint } = (
+          selectedComponent as { getRoutes: () => { entrypoint: string } }
+        ).getRoutes()
+        return h.redirect(
+          `${entrypoint}?component=${componentName}&returnUrl=${encodeURI(`${request.url.origin}${request.url.pathname}`)}`
+        )
       }
 
       // Check if this is a save-and-exit action

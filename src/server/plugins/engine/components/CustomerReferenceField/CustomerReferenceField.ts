@@ -1,20 +1,17 @@
 import { type FormComponentsDef } from '@defra/forms-model'
 import joi, { type ObjectSchema } from 'joi'
 
-import { type FormRequestPayload } from '../../types/index.js'
 
 import { getRoutes } from './routes.js'
 
-import {
-  FormComponent,
-  isFormValue
-} from '~/src/server/plugins/engine/components/FormComponent.js'
+import { FormComponent } from '~/src/server/plugins/engine/components/FormComponent.js'
 import { messageTemplate } from '~/src/server/plugins/engine/pageControllers/validationOptions.js'
 import {
   type ErrorMessageTemplateList,
+  type FormPayload,
   type FormState,
   type FormStateValue,
-  type FormSubmissionState
+  type FormSubmissionError
 } from '~/src/server/plugins/engine/types.js'
 
 export class CustomerReferenceField extends FormComponent {
@@ -34,42 +31,21 @@ export class CustomerReferenceField extends FormComponent {
     const { options } = def
     const schema = 'schema' in def ? def.schema : {}
 
-    this.formSchema = joi.string().required()
-    this.stateSchema = joi
+    this.formSchema = joi
       .object()
       .keys({
         reference: joi.string().required(),
         _id: joi.string().required()
       })
       .required()
+    this.stateSchema = this.formSchema
     this.options = options
     this.schema = schema
-  }
-
-  getFormValueFromState(state: FormSubmissionState) {
-    const { name } = this
-    return this.getFormValue(state[name])
-  }
-
-  getFormValue(value?: FormStateValue | FormState) {
-    return this.isValue(value) ? value.reference : undefined
   }
 
   isValue(value?: FormStateValue | FormState): value is CustomerReferenceState {
     return CustomerReferenceField.isCustomerReferenceField(value)
   }
-
-  // getFormDataFromState(state: FormSubmissionState): FormPayload {
-  //   const { collection, name } = this
-
-  //   if (collection) {
-  //     return collection.getFormDataFromState(state)
-  //   }
-
-  //   return {
-  //     [name]: this.getFormValue(state[name])
-  //   }
-  // }
 
   /**
    * For error preview page that shows all possible errors on a component
@@ -89,6 +65,21 @@ export class CustomerReferenceField extends FormComponent {
         { type: 'max', template: messageTemplate.max }
       ]
     }
+  }
+
+  getDisplayStringFromFormValue(value?: FormStateValue | FormState): string {
+    if (this.isValue(value)) {
+      return value.reference
+    }
+    return ''
+  }
+
+  getViewModel(payload: FormPayload, errors?: FormSubmissionError[]) {
+    const viewModel = super.getViewModel(payload, errors)
+
+    viewModel.value = this.getDisplayStringFromFormValue(payload[this.name])
+
+    return viewModel
   }
 
   static isCustomerReferenceField(
