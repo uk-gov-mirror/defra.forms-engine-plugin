@@ -6,7 +6,6 @@ import {
   type ServerRoute
 } from '@hapi/hapi'
 
-import * as Components from '~/src/server/plugins/engine/components/index.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { validatePluginOptions } from '~/src/server/plugins/engine/options.js'
 import { getRoutes as getFileUploadStatusRoutes } from '~/src/server/plugins/engine/routes/file-upload.js'
@@ -15,6 +14,7 @@ import { getRoutes as getQuestionRoutes } from '~/src/server/plugins/engine/rout
 import { getRoutes as getRepeaterItemDeleteRoutes } from '~/src/server/plugins/engine/routes/repeaters/item-delete.js'
 import { getRoutes as getRepeaterSummaryRoutes } from '~/src/server/plugins/engine/routes/repeaters/summary.js'
 import { type PluginOptions } from '~/src/server/plugins/engine/types.js'
+import { getComponentsByType } from '~/src/server/plugins/engine/validationHelpers.js'
 import { registerVision } from '~/src/server/plugins/engine/vision.js'
 import {
   type FormRequestPayloadRefs,
@@ -80,16 +80,12 @@ export const plugin = {
       ]
     }
 
-    // Collect routes from components with a static getRoutes method
-    const componentRoutes = []
-    for (const comp of Object.values(Components)) {
-      if (typeof comp?.prototype.getRoutes === 'function') {
-        const { routes } = comp.prototype.getRoutes()
-        if (Array.isArray(routes)) {
-          componentRoutes.push(...routes)
-        }
-      }
-    }
+    // Collect routes from components with a static getRoutes method using getComponentsByType
+    const { externalComponents } = getComponentsByType()
+
+    const componentRoutes = Array.from(externalComponents.values()).flatMap(
+      (comp) => comp.getRoutes().routes
+    )
 
     const routes = [
       ...getQuestionRoutes(

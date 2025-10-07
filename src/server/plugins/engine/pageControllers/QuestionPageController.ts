@@ -520,20 +520,27 @@ export class QuestionPageController extends PageController {
       // Save state
       await this.setState(request, state)
 
-      if (
-        action &&
-        action === 'external-component-edit-customerReferenceNumber'
-      ) {
-        const { externalComponents } = getComponentsByType(
-          request.app.model?.componentMap ?? new Map()
-        )
+      if (action && action.startsWith('external-component-edit-')) {
+        const { externalComponents } = getComponentsByType()
 
         const componentName = action.split('external-component-edit-')[1]
 
-        const selectedComponent = externalComponents.get(componentName)
-        const { entrypoint } = (
-          selectedComponent as { getRoutes: () => { entrypoint: string } }
-        ).getRoutes()
+        const component = model.componentDefMap.get(componentName)
+        const componentType = component?.type
+
+        if (!componentType) {
+          throw Boom.internal(
+            `External component of type ${componentType} not found`
+          )
+        }
+
+        const selectedComponent = externalComponents.get(componentType)
+
+        if (!selectedComponent) {
+          throw Boom.internal(`External component ${componentName} not found`)
+        }
+
+        const { entrypoint } = selectedComponent.getRoutes()
         return h.redirect(
           `${entrypoint}?component=${componentName}&returnUrl=${encodeURI(`${request.url.origin}${request.url.pathname}`)}`
         )

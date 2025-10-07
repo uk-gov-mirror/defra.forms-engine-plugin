@@ -1,9 +1,7 @@
 import { type FormComponentsDef } from '@defra/forms-model'
 import joi, { type ObjectSchema } from 'joi'
 
-
-import { getRoutes } from './routes.js'
-
+import { getRoutes } from '~/src/server/plugins/engine/components/CustomerReferenceField/routes.js'
 import { FormComponent } from '~/src/server/plugins/engine/components/FormComponent.js'
 import { messageTemplate } from '~/src/server/plugins/engine/pageControllers/validationOptions.js'
 import {
@@ -88,7 +86,7 @@ export class CustomerReferenceField extends FormComponent {
     return value !== null && typeof value === 'object' && '_id' in value
   }
 
-  getRoutes() {
+  static getRoutes() {
     return {
       routes: getRoutes(),
       entrypoint: '/customer-reference-field/confirm'
