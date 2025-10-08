@@ -43,9 +43,7 @@
 
         {{ componentList(components) }}
 
-        {% if userConfirmationEmailField %}
-          {{ govukInput(userConfirmationEmailField) }}
-        {% endif %}
+        {% block customPageContent %}{% endblock %}
 
         {% if declaration %}
           <h2 class="govuk-heading-m" id="declaration">Declaration</h2>
