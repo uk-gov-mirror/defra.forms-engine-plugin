@@ -74,8 +74,12 @@ export async function redirectOrMakeHandler(
   // Call the onRequest callback if it has been supplied
   if (onRequest) {
     const result = await onRequest(request, h as ResponseToolkit, context)
-    if (result) {
-      return result // no need to check for `isTakeover`, TypeScript is happy
+    if (
+      result &&
+      typeof result === 'object' &&
+      (result as unknown as Record<string, unknown>)._takeover === true
+    ) {
+      return result
     }
   }
 
