@@ -23,7 +23,6 @@ export const pathSchema = Joi.string().required()
 export const itemIdSchema = Joi.string().uuid().required()
 export const crumbSchema = Joi.string().optional().allow('')
 export const confirmSchema = Joi.boolean().empty(false)
-export const userConfirmationEmailSchema = Joi.string().trim().email().allow('')
 
 export const paramsSchema = Joi.object<FormPayloadParams>()
   .keys({

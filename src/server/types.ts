@@ -60,10 +60,7 @@ export interface OutputService {
     context: FormContext,
     request: FormRequestPayload,
     model: FormModel,
-    options: {
-      submissionEmailAddress: string
-      userConfirmationEmailAddress?: string
-    },
+    submissionEmailAddress: string,
     items: DetailItem[],
     submitResponse: SubmitResponsePayload,
     formMetadata?: FormMetadata

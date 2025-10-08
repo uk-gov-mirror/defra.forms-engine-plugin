@@ -408,8 +408,8 @@ export interface FormAdapterSubmissionMessageMeta {
   status: FormStatus
   isPreview: boolean
   notificationEmail: string
-  userConfirmationEmail?: string
   versionMetadata?: FormVersionMetadata
+  [key: string]: unknown
 }
 
 export type FormAdapterSubmissionMessageMetaSerialised = Omit<

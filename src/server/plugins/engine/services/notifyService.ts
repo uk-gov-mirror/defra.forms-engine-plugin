@@ -25,10 +25,7 @@ export async function submit(
   context: FormContext,
   request: FormRequestPayload,
   model: FormModel,
-  options: {
-    submissionEmailAddress: string
-    userConfirmationEmailAddress?: string
-  },
+  emailAddress: string,
   items: DetailItem[],
   submitResponse: SubmitResponsePayload,
   formMetadata?: FormMetadata
@@ -43,7 +40,6 @@ export async function submit(
   // Get submission email personalisation
   request.logger.info(logTags, 'Getting personalisation data')
 
-  const emailAddress = options.submissionEmailAddress
   const formName = escapeMarkdown(model.name)
   const subject = formStatus.isPreview
     ? `TEST FORM SUBMISSION: ${formName}`
