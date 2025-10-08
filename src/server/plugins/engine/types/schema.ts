@@ -17,24 +17,26 @@ import {
 } from '~/src/server/plugins/engine/types.js'
 
 export const formAdapterSubmissionMessageMetaSchema =
-  Joi.object<FormAdapterSubmissionMessageMeta>()
-    .keys({
-      schemaVersion: Joi.string().valid(
-        ...Object.values(FormAdapterSubmissionSchemaVersion)
-      ),
-      timestamp: Joi.date().required(),
-      referenceNumber: Joi.string().required(),
-      formName: titleSchema,
-      formId: idSchema,
-      formSlug: slugSchema,
-      status: Joi.string()
-        .valid(...Object.values(FormStatus))
-        .required(),
-      isPreview: Joi.boolean().required(),
-      notificationEmail: notificationEmailAddressSchema.required(),
-      versionMetadata: formVersionMetadataSchema.optional()
-    })
-    .unknown(true) // Allow custom key/values
+  Joi.object<FormAdapterSubmissionMessageMeta>().keys({
+    schemaVersion: Joi.string().valid(
+      ...Object.values(FormAdapterSubmissionSchemaVersion)
+    ),
+    timestamp: Joi.date().required(),
+    referenceNumber: Joi.string().required(),
+    formName: titleSchema,
+    formId: idSchema,
+    formSlug: slugSchema,
+    status: Joi.string()
+      .valid(...Object.values(FormStatus))
+      .required(),
+    isPreview: Joi.boolean().required(),
+    notificationEmail: notificationEmailAddressSchema.required(),
+    versionMetadata: formVersionMetadataSchema.optional(),
+    custom: Joi.object({ a: Joi.any() })
+      .unknown()
+      .optional()
+      .description('Custom properties for the message')
+  })
 
 export const formAdapterSubmissionMessageDataSchema =
   Joi.object<FormAdapterSubmissionMessageData>().keys({
