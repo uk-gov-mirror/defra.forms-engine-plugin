@@ -70,7 +70,7 @@ describe('notifyService', () => {
       formContext,
       mockRequest,
       model,
-      { submissionEmailAddress: 'test@defra.gov.uk' },
+      'test@defra.gov.uk',
       items,
       submitResponse
     )
@@ -106,7 +106,7 @@ describe('notifyService', () => {
       formContext,
       mockRequest,
       model,
-      { submissionEmailAddress: 'test@defra.gov.uk' },
+      'test@defra.gov.uk',
       items,
       submitResponse
     )
@@ -144,7 +144,7 @@ describe('notifyService', () => {
       formContext,
       mockRequest,
       model,
-      { submissionEmailAddress: 'test@defra.gov.uk' },
+      'test@defra.gov.uk',
       items,
       submitResponse
     )
@@ -190,7 +190,7 @@ describe('notifyService', () => {
       formContext,
       mockRequest,
       model,
-      { submissionEmailAddress: 'test@defra.gov.uk' },
+      'test@defra.gov.uk',
       items,
       submitResponse,
       formMetadata
@@ -242,7 +242,7 @@ describe('notifyService', () => {
       formContext,
       mockRequest,
       model,
-      { submissionEmailAddress: 'test@defra.gov.uk' },
+      'test@defra.gov.uk',
       items,
       submitResponse
     )
@@ -294,7 +294,7 @@ describe('notifyService', () => {
         formContext,
         mockRequest,
         model,
-        { submissionEmailAddress: 'test@defra.gov.uk' },
+        'test@defra.gov.uk',
         items,
         submitResponse
       )
