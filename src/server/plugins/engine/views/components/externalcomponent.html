@@ -2,6 +2,7 @@
 {% from "govuk/components/hint/macro.njk" import govukHint %}
 
 {% macro ExternalComponent(component, bodyHtml) %}
+<div class="govuk-form-group{% if component.model.errors | length %} govuk-form-group--error{% endif %}">
   <h2 class="govuk-heading-m">{{ component.model.label.text }}</h2>
 
   {% if component.model.hint %}
@@ -11,11 +12,17 @@
     }) }}
   {% endif %}
 
+  {% if component.model.errors | length %}
+    <p class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span> {{ component.model.errors[0].text }}
+    </p>
+  {% endif %}
+
   {{ bodyHtml | safe }}
 
   {% if component.model.value %}
     {{ govukButton({
-      text: "Edit reference",
+      text: "Edit",
       type: "submit",
       name: "action",
       value: "external-component-edit-" + component.model.name,
@@ -24,7 +31,7 @@
     }) }}
   {% else %}
     {{ govukButton({
-      text: "Fetch reference",
+      text: "Select",
       type: "submit",
       name: "action",
       value: "external-component-edit-" + component.model.name,
@@ -32,4 +39,5 @@
       classes: "govuk-button--secondary"
     }) }}
   {% endif %}
+</div>
 {% endmacro %}
