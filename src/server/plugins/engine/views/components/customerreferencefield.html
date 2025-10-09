@@ -1,43 +1,21 @@
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/hint/macro.njk" import govukHint %}
+{% from "components/externalcomponent.html" import ExternalComponent %}
+
 
 {% macro CustomerReferenceField(component) %}
-  {# TODO if component.isExternal, modify component.model.label.classes in QuestionPageController.ts to use govuk-heading-m not govuk-label-m  #}
-  {# <h2 class="{{ component.model.label.classes }}">{{ component.model.label.text }}</h2> #}
-  <h2 class="govuk-heading-m">{{ component.model.label.text }}</h2>
-
-  {% if component.model.hint %}
-    {{ govukHint({
-      id: component.model.name + "-hint",
-      text: component.model.hint.text
-    }) }}
-    {# TODO check accessibility #}
-  {% endif %}
-
-  {# TODO externalise <form> into a generic base for external components</form> #}
   {% if component.model.value %}
-    <p class="govuk-body">Your reference number: <strong>{{ component.model.value }}</strong></p>
-
-    {{ govukButton({
-      text: "Edit reference",
-      type: "submit",
-      name: "action",
-      value: "external-component-edit-" + component.model.name,
-      preventDoubleClick: true,
-      classes: "govuk-button--secondary"
-    }) }}
+    {% set bodyHtml %}
+      <p class="govuk-body">Your reference number: <strong>{{ component.model.value }}</strong></p>
+    {% endset %}
   {% else %}
-    <div class="govuk-body">
-      <span>Use the button below to look up your reference number from <i>name of external system</i>.</span>
-    </div>
-    {{ govukButton({
-      text: "Fetch reference",
-      type: "submit",
-      name: "action",
-      value: "external-component-edit-" + component.model.name,
-      preventDoubleClick: true,
-      classes: "govuk-button--secondary"
-    }) }}
+    {% set bodyHtml %}
+      <div class="govuk-body">
+        <span>Use the button below to look up your reference number from <i>name of external system</i>.</span>
+      </div>
+    {% endset %}
   {% endif %}
+
+  {{ ExternalComponent(component, bodyHtml) }}
 {% endmacro %}
