@@ -6,9 +6,8 @@ import {
 } from '@hapi/hapi'
 import { isEqual } from 'date-fns'
 
-import { CustomerReferenceField } from '../components/index.js'
-
 import { PREVIEW_PATH_PREFIX } from '~/src/server/constants.js'
+import { FormComponent } from '~/src/server/plugins/engine/components/FormComponent.js'
 import {
   checkEmailAddressForLiveFormSubmission,
   checkFormStatus,
@@ -25,6 +24,7 @@ import * as defaultServices from '~/src/server/plugins/engine/services/index.js'
 import {
   type AnyFormRequest,
   type FormContext,
+  type FormSubmissionState,
   type PluginOptions
 } from '~/src/server/plugins/engine/types.js'
 import {
@@ -66,17 +66,7 @@ export async function redirectOrMakeHandler(
     })
   }
 
-  if (
-    request.query.component &&
-    request.query.data &&
-    typeof request.query.data === 'string'
-  ) {
-    state = await page.mergeState(request, state, {
-      ...(request.query.data
-        ? { [request.query.component]: JSON.parse(request.query.data) }
-        : {})
-    })
-  }
+  state = await importExternalComponentState(request, page, state)
 
   const flash = cacheService.getFlash(request)
   const context = model.getFormContext(request, state, flash?.errors)
@@ -97,6 +87,56 @@ export async function redirectOrMakeHandler(
   }
 
   return proceed(request, h, page.getHref(relevantPath))
+}
+
+function importExternalComponentState(
+  request: AnyFormRequest,
+  page: PageControllerClass,
+  state: FormSubmissionState
+): Promise<FormSubmissionState> {
+  const externalComponentData = request.yar.flash('externalStateAppendage')[0]
+
+  if (!externalComponentData) {
+    return Promise.resolve(state)
+  }
+
+  let componentName
+  let stateAppendage
+
+  try {
+    const parsedStateAppendage = JSON.parse(externalComponentData)
+
+    componentName = parsedStateAppendage.component
+    stateAppendage = parsedStateAppendage.data
+  } catch (e) {
+    request.server.logger.error(
+      e,
+      'Error parsing external component state JSON'
+    )
+    throw new Error('Error parsing external component state JSON')
+  }
+
+  const component = request.app.model?.componentMap.get(componentName)
+
+  if (!component) {
+    throw new Error(`Component ${componentName} not found in form`)
+  }
+
+  if (!(component instanceof FormComponent)) {
+    throw new Error(
+      `Component ${componentName} is not a FormComponent and does not support isState`
+    )
+  }
+
+  const isStateValid = component.isState(stateAppendage)
+
+  if (!isStateValid) {
+    throw new Error(`State for component ${componentName} is invalid`)
+  }
+
+  return page.mergeState(request, state, {
+    ...(stateAppendage ? { [componentName]: stateAppendage } : {})
+  })
 }
 
 export function makeLoadFormPreHandler(server: Server, options: PluginOptions) {

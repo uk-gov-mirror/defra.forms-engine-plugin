@@ -45,6 +45,10 @@ export class CustomerReferenceField extends FormComponent {
     return CustomerReferenceField.isCustomerReferenceField(value)
   }
 
+  isState(value?: FormStateValue | FormState): value is FormState {
+    return CustomerReferenceField.isCustomerReferenceField(value)
+  }
+
   /**
    * For error preview page that shows all possible errors on a component
    */
@@ -83,7 +87,12 @@ export class CustomerReferenceField extends FormComponent {
   static isCustomerReferenceField(
     value?: FormStateValue | FormState
   ): value is CustomerReferenceState {
-    return value !== null && typeof value === 'object' && '_id' in value
+    return (
+      value !== null &&
+      typeof value === 'object' &&
+      '_id' in value &&
+      'reference' in value
+    )
   }
 
   static getRoutes() {

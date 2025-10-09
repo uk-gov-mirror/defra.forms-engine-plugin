@@ -1,14 +1,20 @@
-import { type Request, type ResponseToolkit, type ServerRoute  } from '@hapi/hapi'
+import {
+  type Request,
+  type ResponseToolkit,
+  type ServerRoute
+} from '@hapi/hapi'
 import Joi from 'joi'
 
 function randomReference() {
   // Example: 3 groups of 3 digits
-  return `${Math.floor(100+Math.random()*900)}-${Math.floor(100+Math.random()*900)}-${Math.floor(100+Math.random()*900)}`
+  return `${Math.floor(100 + Math.random() * 900)}-${Math.floor(100 + Math.random() * 900)}-${Math.floor(100 + Math.random() * 900)}`
 }
 
 function randomId() {
   // Example: 32 hex chars
-  return Array.from({length:32},()=>Math.floor(Math.random()*16).toString(16)).join("")
+  return Array.from({ length: 32 }, () =>
+    Math.floor(Math.random() * 16).toString(16)
+  ).join('')
 }
 
 export function initiateHandler(request: Request, h: ResponseToolkit) {
@@ -42,9 +48,15 @@ export function confirmHandler(request: Request, h: ResponseToolkit) {
   const data = request.yar.get('data')
   const returnUrl = request.yar.get('returnUrl')
 
-  return h.redirect(
-    `${returnUrl}?component=${component}&data=${JSON.stringify(data)}`
+  request.yar.flash(
+    'externalStateAppendage',
+    JSON.stringify({
+      component,
+      data
+    })
   )
+
+  return h.redirect(returnUrl)
 }
 
 export function getRoutes(): ServerRoute[] {
