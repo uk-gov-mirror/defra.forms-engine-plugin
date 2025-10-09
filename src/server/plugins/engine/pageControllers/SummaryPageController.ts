@@ -73,6 +73,7 @@ export class SummaryPageController extends QuestionPageController {
     viewModel.phaseTag = this.phaseTag
     viewModel.components = components
     viewModel.allowSaveAndExit = this.shouldShowSaveAndExit(request.server)
+    viewModel.errors = errors
 
     return viewModel
   }
@@ -107,48 +108,56 @@ export class SummaryPageController extends QuestionPageController {
       context: FormContext,
       h: FormResponseToolkit
     ) => {
-      const { model } = this
-      const { params } = request
-
       // Check if this is a save-and-exit action
       const { action } = request.payload
       if (action === FormAction.SaveAndExit) {
         return this.handleSaveAndExit(request, context, h)
       }
 
-      const cacheService = getCacheService(request.server)
-
-      const { formsService } = this.model.services
-      const { getFormMetadata } = formsService
-
-      // Get the form metadata using the `slug` param
-      const formMetadata = await getFormMetadata(params.slug)
-      const { notificationEmail } = formMetadata
-      const { isPreview } = checkFormStatus(request.params)
-      const emailAddress = notificationEmail ?? this.model.def.outputEmail
-
-      checkEmailAddressForLiveFormSubmission(emailAddress, isPreview)
-
-      // Send submission email
-      if (emailAddress) {
-        const viewModel = this.getSummaryViewModel(request, context)
-        await submitForm(
-          context,
-          request,
-          viewModel,
-          model,
-          emailAddress,
-          formMetadata
-        )
-      }
-
-      await cacheService.setConfirmationState(request, { confirmed: true })
-
-      // Clear all form data
-      await cacheService.clearState(request)
-
-      return this.proceed(request, h, this.getStatusPath())
+      return this.handleFormSubmit(request, context, h)
     }
+  }
+
+  async handleFormSubmit(
+    request: FormRequestPayload,
+    context: FormContext,
+    h: FormResponseToolkit
+  ) {
+    const { model } = this
+    const { params } = request
+
+    const cacheService = getCacheService(request.server)
+
+    const { formsService } = this.model.services
+    const { getFormMetadata } = formsService
+
+    // Get the form metadata using the `slug` param
+    const formMetadata = await getFormMetadata(params.slug)
+    const { notificationEmail } = formMetadata
+    const { isPreview } = checkFormStatus(request.params)
+    const emailAddress = notificationEmail ?? this.model.def.outputEmail
+
+    checkEmailAddressForLiveFormSubmission(emailAddress, isPreview)
+
+    // Send submission email
+    if (emailAddress) {
+      const viewModel = this.getSummaryViewModel(request, context)
+      await submitForm(
+        context,
+        request,
+        viewModel,
+        model,
+        emailAddress,
+        formMetadata
+      )
+    }
+
+    await cacheService.setConfirmationState(request, { confirmed: true })
+
+    // Clear all form data
+    await cacheService.clearState(request)
+
+    return this.proceed(request, h, this.getStatusPath())
   }
 
   get postRouteOptions(): RouteOptions<FormRequestPayloadRefs> {
@@ -164,7 +173,7 @@ export class SummaryPageController extends QuestionPageController {
   }
 }
 
-async function submitForm(
+export async function submitForm(
   context: FormContext,
   request: FormRequestPayload,
   summaryViewModel: SummaryViewModel,

@@ -409,6 +409,7 @@ export interface FormAdapterSubmissionMessageMeta {
   isPreview: boolean
   notificationEmail: string
   versionMetadata?: FormVersionMetadata
+  custom?: Record<string, unknown>
 }
 
 export type FormAdapterSubmissionMessageMetaSerialised = Omit<

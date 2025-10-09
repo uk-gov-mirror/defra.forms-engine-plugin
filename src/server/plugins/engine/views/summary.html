@@ -4,12 +4,20 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "partials/components.html" import componentList with context %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
 
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {% if previewMode %}
         {% include "partials/preview-banner.html" %}
+      {% endif %}
+
+      {% if errors %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: checkErrorTemplates(errors)
+        }) }}
       {% endif %}
 
       {% if hasMissingNotificationEmail %}
@@ -33,14 +41,16 @@
       <form method="post" novalidate>
         <input type="hidden" name="crumb" value="{{ crumb }}">
 
+        {{ componentList(components) }}
+
+        {% block customPageContent %}{% endblock %}
+
         {% if declaration %}
           <h2 class="govuk-heading-m" id="declaration">Declaration</h2>
           <div class="govuk-body">
           {{ declaration | safe }}
           </div>
         {% endif %}
-
-        {{ componentList(components) }}
 
         <div class="govuk-button-group">
           {% set isDeclaration = declaration or components | length %}

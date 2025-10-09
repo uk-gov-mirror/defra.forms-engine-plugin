@@ -78,6 +78,29 @@ describe('Schema validation', () => {
       expect(error).toBeUndefined()
     })
 
+    it('should validate valid meta object with valid custom properties', () => {
+      const validMetaWithCustom = {
+        ...validMeta,
+        custom: {
+          property1: 'value 1',
+          property2: 'value2'
+        }
+      }
+      const { error } =
+        formAdapterSubmissionMessageMetaSchema.validate(validMetaWithCustom)
+      expect(error).toBeUndefined()
+    })
+
+    it('should validate valid meta object with empty custom properties', () => {
+      const validMetaWithCustom = {
+        ...validMeta,
+        custom: {}
+      }
+      const { error } =
+        formAdapterSubmissionMessageMetaSchema.validate(validMetaWithCustom)
+      expect(error).toBeUndefined()
+    })
+
     it('should reject invalid schema version', () => {
       const invalidMeta = { ...validMeta, schemaVersion: 'invalid' }
       const { error } =
@@ -90,6 +113,17 @@ describe('Schema validation', () => {
       const { timestamp: _, ...metaWithoutTimestamp } = validMeta
       const { error } =
         formAdapterSubmissionMessageMetaSchema.validate(metaWithoutTimestamp)
+      expect(error).toBeDefined()
+    })
+
+    it('should reject invalid custom structure', () => {
+      const validMetaWithInvalidCustom = {
+        ...validMeta,
+        custom: 'invalid'
+      }
+      const { error } = formAdapterSubmissionMessageMetaSchema.validate(
+        validMetaWithInvalidCustom
+      )
       expect(error).toBeDefined()
     })
   })
