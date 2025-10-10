@@ -87,8 +87,12 @@ export const plugin = {
         preparePageEventRequestOptions,
         onRequest
       ),
-      ...getRepeaterSummaryRoutes(getRouteOptions, postRouteOptions),
-      ...getRepeaterItemDeleteRoutes(getRouteOptions, postRouteOptions),
+      ...getRepeaterSummaryRoutes(getRouteOptions, postRouteOptions, onRequest),
+      ...getRepeaterItemDeleteRoutes(
+        getRouteOptions,
+        postRouteOptions,
+        onRequest
+      ),
       ...getFileUploadStatusRoutes()
     ]
 

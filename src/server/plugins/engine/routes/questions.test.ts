@@ -40,7 +40,14 @@ jest.mock('~/src/server/plugins/engine/routes/index')
 
 describe('makeGetHandler', () => {
   const hMock: FormResponseToolkit = {
-    redirect: jest.fn(),
+    redirect: jest.fn().mockReturnValue({
+      takeover: jest
+        .fn()
+        .mockReturnValue({
+          statusCode: 302,
+          headers: { location: '/redirect-url' }
+        })
+    }),
     view: jest.fn()
   }
 
@@ -84,8 +91,9 @@ describe('makeGetHandler', () => {
 
     jest
       .mocked(redirectOrMakeHandler)
-      .mockImplementation((_req: AnyFormRequest, _h: FormResponseToolkit, fn) =>
-        Promise.resolve(fn(pageMock, contextMock))
+      .mockImplementation(
+        (_req: AnyFormRequest, _h: FormResponseToolkit, _onRequest, fn) =>
+          Promise.resolve(fn(pageMock, contextMock))
       )
 
     await makeGetHandler()(requestMock, hMock)
@@ -126,8 +134,9 @@ describe('makeGetHandler', () => {
 
     jest
       .mocked(redirectOrMakeHandler)
-      .mockImplementation((_req: AnyFormRequest, _h: FormResponseToolkit, fn) =>
-        Promise.resolve(fn(pageMock, contextMock))
+      .mockImplementation(
+        (_req: AnyFormRequest, _h: FormResponseToolkit, _onRequest, fn) =>
+          Promise.resolve(fn(pageMock, contextMock))
       )
 
     await makeGetHandler()(requestMock, hMock)
@@ -164,7 +173,12 @@ describe('makeGetHandler', () => {
     jest
       .mocked(redirectOrMakeHandler)
       .mockImplementation(
-        async (_req: AnyFormRequest, _h: FormResponseToolkit, fn) => {
+        async (
+          _req: AnyFormRequest,
+          _h: FormResponseToolkit,
+          _onRequest,
+          fn
+        ) => {
           try {
             await fn(pageMock, contextMock)
           } catch (err) {
@@ -230,8 +244,9 @@ describe('makePostHandler', () => {
 
     jest
       .mocked(redirectOrMakeHandler)
-      .mockImplementation((_req: AnyFormRequest, _h: FormResponseToolkit, fn) =>
-        Promise.resolve(fn(pageMock, contextMock))
+      .mockImplementation(
+        (_req: AnyFormRequest, _h: FormResponseToolkit, _onRequest, fn) =>
+          Promise.resolve(fn(pageMock, contextMock))
       )
 
     const response = await makePostHandler()(requestMock, hMock)
@@ -269,8 +284,9 @@ describe('makePostHandler', () => {
 
     jest
       .mocked(redirectOrMakeHandler)
-      .mockImplementation((_req: AnyFormRequest, _h: FormResponseToolkit, fn) =>
-        Promise.resolve(fn(pageMock, contextMock))
+      .mockImplementation(
+        (_req: AnyFormRequest, _h: FormResponseToolkit, _onRequest, fn) =>
+          Promise.resolve(fn(pageMock, contextMock))
       )
 
     await makePostHandler()(requestMock, hMock)
@@ -310,8 +326,9 @@ describe('makePostHandler', () => {
 
     jest
       .mocked(redirectOrMakeHandler)
-      .mockImplementation((_req: AnyFormRequest, _h: FormResponseToolkit, fn) =>
-        Promise.resolve(fn(pageMock, contextMock))
+      .mockImplementation(
+        (_req: AnyFormRequest, _h: FormResponseToolkit, _onRequest, fn) =>
+          Promise.resolve(fn(pageMock, contextMock))
       )
 
     await makePostHandler()(requestMock, hMock)
@@ -349,7 +366,12 @@ describe('makePostHandler', () => {
     jest
       .mocked(redirectOrMakeHandler)
       .mockImplementation(
-        async (_req: AnyFormRequest, _h: FormResponseToolkit, fn) => {
+        async (
+          _req: AnyFormRequest,
+          _h: FormResponseToolkit,
+          _onRequest,
+          fn
+        ) => {
           try {
             await fn(pageMock, contextMock)
           } catch (err) {
