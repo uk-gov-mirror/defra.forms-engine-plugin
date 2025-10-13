@@ -6,7 +6,7 @@ import {
   getCacheService,
   getPage,
   proceed
-} from '~/src/server/plugins/engine/helpers.ts'
+} from '~/src/server/plugins/engine/helpers.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers/pages.js'
 import { redirectOrMakeHandler } from '~/src/server/plugins/engine/routes/index.js'
@@ -16,7 +16,7 @@ import {
 } from '~/src/server/plugins/engine/types.js'
 import { type FormResponseToolkit } from '~/src/server/routes/types.js'
 
-jest.mock('~/src/server/plugins/engine/helpers.ts')
+jest.mock('~/src/server/plugins/engine/helpers')
 
 describe('redirectOrMakeHandler', () => {
   const mockServer = {} as unknown as Parameters<
@@ -34,14 +34,7 @@ describe('redirectOrMakeHandler', () => {
     view: jest.fn()
   } as unknown as FormResponseToolkit
 
-  const mockPage: PageControllerClass = {
-    getState: jest.fn().mockResolvedValue({ $$__referenceNumber: 'REF-123' }),
-    mergeState: jest.fn().mockResolvedValue({ $$__referenceNumber: 'REF-123' }),
-    getRelevantPath: jest.fn().mockReturnValue('/test-path'),
-    getSummaryPath: jest.fn().mockReturnValue('/summary'),
-    getHref: jest.fn().mockReturnValue('/test-href'),
-    path: '/test-path'
-  } as unknown as PageControllerClass
+  let mockPage: PageControllerClass
 
   const mockModel: FormModel = {
     def: { metadata: {} },
@@ -60,16 +53,16 @@ describe('redirectOrMakeHandler', () => {
     mockRequest.app = { model: mockModel }
 
     // Reset mock page
-    mockPage.getState = jest
-      .fn()
-      .mockResolvedValue({ $$__referenceNumber: 'REF-123' })
-    mockPage.mergeState = jest
-      .fn()
-      .mockResolvedValue({ $$__referenceNumber: 'REF-123' })
-    mockPage.getRelevantPath = jest.fn().mockReturnValue('/test-path')
-    mockPage.getSummaryPath = jest.fn().mockReturnValue('/summary')
-    mockPage.getHref = jest.fn().mockReturnValue('/test-href')
-    mockPage.path = '/test-path'
+    mockPage = {
+      getState: jest.fn().mockResolvedValue({ $$__referenceNumber: 'REF-123' }),
+      mergeState: jest
+        .fn()
+        .mockResolvedValue({ $$__referenceNumber: 'REF-123' }),
+      getRelevantPath: jest.fn().mockReturnValue('/test-path'),
+      getSummaryPath: jest.fn().mockReturnValue('/summary'),
+      getHref: jest.fn().mockReturnValue('/test-href'),
+      path: '/test-path'
+    } as unknown as PageControllerClass
 
     // Reset mock model
     mockModel.getFormContext = jest.fn().mockReturnValue({
@@ -225,8 +218,19 @@ describe('redirectOrMakeHandler', () => {
     })
 
     it('should call makeHandler when page is relevant', async () => {
-      mockPage.getRelevantPath = jest.fn().mockReturnValue('/test-path')
-      mockPage.path = '/test-path'
+      const testPage = {
+        getState: jest
+          .fn()
+          .mockResolvedValue({ $$__referenceNumber: 'REF-123' }),
+        mergeState: jest
+          .fn()
+          .mockResolvedValue({ $$__referenceNumber: 'REF-123' }),
+        getSummaryPath: jest.fn().mockReturnValue('/summary'),
+        getHref: jest.fn().mockReturnValue('/test-href'),
+        getRelevantPath: jest.fn().mockReturnValue('/test-path'),
+        path: '/test-path'
+      } as unknown as PageControllerClass
+      ;(getPage as jest.Mock).mockReturnValue(testPage)
 
       await redirectOrMakeHandler(
         mockRequest,
@@ -235,7 +239,7 @@ describe('redirectOrMakeHandler', () => {
         mockMakeHandler
       )
 
-      expect(mockMakeHandler).toHaveBeenCalledWith(mockPage, expect.any(Object))
+      expect(mockMakeHandler).toHaveBeenCalledWith(testPage, expect.any(Object))
     })
 
     it('should call makeHandler when context has force access', async () => {
@@ -255,8 +259,19 @@ describe('redirectOrMakeHandler', () => {
     })
 
     it('should redirect when page is not relevant', async () => {
-      mockPage.getRelevantPath = jest.fn().mockReturnValue('/other-path')
-      mockPage.path = '/test-path'
+      const testPage = {
+        getState: jest
+          .fn()
+          .mockResolvedValue({ $$__referenceNumber: 'REF-123' }),
+        mergeState: jest
+          .fn()
+          .mockResolvedValue({ $$__referenceNumber: 'REF-123' }),
+        getSummaryPath: jest.fn().mockReturnValue('/summary'),
+        getHref: jest.fn().mockReturnValue('/test-href'),
+        getRelevantPath: jest.fn().mockReturnValue('/other-path'),
+        path: '/test-path'
+      } as unknown as PageControllerClass
+      ;(getPage as jest.Mock).mockReturnValue(testPage)
 
       await redirectOrMakeHandler(
         mockRequest,
@@ -270,12 +285,22 @@ describe('redirectOrMakeHandler', () => {
     })
 
     it('should set returnUrl when redirecting and next pages exist', async () => {
-      mockPage.getRelevantPath = jest.fn().mockReturnValue('/other-path')
-      mockPage.path = '/test-path'
-      mockPage.getHref = jest
-        .fn()
-        .mockReturnValueOnce('/summary-href') // First call: for summaryPath (returnUrl)
-        .mockReturnValueOnce('/relevant-path-href') // Second call: for relevantPath (redirect)
+      const testPage = {
+        getState: jest
+          .fn()
+          .mockResolvedValue({ $$__referenceNumber: 'REF-123' }),
+        mergeState: jest
+          .fn()
+          .mockResolvedValue({ $$__referenceNumber: 'REF-123' }),
+        getSummaryPath: jest.fn().mockReturnValue('/summary'),
+        getRelevantPath: jest.fn().mockReturnValue('/other-path'),
+        path: '/test-path',
+        getHref: jest
+          .fn()
+          .mockReturnValueOnce('/summary-href') // First call: for summaryPath (returnUrl)
+          .mockReturnValueOnce('/relevant-path-href') // Second call: for relevantPath (redirect)
+      } as unknown as PageControllerClass
+      ;(getPage as jest.Mock).mockReturnValue(testPage)
       ;(findPage as jest.Mock).mockReturnValue({ next: ['next-page'] })
 
       await redirectOrMakeHandler(
@@ -294,8 +319,19 @@ describe('redirectOrMakeHandler', () => {
     })
 
     it('should not set returnUrl when redirecting and no next pages exist', async () => {
-      mockPage.getRelevantPath = jest.fn().mockReturnValue('/other-path')
-      mockPage.path = '/test-path'
+      const testPage = {
+        getState: jest
+          .fn()
+          .mockResolvedValue({ $$__referenceNumber: 'REF-123' }),
+        mergeState: jest
+          .fn()
+          .mockResolvedValue({ $$__referenceNumber: 'REF-123' }),
+        getSummaryPath: jest.fn().mockReturnValue('/summary'),
+        getHref: jest.fn().mockReturnValue('/test-href'),
+        getRelevantPath: jest.fn().mockReturnValue('/other-path'),
+        path: '/test-path'
+      } as unknown as PageControllerClass
+      ;(getPage as jest.Mock).mockReturnValue(testPage)
       const returnUrlBefore = mockRequest.query.returnUrl
       ;(findPage as jest.Mock).mockReturnValue({ next: [] })
 
