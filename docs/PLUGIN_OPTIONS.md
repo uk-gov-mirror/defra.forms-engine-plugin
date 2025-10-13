@@ -237,7 +237,7 @@ export type OnRequestCallback = (
   request: AnyFormRequest,
   h: ResponseToolkit,
   context: FormContext
-) => void
+) => Promise<ResponseObject | undefined>
 ```
 
 Here's an example of how it could be used to secure access to forms:
@@ -246,14 +246,17 @@ Here's an example of how it could be used to secure access to forms:
 await server.register({
   plugin,
   options: {
-    onRequest: (request , h, context) => {
-      const redirectUrl = mapStatusToUrl(applicationStatus, grantCode)
-      if (request.path === redirectUrl) {
-        return h.continue
+    onRequest: async (request, h, context) => {
+      const { auth } = request
+
+      // Check if user is authenticated
+      if (!auth.isAuthenticated) {
+        return h.redirect('/login').takeover()
       }
 
-      return h.redirect(redirectUrl).takeover()
-      }
+      // Return undefined to continue with normal form processing
+      return undefined
+    }
   }
 })
 ```
