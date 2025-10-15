@@ -367,7 +367,8 @@ export type PreparePageEventRequestOptions = (
 export type OnRequestCallback = (
   request: AnyFormRequest,
   h: ResponseToolkit,
-  context: FormContext
+  context: FormContext,
+  metadata: Record<string, unknown>
 ) => Promise<ResponseObject | undefined>
 
 export type SaveAndExitHandler = (
