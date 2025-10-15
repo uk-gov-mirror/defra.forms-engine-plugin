@@ -1,3 +1,4 @@
+import { type FormDefinition } from '@defra/forms-model'
 import Boom from '@hapi/boom'
 import { type ResponseObject, type ResponseToolkit } from '@hapi/hapi'
 
@@ -37,7 +38,11 @@ describe('redirectOrMakeHandler', () => {
   let mockPage: PageControllerClass
 
   const mockModel: FormModel = {
-    def: { metadata: {} },
+    def: {
+      metadata: {
+        submission: { grantCode: 'TEST-GRANT' }
+      } as { submission: { grantCode: string } }
+    },
     getFormContext: jest.fn().mockReturnValue({
       isForceAccess: false,
       data: {}
@@ -98,7 +103,46 @@ describe('redirectOrMakeHandler', () => {
         expect.objectContaining({
           isForceAccess: false,
           data: {}
+        }),
+        mockModel.def.metadata
+      )
+    })
+
+    it('should call onRequest callback with metadata as empty object if it does not exist', async () => {
+      const testModel: Partial<FormModel> = {
+        def: {
+          pages: [],
+          conditions: [],
+          lists: [],
+          sections: [],
+          metadata: undefined
+        } as FormDefinition,
+        getFormContext: jest.fn().mockReturnValue({
+          isForceAccess: false,
+          data: {}
         })
+      }
+      mockRequest.app = { model: testModel as unknown as FormModel }
+
+      const onRequestCallback: OnRequestCallback = jest
+        .fn()
+        .mockResolvedValue(undefined)
+
+      await redirectOrMakeHandler(
+        mockRequest,
+        mockH,
+        onRequestCallback,
+        mockMakeHandler
+      )
+
+      expect(onRequestCallback).toHaveBeenCalledWith(
+        mockRequest,
+        mockH as ResponseToolkit,
+        expect.objectContaining({
+          isForceAccess: false,
+          data: {}
+        }),
+        expect.objectContaining({})
       )
     })
 
