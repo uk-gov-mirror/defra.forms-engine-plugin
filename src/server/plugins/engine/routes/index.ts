@@ -5,6 +5,7 @@ import {
   type Server
 } from '@hapi/hapi'
 import { isEqual } from 'date-fns'
+import { object } from 'joi'
 
 import { PREVIEW_PATH_PREFIX } from '~/src/server/constants.js'
 import { FormComponent } from '~/src/server/plugins/engine/components/FormComponent.js'
@@ -24,6 +25,8 @@ import * as defaultServices from '~/src/server/plugins/engine/services/index.js'
 import {
   type AnyFormRequest,
   type FormContext,
+  type FormState,
+  type FormStateValue,
   type FormSubmissionState,
   type PluginOptions
 } from '~/src/server/plugins/engine/types.js'
@@ -94,26 +97,32 @@ function importExternalComponentState(
   page: PageControllerClass,
   state: FormSubmissionState
 ): Promise<FormSubmissionState> {
-  const externalComponentData = request.yar.flash('externalStateAppendage')[0]
+  const externalComponentData: string = request.yar.flash(
+    'externalStateAppendage'
+  )[0]
 
   if (!externalComponentData) {
     return Promise.resolve(state)
   }
 
-  let componentName
-  let stateAppendage
+  let componentName: string | undefined
+  let stateAppendage: FormState | undefined
 
   try {
-    const parsedStateAppendage = JSON.parse(externalComponentData)
-
-    componentName = parsedStateAppendage.component
-    stateAppendage = parsedStateAppendage.data
+    const externalComponentPayload = JSON.parse(externalComponentData) as {
+      component: string
+      data: FormState
+    }
+    componentName = externalComponentPayload.component
+    stateAppendage = externalComponentPayload.data
   } catch (e) {
     request.server.logger.error(
       e,
-      'Error parsing external component state JSON'
+      'Error parsing external component state JSON or type cast failed'
     )
-    throw new Error('Error parsing external component state JSON')
+    throw new Error(
+      'Error parsing external component state JSON or type cast failed'
+    )
   }
 
   const component = request.app.model?.componentMap.get(componentName)
@@ -128,14 +137,24 @@ function importExternalComponentState(
     )
   }
 
-  const isStateValid = component.isState(stateAppendage)
-
-  if (!isStateValid) {
-    throw new Error(`State for component ${componentName} is invalid`)
+  if (!stateAppendage) {
+    throw new Error('No state appendage found')
   }
 
+  // Filter stateAppendage keys to only those starting with componentName
+  const filteredStateAppendage = Object.keys(stateAppendage)
+    .filter((key) => key.startsWith(componentName))
+    .reduce((acc: Record<string, unknown>, key) => {
+      acc[key] = stateAppendage[key]
+      return acc
+    }, {})
+
+  // if (!component.isState(filteredStateAppendage as FormState)) {
+  //   throw new Error(`State for component ${componentName} is invalid`)
+  // }
+
   return page.mergeState(request, state, {
-    ...(stateAppendage ? { [componentName]: stateAppendage } : {})
+    ...filteredStateAppendage
   })
 }
 

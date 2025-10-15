@@ -18,12 +18,12 @@ function randomId() {
 }
 
 export function initiateHandler(request: Request, h: ResponseToolkit) {
-  const returnUrl = request.query.returnUrl
-  const component = request.query.component
+  const returnUrl: string = request.query.returnUrl
+  const component: string = request.query.component
 
   const data = {
-    reference: randomReference(),
-    _id: randomId()
+    [`${component}__reference`]: randomReference(),
+    [`${component}__id`]: randomId()
   }
 
   request.yar.set('returnUrl', returnUrl)
@@ -34,7 +34,7 @@ export function initiateHandler(request: Request, h: ResponseToolkit) {
     `
     <h1>Simulated external service page</h1>
 
-    <p>You have been generated a reference number: ${data.reference}.</p>
+    <p>You have been generated a reference number: ${data[`${component}__reference`]}.</p>
 
     <form method="post" action="/customer-reference-field/confirm">
       <button type="submit">Confirm</button>

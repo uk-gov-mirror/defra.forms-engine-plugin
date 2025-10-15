@@ -1,8 +1,22 @@
 {
   "conditions": [],
   "engine": "V2",
-  "startPage": "/all-components",
   "pages": [
+    {
+      "path": "/address",
+      "title": "Your address",
+      "components": [
+        {
+          "type": "UkAddressField",
+          "name": "applicantAddress",
+          "title": "What's your address?",
+          "shortDescription": "Your address",
+          "hint": "",
+          "options": {},
+          "schema": {}
+        }
+      ]
+    },
     {
       "path": "/all-components",
       "title": "Details about you",
