@@ -23,7 +23,7 @@ export function initiateHandler(request: Request, h: ResponseToolkit) {
 
   const data = {
     [`${component}__reference`]: randomReference(),
-    [`${component}__id`]: randomId()
+    [`${component}___id`]: randomId()
   }
 
   request.yar.set('returnUrl', returnUrl)

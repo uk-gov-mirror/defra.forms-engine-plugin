@@ -15,8 +15,7 @@ import {
   type FormPayload,
   type FormState,
   type FormStateValue,
-  type FormSubmissionError,
-  type FormSubmissionState
+  type FormSubmissionError
 } from '~/src/server/plugins/engine/types.js'
 
 export class CustomerReferenceField extends FormComponent {
@@ -78,6 +77,11 @@ export class CustomerReferenceField extends FormComponent {
     return CustomerReferenceField.isCustomerReferenceField(value)
   }
 
+  getFormValueFromState(state: FormSubmissionState) {
+    const value = super.getFormValueFromState(state)
+    return this.isState(value) ? value : undefined
+  }
+
   /**
    * For error preview page that shows all possible errors on a component
    */
@@ -112,11 +116,6 @@ export class CustomerReferenceField extends FormComponent {
     viewModel.value = this.getDisplayStringFromFormValue(payload)
 
     return viewModel
-  }
-
-  getFormValueFromState(state: FormSubmissionState) {
-    const value = super.getFormValueFromState(state)
-    return this.isState(value) ? value : undefined
   }
 
   static isCustomerReferenceField(
