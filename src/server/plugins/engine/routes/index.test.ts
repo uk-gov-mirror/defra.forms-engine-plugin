@@ -102,8 +102,7 @@ describe('redirectOrMakeHandler', () => {
         expect.objectContaining({
           isForceAccess: false,
           data: {}
-        }),
-        mockModel.def
+        })
       )
     })
 

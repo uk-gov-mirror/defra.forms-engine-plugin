@@ -236,8 +236,7 @@ If provided, the `onRequest` plugin option will be invoked on each request to an
 export type OnRequestCallback = (
   request: AnyFormRequest,
   h: ResponseToolkit,
-  context: FormContext,
-  formDefinition: FormDefinition
+  context: FormContext
 ) => Promise<ResponseObject | undefined>
 ```
 
@@ -247,7 +246,7 @@ Here's an example of how it could be used to secure access to forms:
 await server.register({
   plugin,
   options: {
-    onRequest: async (request, h, context, formDefinition) => {
+    onRequest: async (request, h, context) => {
       const { auth } = request
 
       // Check if user is authenticated
