@@ -1,6 +1,7 @@
 import {
   type ComponentDef,
   type Event,
+  type FormDefinition,
   type FormVersionMetadata,
   type Item,
   type List,
@@ -368,7 +369,7 @@ export type OnRequestCallback = (
   request: AnyFormRequest,
   h: ResponseToolkit,
   context: FormContext,
-  metadata: Record<string, unknown>
+  definition: FormDefinition
 ) => Promise<ResponseObject | undefined>
 
 export type SaveAndExitHandler = (

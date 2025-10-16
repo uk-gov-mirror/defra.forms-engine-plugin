@@ -237,7 +237,7 @@ export type OnRequestCallback = (
   request: AnyFormRequest,
   h: ResponseToolkit,
   context: FormContext,
-  metadata: Record<string, unknown>
+  formDefinition: FormDefinition
 ) => Promise<ResponseObject | undefined>
 ```
 
@@ -247,7 +247,7 @@ Here's an example of how it could be used to secure access to forms:
 await server.register({
   plugin,
   options: {
-    onRequest: async (request, h, context, metadata) => {
+    onRequest: async (request, h, context, formDefinition) => {
       const { auth } = request
 
       // Check if user is authenticated

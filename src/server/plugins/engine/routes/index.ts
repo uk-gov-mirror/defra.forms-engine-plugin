@@ -77,7 +77,7 @@ export async function redirectOrMakeHandler(
       request,
       h as ResponseToolkit,
       context,
-      model.def.metadata ?? {}
+      model.def
     )
     if (
       result &&
