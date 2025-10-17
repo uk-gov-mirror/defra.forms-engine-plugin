@@ -85,10 +85,8 @@ describe('Auth', () => {
         const { auth } = request
 
         if (!auth.isAuthenticated) {
-          return Promise.resolve(h.redirect('/unauthorized').takeover())
+          return h.redirect('/unauthorized').takeover()
         }
-
-        return Promise.resolve(undefined)
       }
     })
 

@@ -237,7 +237,7 @@ export type OnRequestCallback = (
   request: AnyFormRequest,
   h: FormResponseToolkit,
   context: FormContext
-) => Promise<ResponseObject | undefined>
+) => ResponseObject | undefined | Promise<ResponseObject | undefined>
 ```
 
 Here's an example of how it could be used to secure access to forms:
