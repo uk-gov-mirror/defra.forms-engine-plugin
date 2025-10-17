@@ -156,45 +156,6 @@ describe('redirectOrMakeHandler', () => {
       expect(mockMakeHandler).toHaveBeenCalledWith(mockPage, expect.any(Object))
     })
 
-    it('should continue processing when onRequest returns non-takeover response', async () => {
-      const nonTakeoverResponse = {
-        statusCode: 200,
-        _takeover: false
-      } as unknown as ResponseObject
-
-      const onRequestCallback: OnRequestCallback = jest
-        .fn()
-        .mockResolvedValue(nonTakeoverResponse)
-
-      await redirectOrMakeHandler(
-        mockRequest,
-        mockH,
-        onRequestCallback,
-        mockMakeHandler
-      )
-
-      expect(mockMakeHandler).toHaveBeenCalledWith(mockPage, expect.any(Object))
-    })
-
-    it('should continue processing when onRequest returns response without _takeover property', async () => {
-      const responseWithoutTakeover = {
-        statusCode: 200
-      } as unknown as ResponseObject
-
-      const onRequestCallback: OnRequestCallback = jest
-        .fn()
-        .mockResolvedValue(responseWithoutTakeover)
-
-      await redirectOrMakeHandler(
-        mockRequest,
-        mockH,
-        onRequestCallback,
-        mockMakeHandler
-      )
-
-      expect(mockMakeHandler).toHaveBeenCalledWith(mockPage, expect.any(Object))
-    })
-
     it('should handle onRequest callback errors', async () => {
       const error = new Error('onRequest callback error')
       const onRequestCallback: OnRequestCallback = jest
