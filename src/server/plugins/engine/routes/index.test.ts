@@ -40,8 +40,8 @@ describe('redirectOrMakeHandler', () => {
   const mockModel: FormModel = {
     def: {
       metadata: {
-        submission: { grantCode: 'TEST-GRANT' }
-      } as { submission: { grantCode: string } }
+        submission: { code: 'TEST-CODE' }
+      } as { submission: { code: string } }
     },
     getFormContext: jest.fn().mockReturnValue({
       isForceAccess: false,
