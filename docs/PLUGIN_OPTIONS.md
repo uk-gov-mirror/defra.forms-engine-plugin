@@ -237,7 +237,7 @@ export type OnRequestCallback = (
   request: AnyFormRequest,
   h: FormResponseToolkit,
   context: FormContext
-) => ResponseObject | undefined | Promise<ResponseObject | undefined>
+) => ResponseObject | FormResponseToolkit['continue'] | Promise<ResponseObject | FormResponseToolkit['continue']>
 ```
 
 Here's an example of how it could be used to secure access to forms:
@@ -254,8 +254,8 @@ await server.register({
         return h.redirect('/login').takeover()
       }
 
-      // Return undefined to continue with normal form processing
-      return undefined
+      // Return h.continue to resume with normal form processing
+      return h.continue
     }
   }
 })

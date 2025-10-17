@@ -367,7 +367,10 @@ export type OnRequestCallback = (
   request: AnyFormRequest,
   h: FormResponseToolkit,
   context: FormContext
-) => ResponseObject | undefined | Promise<ResponseObject | undefined>
+) =>
+  | ResponseObject
+  | FormResponseToolkit['continue']
+  | Promise<ResponseObject | FormResponseToolkit['continue']>
 
 export type SaveAndExitHandler = (
   request: FormRequestPayload,

@@ -74,7 +74,7 @@ export async function redirectOrMakeHandler(
   // Call the onRequest callback if it has been supplied
   if (onRequest) {
     const result = await onRequest(request, h, context)
-    if (result !== undefined) {
+    if (result !== h.continue) {
       return result
     }
   }

@@ -46,7 +46,8 @@ describe('makeGetHandler', () => {
         headers: { location: '/redirect-url' }
       })
     }),
-    view: jest.fn()
+    view: jest.fn(),
+    continue: Symbol('continue')
   }
 
   beforeEach(() => {
@@ -240,7 +241,8 @@ describe('makeGetHandler', () => {
 describe('makePostHandler', () => {
   const hMock: FormResponseToolkit = {
     redirect: jest.fn(),
-    view: jest.fn()
+    view: jest.fn(),
+    continue: Symbol('continue')
   }
 
   beforeEach(() => {

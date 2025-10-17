@@ -81,12 +81,14 @@ describe('Auth', () => {
 
     server = await createServer({
       services,
-      onRequest: (request, h /*, context */) => {
+      onRequest: (request, h, _context) => {
         const { auth } = request
 
         if (!auth.isAuthenticated) {
           return h.redirect('/unauthorized').takeover()
         }
+
+        return h.continue
       }
     })
 
