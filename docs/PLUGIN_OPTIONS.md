@@ -235,7 +235,7 @@ If provided, the `onRequest` plugin option will be invoked on each request to an
 ```ts
 export type OnRequestCallback = (
   request: AnyFormRequest,
-  h: ResponseToolkit,
+  h: FormResponseToolkit,
   context: FormContext
 ) => Promise<ResponseObject | undefined>
 ```

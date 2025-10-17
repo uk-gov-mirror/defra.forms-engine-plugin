@@ -9,8 +9,7 @@ import {
 import {
   type PluginProperties,
   type Request,
-  type ResponseObject,
-  type ResponseToolkit
+  type ResponseObject
 } from '@hapi/hapi'
 import { type JoiExpression, type ValidationErrorItem } from 'joi'
 
@@ -366,7 +365,7 @@ export type PreparePageEventRequestOptions = (
 
 export type OnRequestCallback = (
   request: AnyFormRequest,
-  h: ResponseToolkit,
+  h: FormResponseToolkit,
   context: FormContext
 ) => Promise<ResponseObject | undefined>
 
