@@ -31,7 +31,8 @@ describe('redirectOrMakeHandler', () => {
 
   const mockH: FormResponseToolkit = {
     redirect: jest.fn(),
-    view: jest.fn()
+    view: jest.fn(),
+    continue: Symbol('continue')
   } as unknown as FormResponseToolkit
 
   let mockPage: PageControllerClass
@@ -141,10 +142,10 @@ describe('redirectOrMakeHandler', () => {
       expect(mockMakeHandler).not.toHaveBeenCalled()
     })
 
-    it('should continue processing when onRequest returns undefined', async () => {
+    it('should continue processing when onRequest returns h.continue', async () => {
       const onRequestCallback: OnRequestCallback = jest
         .fn()
-        .mockResolvedValue(undefined)
+        .mockResolvedValue(mockH.continue)
 
       await redirectOrMakeHandler(
         mockRequest,
