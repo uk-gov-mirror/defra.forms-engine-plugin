@@ -15,6 +15,7 @@ import { getRoutes as getRepeaterItemDeleteRoutes } from '~/src/server/plugins/e
 import { getRoutes as getRepeaterSummaryRoutes } from '~/src/server/plugins/engine/routes/repeaters/summary.js'
 import { type PluginOptions } from '~/src/server/plugins/engine/types.js'
 import { registerVision } from '~/src/server/plugins/engine/vision.js'
+import { postcodeLookupPlugin } from '~/src/server/plugins/postcode-lookup/index.js'
 import {
   type FormRequestPayloadRefs,
   type FormRequestRefs
@@ -35,7 +36,8 @@ export const plugin = {
       nunjucks: nunjucksOptions,
       viewContext,
       preparePageEventRequestOptions,
-      onRequest
+      onRequest,
+      ordnanceSurveyApiKey
     } = options
 
     const cacheService =
@@ -44,6 +46,16 @@ export const plugin = {
         : cache
 
     await registerVision(server, options)
+
+    // Register the postcode lookup plugin only if we have an OS api key
+    if (ordnanceSurveyApiKey) {
+      await server.register({
+        plugin: postcodeLookupPlugin,
+        options: {
+          ordnanceSurveyApiKey
+        }
+      })
+    }
 
     server.expose('baseLayoutPath', nunjucksOptions.baseLayoutPath)
     server.expose('viewContext', viewContext)
