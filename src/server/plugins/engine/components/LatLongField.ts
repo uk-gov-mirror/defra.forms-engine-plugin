@@ -39,15 +39,15 @@ export class LatLongField extends FormComponent {
       // Pattern for latitude and longitude - flexible format
       // Accepts: "51.5074, -0.1278" or "51.5074,-0.1278" or "Lat: 51.5074, Long: -0.1278"
       .pattern(
-        /^(?:Lat(?:itude)?:\s*)?(-?\d+\.?\d*),?\s*(?:Long?(?:itude)?:\s*)?(-?\d+\.?\d*)$/i
+        /^(?:Lat:?\s*)?(-?\d+(?:\.\d+)?),?\s*(?:Lon(?:g)?:?\s*)?(-?\d+(?:\.\d+)?)$/i
       )
       .custom((value, helpers) => {
         const match = value.match(
-          /^(?:Lat(?:itude)?:\s*)?(-?\d+\.?\d*),?\s*(?:Long?(?:itude)?:\s*)?(-?\d+\.?\d*)$/i
+          /^(?:Lat:?\s*)?(-?\d+(?:\.\d+)?),?\s*(?:Lon(?:g)?:?\s*)?(-?\d+(?:\.\d+)?)$/i
         )
         if (match) {
-          const latitude = parseFloat(match[1])
-          const longitude = parseFloat(match[2])
+          const latitude = Number.parseFloat(match[1])
+          const longitude = Number.parseFloat(match[2])
 
           // Validate Great Britain ranges
           if (latitude < 49.85 || latitude > 60.859) {
