@@ -10,4 +10,5 @@
   {% endset %}
   {% set checkboxes = component.model | merge({ formGroup: { beforeInputs: { html: content } } }) %}
   {{ govukCheckboxes(checkboxes) }}
+  <input type="hidden" name="{{ component.model.name }}" value="unchecked">
 {% endmacro %}

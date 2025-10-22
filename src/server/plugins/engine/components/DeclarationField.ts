@@ -35,13 +35,33 @@ export class DeclarationField extends FormComponent {
 
     const { options, content } = def
 
-    let formSchema = joi.string().valid('true').label(this.label).required()
+    let formSchema = joi
+      .array()
+      .label(this.label)
+      .items(
+        joi.string().valid('true').required(),
+        joi.string().valid('unchecked').strip()
+      )
+      .single() as StringSchema
 
     if (options.required === false) {
-      formSchema = formSchema.optional()
+      formSchema = joi
+        .array()
+        .items(
+          joi.string().valid('true'),
+          joi.string().valid('unchecked').strip()
+        )
+        .single()
+        .label(this.label)
+        .custom(([first, _]: string[], _helpers) => {
+          return first
+        }) as StringSchema
     } else {
       formSchema = formSchema.messages({
-        'any.required': messageTemplate.declarationRequired as string
+        'any.required': messageTemplate.declarationRequired as string,
+        'any.unknown': messageTemplate.declarationRequired as string,
+        'array.includesRequiredUnknowns':
+          messageTemplate.declarationRequired as string
       })
     }
 
@@ -97,11 +117,11 @@ export class DeclarationField extends FormComponent {
         }
       },
       content,
+      values: payload[this.name] === 'true' ? ['true'] : [],
       items: [
         {
           text: declarationConfirmationLabel,
-          value: 'true',
-          checked: payload[this.name] === 'true'
+          value: 'true'
         }
       ]
     }

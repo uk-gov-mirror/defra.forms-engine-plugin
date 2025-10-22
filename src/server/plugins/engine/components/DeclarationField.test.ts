@@ -297,6 +297,28 @@ describe('DeclarationField', () => {
   describe('Validation', () => {
     describe.each([
       {
+        description: 'Default',
+        component: {
+          title: 'Terms and conditions',
+          shortDescription: 'The terms and conditions',
+          content: 'Lorem ipsum dolar sit amet',
+          name: 'myComponent',
+          type: ComponentType.DeclarationField,
+          options: {}
+        } satisfies DeclarationFieldComponent,
+        assertions: [
+          {
+            input: getFormData(['unchecked', 'true']),
+            output: {
+              value: {
+                myComponent: ['true']
+              },
+              errors: undefined
+            }
+          }
+        ]
+      },
+      {
         description: 'Use short description if it exists',
         component: {
           title: 'Terms and conditions',
@@ -308,9 +330,9 @@ describe('DeclarationField', () => {
         } satisfies DeclarationFieldComponent,
         assertions: [
           {
-            input: getFormData(),
+            input: getFormData('unchecked'),
             output: {
-              value: getFormData('false'),
+              value: { myComponent: [] },
               errors: [
                 expect.objectContaining({
                   text: 'You must confirm you understand and agree with the terms and conditions to continue'
@@ -333,8 +355,8 @@ describe('DeclarationField', () => {
         } satisfies DeclarationFieldComponent,
         assertions: [
           {
-            input: getFormData(),
-            output: { value: getFormData('false') }
+            input: getFormData('unchecked'),
+            output: { value: {} }
           }
         ]
       }
