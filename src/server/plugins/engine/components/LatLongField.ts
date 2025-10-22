@@ -38,12 +38,10 @@ export class LatLongField extends FormComponent {
       .required()
       // Pattern for latitude and longitude - flexible format
       // Accepts: "51.5074, -0.1278" or "51.5074,-0.1278" or "Lat: 51.5074, Long: -0.1278"
-      .pattern(
-        /^(?:Lat:?\s*)?(-?\d+(?:\.\d+)?),?\s*(?:Lon(?:g)?:?\s*)?(-?\d+(?:\.\d+)?)$/i
-      )
+      .pattern(/^(?:Lat:\s*)?(-?\d+\.?\d*),?\s*(?:Long:\s*)?(-?\d+\.?\d*)$/i)
       .custom((value, helpers) => {
         const match = value.match(
-          /^(?:Lat:?\s*)?(-?\d+(?:\.\d+)?),?\s*(?:Lon(?:g)?:?\s*)?(-?\d+(?:\.\d+)?)$/i
+          /^(?:Lat:\s*)?(-?\d+\.?\d*),?\s*(?:Long:\s*)?(-?\d+\.?\d*)$/i
         )
         if (match) {
           const latitude = Number.parseFloat(match[1])
