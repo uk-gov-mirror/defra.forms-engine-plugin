@@ -356,7 +356,7 @@ describe('DeclarationField', () => {
         assertions: [
           {
             input: getFormData('unchecked'),
-            output: { value: {} }
+            output: { value: { myComponent: [] } }
           }
         ]
       }
