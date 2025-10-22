@@ -2,10 +2,8 @@ import {
   ComponentType,
   type DeclarationFieldComponent
 } from '@defra/forms-model'
-import joi, { type BooleanSchema } from 'joi'
 
 import { ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
-import { DeclarationField } from '~/src/server/plugins/engine/components/DeclarationField.js'
 import {
   getAnswer,
   type Field
@@ -151,7 +149,7 @@ describe('DeclarationField', () => {
 
     describe('State', () => {
       it('returns text from state', () => {
-        const state1 = getFormState('true')
+        const state1 = getFormState(true)
         const state2 = getFormState()
         // context - boolean
         // state - boolean
@@ -159,51 +157,51 @@ describe('DeclarationField', () => {
         const answer1 = getAnswer(field, state1)
         const answer2 = getAnswer(field, state2)
 
-        expect(answer1).toBe('true')
-        expect(answer2).toBe('false')
+        expect(answer1).toBe('I understand and agree')
+        expect(answer2).toBe('')
       })
 
       it('returns payload from state', () => {
-        const state1 = getFormState('Text field')
+        const state1 = getFormState(true)
         const state2 = getFormState(null)
 
         const payload1 = field.getFormDataFromState(state1)
         const payload2 = field.getFormDataFromState(state2)
 
-        expect(payload1).toEqual(getFormData('Text field'))
+        expect(payload1).toEqual(getFormData(true))
         expect(payload2).toEqual(getFormData())
       })
 
       it('returns value from state', () => {
-        const state1 = getFormState('Text field')
+        const state1 = getFormState(true)
         const state2 = getFormState(null)
 
         const value1 = field.getFormValueFromState(state1)
         const value2 = field.getFormValueFromState(state2)
 
-        expect(value1).toBe('Text field')
+        expect(value1).toBe(true)
         expect(value2).toBeUndefined()
       })
 
       it('returns context for conditions and form submission', () => {
-        const state1 = getFormState('Text field')
+        const state1 = getFormState(true)
         const state2 = getFormState(null)
 
         const value1 = field.getContextValueFromState(state1)
         const value2 = field.getContextValueFromState(state2)
 
-        expect(value1).toBe('Text field')
+        expect(value1).toBe(true)
         expect(value2).toBeNull()
       })
 
       it('returns state from payload', () => {
-        const payload1 = getFormData('Text field')
+        const payload1 = getFormData(true)
         const payload2 = getFormData()
 
         const value1 = field.getStateFromValidForm(payload1)
         const value2 = field.getStateFromValidForm(payload2)
 
-        expect(value1).toEqual(getFormState('Text field'))
+        expect(value1).toEqual(getFormState(true))
         expect(value2).toEqual(getFormState(null))
       })
     })
@@ -228,7 +226,7 @@ describe('DeclarationField', () => {
             items: [
               {
                 value: 'true',
-                text: 'I confirm that I understand and accept this declaration'
+                text: 'I understand and agree'
               }
             ]
           })

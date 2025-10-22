@@ -10,5 +10,4 @@
   {% endset %}
   {% set checkboxes = component.model | merge({ formGroup: { beforeInputs: { html: content } } }) %}
   {{ govukCheckboxes(checkboxes) }}
-  {{ checkboxes | dump }}
 {% endmacro %}

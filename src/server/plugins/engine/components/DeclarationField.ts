@@ -1,5 +1,5 @@
 import { type DeclarationFieldComponent } from '@defra/forms-model'
-import joi, { type BooleanSchema, type StringSchema } from 'joi'
+import joi, { type BooleanSchema } from 'joi'
 
 import {
   FormComponent,
@@ -12,13 +12,18 @@ import {
   type FormState,
   type FormStateValue,
   type FormSubmissionError,
-  type FormSubmissionState
+  type FormSubmissionState,
+  type FormValue
 } from '~/src/server/plugins/engine/types.js'
 
 export class DeclarationField extends FormComponent {
+  private readonly DEFAULT_DECLARATION_LABEL = 'I understand and agree'
+
   declare options: DeclarationFieldComponent['options']
 
   declare schema: DeclarationFieldComponent['schema']
+
+  declare declarationConfirmationLabel: string
 
   declare formSchema: BooleanSchema<string>
   declare stateSchema: BooleanSchema<string>
@@ -51,7 +56,8 @@ export class DeclarationField extends FormComponent {
     this.stateSchema = formSchema.default(false)
     this.options = options
     this.content = content
-    this.declarationConfirmationLabel = options.declarationConfirmationLabel
+    this.declarationConfirmationLabel =
+      options.declarationConfirmationLabel ?? this.DEFAULT_DECLARATION_LABEL
   }
 
   getFormValueFromState(state: FormSubmissionState) {
@@ -61,6 +67,10 @@ export class DeclarationField extends FormComponent {
 
   getFormValue(value?: FormStateValue | FormState) {
     return this.isValue(value) ? value : undefined
+  }
+
+  getDisplayStringFromFormValue(value: FormValue | FormPayload): string {
+    return value ? this.declarationConfirmationLabel : ''
   }
 
   getViewModel(payload: FormPayload, errors?: FormSubmissionError[]) {
@@ -90,7 +100,7 @@ export class DeclarationField extends FormComponent {
     }
   }
 
-  isValue(value?: FormStateValue | FormState): value is string {
+  isValue(value?: FormStateValue | FormState): value is boolean {
     return DeclarationField.isBool(value)
   }
 
@@ -113,7 +123,7 @@ export class DeclarationField extends FormComponent {
     }
   }
 
-  static isBool(value?: FormStateValue | FormState): value is string {
-    return isFormValue(value) && typeof value === 'string'
+  static isBool(value?: FormStateValue | FormState): value is boolean {
+    return isFormValue(value) && typeof value === 'boolean'
   }
 }

@@ -51,12 +51,5 @@ export const formsService = async () => {
     slug: 'components'
   })
 
-  await loader.addForm('src/server/forms/error.json', {
-    ...metadata,
-    id: '0920b6b1-c5b4-4b7d-8783-7dda7fd559f8',
-    title: 'Error',
-    slug: 'error'
-  })
-
   return loader.toFormsService()
 }
