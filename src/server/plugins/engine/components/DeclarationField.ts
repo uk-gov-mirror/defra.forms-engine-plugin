@@ -1,5 +1,5 @@
 import { type DeclarationFieldComponent } from '@defra/forms-model'
-import joi, { type BooleanSchema } from 'joi'
+import joi, { type BooleanSchema, type StringSchema } from 'joi'
 
 import {
   FormComponent,
@@ -21,12 +21,10 @@ export class DeclarationField extends FormComponent {
 
   declare options: DeclarationFieldComponent['options']
 
-  declare schema: DeclarationFieldComponent['schema']
-
   declare declarationConfirmationLabel: string
 
-  declare formSchema: BooleanSchema<string>
-  declare stateSchema: BooleanSchema<string>
+  declare formSchema: StringSchema
+  declare stateSchema: BooleanSchema
   declare content: string
 
   constructor(
@@ -37,12 +35,7 @@ export class DeclarationField extends FormComponent {
 
     const { options, content } = def
 
-    let formSchema = joi
-      .boolean()
-      .valid(true)
-      .cast('string')
-      .label(this.label)
-      .required() as BooleanSchema<string>
+    let formSchema = joi.string().valid('true').label(this.label).required()
 
     if (options.required === false) {
       formSchema = formSchema.optional()
@@ -52,8 +45,9 @@ export class DeclarationField extends FormComponent {
       })
     }
 
-    this.formSchema = formSchema.default(false)
-    this.stateSchema = formSchema.default(false)
+    this.formSchema = formSchema
+    this.stateSchema = joi.boolean().cast('string').label(this.label).required()
+
     this.options = options
     this.content = content
     this.declarationConfirmationLabel =
@@ -62,7 +56,19 @@ export class DeclarationField extends FormComponent {
 
   getFormValueFromState(state: FormSubmissionState) {
     const { name } = this
-    return this.getFormValue(state[name])
+    return state[name] === true ? 'true' : undefined
+  }
+
+  getFormDataFromState(state: FormSubmissionState): FormPayload {
+    const { name } = this
+    const test = { [name]: state[name] === true ? 'true' : undefined }
+    return test
+  }
+
+  getStateFromValidForm(payload: FormPayload): FormState {
+    const { name } = this
+    const value = payload[name] === 'true'
+    return { [name]: value }
   }
 
   getFormValue(value?: FormStateValue | FormState) {
@@ -94,7 +100,8 @@ export class DeclarationField extends FormComponent {
       items: [
         {
           text: declarationConfirmationLabel,
-          value: 'true'
+          value: 'true',
+          checked: payload[this.name] === 'true'
         }
       ]
     }
