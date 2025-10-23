@@ -1,48 +1,24 @@
 import { type LatLongFieldComponent } from '@defra/forms-model'
-import joi, { type StringSchema } from 'joi'
+import { type CustomHelpers, type ErrorReport } from 'joi'
 
-import {
-  FormComponent,
-  isFormValue
-} from '~/src/server/plugins/engine/components/FormComponent.js'
-import { markdown } from '~/src/server/plugins/engine/components/helpers/components.js'
-import { messageTemplate } from '~/src/server/plugins/engine/pageControllers/validationOptions.js'
-import {
-  type ErrorMessageTemplateList,
-  type FormPayload,
-  type FormState,
-  type FormStateValue,
-  type FormSubmissionError,
-  type FormSubmissionState
-} from '~/src/server/plugins/engine/types.js'
+import { LocationFieldBase } from '~/src/server/plugins/engine/components/LocationFieldBase.js'
 
-export class LatLongField extends FormComponent {
+export class LatLongField extends LocationFieldBase {
   declare options: LatLongFieldComponent['options']
-  declare formSchema: StringSchema
-  declare stateSchema: StringSchema
-  instructionText?: string
 
-  constructor(
-    def: LatLongFieldComponent,
-    props: ConstructorParameters<typeof FormComponent>[1]
-  ) {
-    super(def, props)
+  protected getValidationConfig() {
+    const pattern =
+      /^(?:Lat:\s*)?(-?\d+(?:\.\d+)?)\s*,?\s*(?:Long:\s*)?(-?\d+(?:\.\d+)?)$/i
 
-    const { options } = def
-    this.instructionText = options.instructionText
-
-    let formSchema = joi
-      .string()
-      .trim()
-      .label(this.label)
-      .required()
-      // Pattern for latitude and longitude - flexible format
-      // Accepts: "51.5074, -0.1278" or "51.5074,-0.1278" or "Lat: 51.5074, Long: -0.1278"
-      .pattern(/^(?:Lat:\s*)?(-?\d+\.?\d*),?\s*(?:Long:\s*)?(-?\d+\.?\d*)$/i)
-      .custom((value, helpers) => {
-        const match = value.match(
-          /^(?:Lat:\s*)?(-?\d+\.?\d*),?\s*(?:Long:\s*)?(-?\d+\.?\d*)$/i
-        )
+    return {
+      pattern,
+      patternErrorMessage:
+        'Enter latitude and longitude in the correct format, for example, 51.5074, -0.1278',
+      customValidation: (
+        value: string,
+        helpers: CustomHelpers
+      ): string | ErrorReport => {
+        const match = pattern.exec(value)
         if (match) {
           const latitude = Number.parseFloat(match[1])
           const longitude = Number.parseFloat(match[2])
@@ -56,101 +32,40 @@ export class LatLongField extends FormComponent {
           }
         }
         return value
-      })
-      .messages({
-        'string.pattern.base':
-          'Enter latitude and longitude in the correct format, for example, 51.5074, -0.1278',
+      },
+      additionalMessages: {
         'custom.latitude':
           'Latitude must be between 49.850 and 60.859 for Great Britain',
         'custom.longitude':
           'Longitude must be between -13.687 and 1.767 for Great Britain'
-      })
-
-    if (options.required === false) {
-      formSchema = formSchema.allow('')
-    }
-
-    if (options.customValidationMessage) {
-      const message = options.customValidationMessage
-
-      formSchema = formSchema.messages({
-        'any.required': message,
-        'string.empty': message,
-        'string.pattern.base': message,
-        'custom.latitude': message,
-        'custom.longitude': message
-      })
-    } else if (options.customValidationMessages) {
-      formSchema = formSchema.messages(options.customValidationMessages)
-    }
-
-    this.formSchema = formSchema.default('')
-    this.stateSchema = formSchema.default(null).allow(null)
-    this.options = options
-  }
-
-  getFormValueFromState(state: FormSubmissionState) {
-    const { name } = this
-    return this.getFormValue(state[name])
-  }
-
-  getFormValue(value?: FormStateValue | FormState) {
-    return this.isValue(value) ? value : undefined
-  }
-
-  isValue(value?: FormStateValue | FormState): value is string {
-    return LatLongField.isText(value)
-  }
-
-  getViewModel(payload: FormPayload, errors?: FormSubmissionError[]) {
-    const viewModel = super.getViewModel(payload, errors)
-
-    // Add instruction text to the component for rendering
-    if (this.instructionText) {
-      return {
-        ...viewModel,
-        instructionText: markdown.parse(this.instructionText, { async: false })
       }
     }
-
-    return viewModel
   }
 
-  /**
-   * For error preview page that shows all possible errors on a component
-   */
-  getAllPossibleErrors(): ErrorMessageTemplateList {
-    return LatLongField.getAllPossibleErrors()
+  protected getErrorTemplates() {
+    return [
+      {
+        type: 'pattern',
+        template:
+          'Enter latitude and longitude in the correct format, for example, 51.5074, -0.1278'
+      },
+      {
+        type: 'latitude',
+        template: 'Latitude must be between 49.850 and 60.859 for Great Britain'
+      },
+      {
+        type: 'longitude',
+        template:
+          'Longitude must be between -13.687 and 1.767 for Great Britain'
+      }
+    ]
   }
 
   /**
    * Static version of getAllPossibleErrors that doesn't require a component instance.
    */
-  static getAllPossibleErrors(): ErrorMessageTemplateList {
-    return {
-      baseErrors: [
-        { type: 'required', template: messageTemplate.required },
-        {
-          type: 'pattern',
-          template:
-            'Enter latitude and longitude in the correct format, for example, 51.5074, -0.1278'
-        },
-        {
-          type: 'latitude',
-          template:
-            'Latitude must be between 49.850 and 60.859 for Great Britain'
-        },
-        {
-          type: 'longitude',
-          template:
-            'Longitude must be between -13.687 and 1.767 for Great Britain'
-        }
-      ],
-      advancedSettingsErrors: []
-    }
-  }
-
-  static isText(value?: FormStateValue | FormState): value is string {
-    return isFormValue(value) && typeof value === 'string'
+  static getAllPossibleErrors() {
+    const instance = Object.create(LatLongField.prototype) as LatLongField
+    return instance.getAllPossibleErrors()
   }
 }
