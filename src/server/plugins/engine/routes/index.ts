@@ -157,17 +157,12 @@ async function importExternalComponentState(
   )
   const savedState = await page.mergeState(request, state, pageState)
 
-  // Get any flashed/stashed payload
+  // Merge any stashed payload into the local state
   const payload = request.yar.flash(EXTERNAL_STATE_PAYLOAD)
+  const stashedPayload = Array.isArray(payload) ? {} : (payload as FormPayload)
 
-  // Return the newly saved state if there is no stashed payload
-  if (Array.isArray(payload)) {
-    return savedState
-  }
-
-  // Merge the stashed payload into the local state
   const localState = page.getStateFromValidForm(request, savedState, {
-    ...(payload as FormPayload),
+    ...stashedPayload,
     ...componentState
   } as FormPayload)
 
