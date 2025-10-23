@@ -9,7 +9,10 @@ const logger = createLogger()
 process.on('unhandledRejection', (error) => {
   const err = getErrorMessage(error)
   logger.info('Unhandled rejection')
-  logger.error(err, `[unhandledRejection] Unhandled promise rejection: ${err}`)
+  logger.error(
+    error,
+    `[unhandledRejection] Unhandled promise rejection: ${err}`
+  )
   throw error
 })
 
@@ -32,6 +35,6 @@ async function startServer() {
 startServer().catch((error: unknown) => {
   const err = getErrorMessage(error)
   logger.info('Server failed to start :(')
-  logger.error(err, `[serverStartup] Server failed to start: ${err}`)
+  logger.error(error, `[serverStartup] Server failed to start: ${err}`)
   throw error
 })
