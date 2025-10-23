@@ -8,7 +8,7 @@ export class LatLongField extends LocationFieldBase {
 
   protected getValidationConfig() {
     const pattern =
-      /^(?:Lat:\s*)?(-?\d+(?:\.\d+)?)\s*,?\s*(?:Long:\s*)?(-?\d+(?:\.\d+)?)$/i
+      /^(?:Lat:\s+)?(-?\d+(?:\.\d+)?)\s*,\s*(?:Long:\s+)?(-?\d+(?:\.\d+)?)$/i
 
     return {
       pattern,

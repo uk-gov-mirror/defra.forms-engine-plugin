@@ -7,9 +7,9 @@ export class EastingNorthingField extends LocationFieldBase {
 
   protected getValidationConfig() {
     return {
-      pattern: /^(?:Easting:\s*)?(\d{6})\s*,?\s*(?:Northing:\s*)?(\d{6})$/i,
+      pattern: /^(?:Easting:\s+)?(\d{6})\s*,\s*(?:Northing:\s+)?(\d{6})$/i,
       patternErrorMessage:
-        'Enter easting and northing in the correct format, for example, Easting: 248741, Northing: 63688'
+        'Enter easting and northing in the correct format, for example, Easting: 248741, Northing: 636880'
     }
   }
 
@@ -18,7 +18,7 @@ export class EastingNorthingField extends LocationFieldBase {
       {
         type: 'pattern',
         template:
-          'Enter easting and northing in the correct format, for example, Easting: 248741, Northing: 63688'
+          'Enter easting and northing in the correct format, for example, Easting: 248741, Northing: 636880'
       }
     ]
   }
