@@ -767,6 +767,62 @@ describe('DatePartsField', () => {
         ]
       },
       {
+        description: 'Max days in the future of zero',
+        component: {
+          title: 'Example date parts field',
+          name: 'myComponent',
+          type: ComponentType.DatePartsField,
+          options: {
+            maxDaysInFuture: 0
+          }
+        } satisfies DatePartsFieldComponent,
+        assertions: [
+          {
+            input: getFormData(OneDayInFuture),
+            output: {
+              value: getFormData(OneDayInFuture),
+              errors: [
+                expect.objectContaining({
+                  text: `Example date parts field must be the same as or before ${format(today, 'd MMMM yyyy')}`
+                })
+              ]
+            }
+          },
+          {
+            input: getFormData(today),
+            output: { value: getFormData(today) }
+          }
+        ]
+      },
+      {
+        description: 'Max days in the past of zero',
+        component: {
+          title: 'Example date parts field',
+          name: 'myComponent',
+          type: ComponentType.DatePartsField,
+          options: {
+            maxDaysInPast: 0
+          }
+        } satisfies DatePartsFieldComponent,
+        assertions: [
+          {
+            input: getFormData(OneDayInPast),
+            output: {
+              value: getFormData(OneDayInPast),
+              errors: [
+                expect.objectContaining({
+                  text: `Example date parts field must be the same as or after ${format(today, 'd MMMM yyyy')}`
+                })
+              ]
+            }
+          },
+          {
+            input: getFormData(today),
+            output: { value: getFormData(today) }
+          }
+        ]
+      },
+      {
         description: 'Optional fields',
         component: {
           title: 'Example date parts field',
