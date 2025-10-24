@@ -1,9 +1,17 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/hint/macro.njk" import govukHint %}
 
 {% macro LocationFieldBase(component, inputType, inputMode) %}
   {% set fieldsetHtml %}
+    {% if component.model.hint %}
+      {{ govukHint({
+        id: component.model.name + "-hint",
+        text: component.model.hint.text
+      }) }}
+    {% endif %}
+
     <div class="govuk-date-input">
       {% for item in component.model.items %}
         <div class="govuk-date-input__item">
