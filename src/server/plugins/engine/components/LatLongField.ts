@@ -1,71 +1,291 @@
-import { type LatLongFieldComponent } from '@defra/forms-model'
-import { type CustomHelpers, type ErrorReport } from 'joi'
+import { ComponentType, type LatLongFieldComponent } from '@defra/forms-model'
+import {
+  type Context,
+  type CustomValidator,
+  type LanguageMessages,
+  type ObjectSchema
+} from 'joi'
 
-import { LocationFieldBase } from '~/src/server/plugins/engine/components/LocationFieldBase.js'
+import { ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
+import {
+  FormComponent,
+  isFormState,
+  isFormValue
+} from '~/src/server/plugins/engine/components/FormComponent.js'
+import { NumberField } from '~/src/server/plugins/engine/components/NumberField.js'
+import { markdown } from '~/src/server/plugins/engine/components/helpers/components.js'
+import { type LatLongState } from '~/src/server/plugins/engine/components/types.js'
+import { messageTemplate } from '~/src/server/plugins/engine/pageControllers/validationOptions.js'
+import {
+  type ErrorMessageTemplateList,
+  type FormPayload,
+  type FormState,
+  type FormStateValue,
+  type FormSubmissionError,
+  type FormSubmissionState
+} from '~/src/server/plugins/engine/types.js'
+import { convertToLanguageMessages } from '~/src/server/utils/type-utils.js'
 
-export class LatLongField extends LocationFieldBase {
+export class LatLongField extends FormComponent {
   declare options: LatLongFieldComponent['options']
+  declare formSchema: ObjectSchema<FormPayload>
+  declare stateSchema: ObjectSchema<FormState>
+  declare collection: ComponentCollection
+  instructionText?: string
 
-  protected getValidationConfig() {
-    const pattern =
-      /^(?:Lat:\s+)?(-?\d+(?:\.\d+)?)\s*,\s*(?:Long:\s+)?(-?\d+(?:\.\d+)?)$/i
+  constructor(
+    def: LatLongFieldComponent,
+    props: ConstructorParameters<typeof FormComponent>[1]
+  ) {
+    super(def, props)
 
-    return {
-      pattern,
-      patternErrorMessage:
-        'Enter latitude and longitude in the correct format, for example, 51.5074, -0.1278',
-      customValidation: (
-        value: string,
-        helpers: CustomHelpers
-      ): string | ErrorReport => {
-        const match = pattern.exec(value)
-        if (match) {
-          const latitude = Number.parseFloat(match[1])
-          const longitude = Number.parseFloat(match[2])
+    const { name, options, schema } = def
 
-          // Validate Great Britain ranges
-          if (latitude < 49.85 || latitude > 60.859) {
-            return helpers.error('custom.latitude')
+    const isRequired = options.required !== false
+    this.instructionText = options.instructionText
+
+    // Read schema values from def.schema with fallback defaults
+    const latitudeMin = schema?.latitude?.min ?? 49
+    const latitudeMax = schema?.latitude?.max ?? 60
+    const longitudeMin = schema?.longitude?.min ?? -9
+    const longitudeMax = schema?.longitude?.max ?? 2
+
+    const customValidationMessages: LanguageMessages =
+      convertToLanguageMessages({
+        'any.required': messageTemplate.objectMissing,
+        'number.base': messageTemplate.objectMissing,
+        'number.precision': '{{#label}} must be a decimal number',
+        'number.unsafe': '{{#label}} must be a valid number'
+      })
+
+    const latitudeMessages: LanguageMessages = convertToLanguageMessages({
+      ...customValidationMessages,
+      'number.base': `Enter a valid latitude for ${this.title} like 51.519450`,
+      'number.min': `Latitude for ${this.title} must be between ${latitudeMin} and ${latitudeMax}`,
+      'number.max': `Latitude for ${this.title} must be between ${latitudeMin} and ${latitudeMax}`
+    })
+
+    const longitudeMessages: LanguageMessages = convertToLanguageMessages({
+      ...customValidationMessages,
+      'number.base': `Enter a valid longitude for ${this.title} like -0.127758`,
+      'number.min': `Longitude for ${this.title} must be between ${longitudeMin} and ${longitudeMax}`,
+      'number.max': `Longitude for ${this.title} must be between ${longitudeMin} and ${longitudeMax}`
+    })
+
+    this.collection = new ComponentCollection(
+      [
+        {
+          type: ComponentType.NumberField,
+          name: `${name}__latitude`,
+          title: 'Latitude',
+          schema: { min: latitudeMin, max: latitudeMax, precision: 6 },
+          options: {
+            required: isRequired,
+            optionalText: true,
+            classes: 'govuk-input--width-10',
+            customValidationMessages: latitudeMessages
           }
-          if (longitude < -13.687 || longitude > 1.767) {
-            return helpers.error('custom.longitude')
+        },
+        {
+          type: ComponentType.NumberField,
+          name: `${name}__longitude`,
+          title: 'Longitude',
+          schema: { min: longitudeMin, max: longitudeMax, precision: 6 },
+          options: {
+            required: isRequired,
+            optionalText: true,
+            classes: 'govuk-input--width-10',
+            customValidationMessages: longitudeMessages
           }
         }
-        return value
-      },
-      additionalMessages: {
-        'custom.latitude':
-          'Latitude must be between 49.850 and 60.859 for Great Britain',
-        'custom.longitude':
-          'Longitude must be between -13.687 and 1.767 for Great Britain'
+      ],
+      { ...props, parent: this },
+      {
+        custom: getValidatorLatLong(this),
+        peers: [`${name}__latitude`, `${name}__longitude`]
       }
-    }
+    )
+
+    this.options = options
+    this.formSchema = this.collection.formSchema
+    this.stateSchema = this.collection.stateSchema
   }
 
-  protected getErrorTemplates() {
-    return [
-      {
-        type: 'pattern',
-        template:
-          'Enter latitude and longitude in the correct format, for example, 51.5074, -0.1278'
-      },
-      {
-        type: 'latitude',
-        template: 'Latitude must be between 49.850 and 60.859 for Great Britain'
-      },
-      {
-        type: 'longitude',
-        template:
-          'Longitude must be between -13.687 and 1.767 for Great Britain'
+  getFormValueFromState(state: FormSubmissionState) {
+    const value = super.getFormValueFromState(state)
+    return LatLongField.isLatLong(value) ? value : undefined
+  }
+
+  getDisplayStringFromFormValue(value: LatLongState | undefined): string {
+    if (!value) {
+      return ''
+    }
+
+    // CYA page format: <<latvalue, langvalue>>
+    return `${value.latitude}, ${value.longitude}`
+  }
+
+  getDisplayStringFromState(state: FormSubmissionState) {
+    const value = this.getFormValueFromState(state)
+
+    return this.getDisplayStringFromFormValue(value)
+  }
+
+  getContextValueFromFormValue(value: LatLongState | undefined): string | null {
+    if (!value) {
+      return null
+    }
+
+    // Output format: Lat: <<entry>>\nLong: <<entry>>
+    return `Lat: ${value.latitude}\nLong: ${value.longitude}`
+  }
+
+  getContextValueFromState(state: FormSubmissionState) {
+    const value = this.getFormValueFromState(state)
+
+    return this.getContextValueFromFormValue(value)
+  }
+
+  getViewModel(payload: FormPayload, errors?: FormSubmissionError[]) {
+    const { collection, name } = this
+
+    const viewModel = super.getViewModel(payload, errors)
+    let { fieldset, label } = viewModel
+
+    // Check for component errors only
+    const hasError = errors?.some((error) => error.name === name)
+
+    // Use the component collection to generate the subitems
+    const items = collection.getViewModel(payload, errors).map(({ model }) => {
+      let { label, type, value, classes, errorMessage } = model
+
+      if (label) {
+        label.toString = () => label.text // Use string labels
       }
-    ]
+
+      if (hasError || errorMessage) {
+        classes = `${classes} govuk-input--error`.trim()
+      }
+
+      // Allow any `toString()`-able value so non-numeric
+      // values are shown alongside their error messages
+      if (!isFormValue(value)) {
+        value = undefined
+      }
+
+      return {
+        label,
+        id: model.id,
+        name: model.name,
+        type,
+        value,
+        classes
+      }
+    })
+
+    fieldset ??= {
+      legend: {
+        text: label.text,
+        classes: 'govuk-fieldset__legend--m'
+      }
+    }
+
+    const result = {
+      ...viewModel,
+      fieldset,
+      items
+    }
+
+    if (this.instructionText) {
+      return {
+        ...result,
+        instructionText: markdown.parse(this.instructionText, { async: false })
+      }
+    }
+
+    return result
+  }
+
+  isState(value?: FormStateValue | FormState) {
+    return LatLongField.isLatLong(value)
+  }
+
+  /**
+   * For error preview page that shows all possible errors on a component
+   */
+  getAllPossibleErrors(): ErrorMessageTemplateList {
+    return LatLongField.getAllPossibleErrors()
   }
 
   /**
    * Static version of getAllPossibleErrors that doesn't require a component instance.
    */
-  static getAllPossibleErrors() {
-    const instance = Object.create(LatLongField.prototype) as LatLongField
-    return instance.getAllPossibleErrors()
+  static getAllPossibleErrors(): ErrorMessageTemplateList {
+    return {
+      baseErrors: [
+        { type: 'required', template: messageTemplate.required },
+        {
+          type: 'latitudeFormat',
+          template:
+            'Enter a valid latitude for [short description] like 51.519450'
+        },
+        {
+          type: 'longitudeFormat',
+          template:
+            'Enter a valid longitude for [short description] like -0.127758'
+        }
+      ],
+      advancedSettingsErrors: [
+        {
+          type: 'latitudeMin',
+          template: 'Latitude for [short description] must be between 49 and 60'
+        },
+        {
+          type: 'latitudeMax',
+          template: 'Latitude for [short description] must be between 49 and 60'
+        },
+        {
+          type: 'longitudeMin',
+          template: 'Longitude for [short description] must be between -9 and 2'
+        },
+        {
+          type: 'longitudeMax',
+          template: 'Longitude for [short description] must be between -9 and 2'
+        }
+      ]
+    }
   }
+
+  static isLatLong(value?: FormStateValue | FormState): value is LatLongState {
+    return (
+      isFormState(value) &&
+      NumberField.isNumber(value.latitude) &&
+      NumberField.isNumber(value.longitude)
+    )
+  }
+}
+
+export function getValidatorLatLong(component: LatLongField) {
+  const validator: CustomValidator = (payload: FormPayload, helpers) => {
+    const { collection, name, options } = component
+
+    const values = component.getFormValueFromState(
+      component.getStateFromValidForm(payload)
+    )
+
+    const context: Context = {
+      missing: collection.keys,
+      key: name
+    }
+
+    if (!component.isState(values)) {
+      return options.required !== false
+        ? helpers.error('object.required', context)
+        : payload
+    }
+
+    return payload
+  }
+
+  return validator
 }

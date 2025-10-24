@@ -76,6 +76,7 @@ export const markdown = new Marked({
     const tokens: Token['type'][] = [
       'br',
       'escape',
+      'link',
       'list',
       'list_item',
       'paragraph',

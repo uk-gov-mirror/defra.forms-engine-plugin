@@ -1,4 +1,5 @@
-import joi, { type StringSchema } from 'joi'
+import { type FormComponentsDef } from '@defra/forms-model'
+import joi, { type LanguageMessages, type StringSchema } from 'joi'
 
 import {
   FormComponent,
@@ -19,7 +20,7 @@ interface LocationFieldOptions {
   instructionText?: string
   required?: boolean
   customValidationMessage?: string
-  customValidationMessages?: Record<string, string>
+  customValidationMessages?: LanguageMessages
 }
 
 interface ValidationConfig {
@@ -29,7 +30,7 @@ interface ValidationConfig {
     value: string,
     helpers: joi.CustomHelpers
   ) => string | joi.ErrorReport
-  additionalMessages?: Record<string, string>
+  additionalMessages?: LanguageMessages
 }
 
 /**
@@ -43,16 +44,20 @@ export abstract class LocationFieldBase extends FormComponent {
   instructionText?: string
 
   protected abstract getValidationConfig(): ValidationConfig
-  protected abstract getErrorTemplates(): Array<{
+  protected abstract getErrorTemplates(): {
     type: string
     template: string
-  }>
+  }[]
 
-  constructor(def: any, props: ConstructorParameters<typeof FormComponent>[1]) {
+  constructor(
+    def: FormComponentsDef,
+    props: ConstructorParameters<typeof FormComponent>[1]
+  ) {
     super(def, props)
 
     const { options } = def
-    this.instructionText = options.instructionText
+    const locationOptions = options as LocationFieldOptions
+    this.instructionText = locationOptions.instructionText
 
     const config = this.getValidationConfig()
 
@@ -71,12 +76,12 @@ export abstract class LocationFieldBase extends FormComponent {
       formSchema = formSchema.custom(config.customValidation)
     }
 
-    if (options.required === false) {
+    if (locationOptions.required === false) {
       formSchema = formSchema.allow('')
     }
 
-    if (options.customValidationMessage) {
-      const message = options.customValidationMessage
+    if (locationOptions.customValidationMessage) {
+      const message = locationOptions.customValidationMessage
       const messageKeys = [
         'any.required',
         'string.empty',
@@ -87,22 +92,19 @@ export abstract class LocationFieldBase extends FormComponent {
         messageKeys.push(...Object.keys(config.additionalMessages))
       }
 
-      const messages = messageKeys.reduce(
-        (acc, key) => {
-          acc[key] = message
-          return acc
-        },
-        {} as Record<string, string>
-      )
+      const messages = messageKeys.reduce<LanguageMessages>((acc, key) => {
+        acc[key] = message
+        return acc
+      }, {})
 
       formSchema = formSchema.messages(messages)
-    } else if (options.customValidationMessages) {
-      formSchema = formSchema.messages(options.customValidationMessages)
+    } else if (locationOptions.customValidationMessages) {
+      formSchema = formSchema.messages(locationOptions.customValidationMessages)
     }
 
     this.formSchema = formSchema.default('')
     this.stateSchema = formSchema.default(null).allow(null)
-    this.options = options
+    this.options = locationOptions
   }
 
   getFormValueFromState(state: FormSubmissionState) {

@@ -4,10 +4,10 @@
 {% macro OsGridRefField(component) %}
   {{ TextField(component) }}
 
-  {% if component.instructionText %}
+  {% if component.model.instructionText %}
     {{ govukDetails({
       summaryText: "How to find location details",
-      html: component.instructionText | safe
+      html: component.model.instructionText | safe
     }) }}
   {% endif %}
 {% endmacro %}
