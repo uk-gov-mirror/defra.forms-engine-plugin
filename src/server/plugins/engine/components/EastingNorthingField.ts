@@ -2,21 +2,18 @@ import {
   ComponentType,
   type EastingNorthingFieldComponent
 } from '@defra/forms-model'
-import {
-  type Context,
-  type CustomValidator,
-  type LanguageMessages,
-  type ObjectSchema
-} from 'joi'
+import { type LanguageMessages, type ObjectSchema } from 'joi'
 
 import { ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
 import {
   FormComponent,
-  isFormState,
-  isFormValue
+  isFormState
 } from '~/src/server/plugins/engine/components/FormComponent.js'
+import {
+  createLocationFieldValidator,
+  getLocationFieldViewModel
+} from '~/src/server/plugins/engine/components/LocationFieldHelpers.js'
 import { NumberField } from '~/src/server/plugins/engine/components/NumberField.js'
-import { markdown } from '~/src/server/plugins/engine/components/helpers/components.js'
 import { type EastingNorthingState } from '~/src/server/plugins/engine/components/types.js'
 import { messageTemplate } from '~/src/server/plugins/engine/pageControllers/validationOptions.js'
 import {
@@ -153,63 +150,8 @@ export class EastingNorthingField extends FormComponent {
   }
 
   getViewModel(payload: FormPayload, errors?: FormSubmissionError[]) {
-    const { collection, name } = this
-
     const viewModel = super.getViewModel(payload, errors)
-    let { fieldset, label } = viewModel
-
-    // Check for component errors only
-    const hasError = errors?.some((error) => error.name === name)
-
-    // Use the component collection to generate the subitems
-    const items = collection.getViewModel(payload, errors).map(({ model }) => {
-      let { label, type, value, classes, errorMessage } = model
-
-      if (label) {
-        label.toString = () => label.text // Use string labels
-      }
-
-      if (hasError || errorMessage) {
-        classes = `${classes} govuk-input--error`.trim()
-      }
-
-      // Allow any `toString()`-able value so non-numeric
-      // values are shown alongside their error messages
-      if (!isFormValue(value)) {
-        value = undefined
-      }
-
-      return {
-        label,
-        id: model.id,
-        name: model.name,
-        type,
-        value,
-        classes
-      }
-    })
-
-    fieldset ??= {
-      legend: {
-        text: label.text,
-        classes: 'govuk-fieldset__legend--m'
-      }
-    }
-
-    const result = {
-      ...viewModel,
-      fieldset,
-      items
-    }
-
-    if (this.instructionText) {
-      return {
-        ...result,
-        instructionText: markdown.parse(this.instructionText, { async: false })
-      }
-    }
-
-    return result
+    return getLocationFieldViewModel(this, viewModel, payload, errors)
   }
 
   isState(value?: FormStateValue | FormState) {
@@ -278,26 +220,5 @@ export class EastingNorthingField extends FormComponent {
 }
 
 export function getValidatorEastingNorthing(component: EastingNorthingField) {
-  const validator: CustomValidator = (payload: FormPayload, helpers) => {
-    const { collection, name, options } = component
-
-    const values = component.getFormValueFromState(
-      component.getStateFromValidForm(payload)
-    )
-
-    const context: Context = {
-      missing: collection.keys,
-      key: name
-    }
-
-    if (!component.isState(values)) {
-      return options.required !== false
-        ? helpers.error('object.required', context)
-        : payload
-    }
-
-    return payload
-  }
-
-  return validator
+  return createLocationFieldValidator(component)
 }
