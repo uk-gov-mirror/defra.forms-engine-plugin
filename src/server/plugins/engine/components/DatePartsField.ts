@@ -278,14 +278,16 @@ export function getValidatorDate(component: DatePartsField) {
     }
 
     // Minimum date from today
-    const dateMin = options.maxDaysInPast
-      ? sub(startOfToday(), { days: options.maxDaysInPast })
-      : undefined
+    const dateMin =
+      options.maxDaysInPast || options.maxDaysInPast === 0
+        ? sub(startOfToday(), { days: options.maxDaysInPast })
+        : undefined
 
     // Maximum date from today
-    const dateMax = options.maxDaysInFuture
-      ? add(startOfToday(), { days: options.maxDaysInFuture })
-      : undefined
+    const dateMax =
+      options.maxDaysInFuture || options.maxDaysInFuture === 0
+        ? add(startOfToday(), { days: options.maxDaysInFuture })
+        : undefined
 
     if (dateMin && date < dateMin) {
       return helpers.error('date.min', { ...context, limit: dateMin })

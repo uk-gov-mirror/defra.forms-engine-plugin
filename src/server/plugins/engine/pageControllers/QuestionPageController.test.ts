@@ -602,6 +602,7 @@ describe('QuestionPageController', () => {
         addressField__town: 'Town or city',
         addressField__county: 'Cheshire',
         addressField__postcode: 'CW1 1AB',
+        addressField__uprn: '',
         radiosField: 'privateLimitedCompany',
         selectField: 910400000,
         autocompleteField: 910400044,
@@ -805,7 +806,8 @@ describe('QuestionPageController', () => {
 
     const h: FormResponseToolkit = {
       redirect: jest.fn().mockReturnValue(response),
-      view: jest.fn()
+      view: jest.fn(),
+      continue: Symbol('continue')
     }
 
     it('returns default route options', () => {
@@ -1373,7 +1375,8 @@ describe('QuestionPageController V2', () => {
 
     const h: FormResponseToolkit = {
       redirect: jest.fn().mockReturnValue(response),
-      view: jest.fn()
+      view: jest.fn(),
+      continue: Symbol('continue')
     }
 
     it('returns default route options', () => {
@@ -1532,7 +1535,8 @@ describe('Save and Exit functionality', () => {
 
   const h: FormResponseToolkit = {
     redirect: jest.fn().mockReturnValue(response),
-    view: jest.fn()
+    view: jest.fn(),
+    continue: Symbol('continue')
   }
 
   beforeEach(() => {
@@ -1663,7 +1667,8 @@ describe('Save and Exit functionality', () => {
 
       const mockH = {
         redirect: jest.fn().mockReturnValue(mockResponse),
-        view: jest.fn()
+        view: jest.fn(),
+        continue: Symbol('continue')
       }
 
       const postHandler = controller1.makePostRouteHandler()

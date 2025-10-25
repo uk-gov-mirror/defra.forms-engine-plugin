@@ -1,12 +1,11 @@
 import {
   type ComponentDef,
   type Event,
-  type FormDefinition,
-  type FormMetadata,
   type FormVersionMetadata,
   type Item,
   type List,
-  type Page
+  type Page,
+  type UkAddressFieldComponent
 } from '@defra/forms-model'
 import {
   type PluginProperties,
@@ -30,6 +29,7 @@ import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { type DetailItemField } from '~/src/server/plugins/engine/models/types.js'
 import { type PageController } from '~/src/server/plugins/engine/pageControllers/PageController.js'
 import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers/pages.js'
+import { type QuestionPageController } from '~/src/server/plugins/engine/pageControllers/index.js'
 import {
   type FileStatus,
   type FormAdapterSubmissionSchemaVersion,
@@ -38,7 +38,6 @@ import {
 import { type ViewContext } from '~/src/server/plugins/nunjucks/types.js'
 import {
   type FormAction,
-  type FormParams,
   type FormRequest,
   type FormRequestPayload,
   type FormResponseToolkit,
@@ -368,16 +367,35 @@ export type PreparePageEventRequestOptions = (
 
 export type OnRequestCallback = (
   request: AnyFormRequest,
-  params: FormParams,
-  definition: FormDefinition,
-  metadata: FormMetadata
-) => void
+  h: FormResponseToolkit,
+  context: FormContext
+) =>
+  | ResponseObject
+  | FormResponseToolkit['continue']
+  | Promise<ResponseObject | FormResponseToolkit['continue']>
 
 export type SaveAndExitHandler = (
   request: FormRequestPayload,
   h: FormResponseToolkit,
   context: FormContext
 ) => ResponseObject
+
+export interface ExternalArgs {
+  component: ComponentDef
+  controller: QuestionPageController
+  sourceUrl: string
+  actionArgs: Record<string, string>
+}
+
+export interface PostcodeLookupExternalArgs extends ExternalArgs {
+  component: UkAddressFieldComponent
+  actionArgs: { step: string }
+}
+
+export interface ExternalStateAppendage {
+  component: string
+  data: FormStateValue | FormState
+}
 
 export interface PluginOptions {
   model?: FormModel
@@ -396,6 +414,7 @@ export interface PluginOptions {
   preparePageEventRequestOptions?: PreparePageEventRequestOptions
   onRequest?: OnRequestCallback
   baseUrl: string // base URL of the application, protocol and hostname e.g. "https://myapp.com"
+  ordnanceSurveyApiKey?: string
 }
 
 export interface FormAdapterSubmissionMessageMeta {

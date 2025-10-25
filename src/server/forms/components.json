@@ -129,6 +129,12 @@
           "hint": "Please read and confirm the following terms"
         }
       ]
+    },
+    {
+      "title": "Summary",
+      "path": "/summary",
+      "controller": "SummaryPageController",
+      "next": []
     }
   ],
   "sections": [
