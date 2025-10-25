@@ -74,23 +74,44 @@ describe('DeclarationField', () => {
         expect(keys).toHaveProperty(
           'myComponent',
           expect.objectContaining({
-            flags: expect.objectContaining({
-              presence: 'required'
-            })
+            items: expect.arrayContaining([
+              expect.objectContaining({
+                allow: ['true'],
+                flags: expect.objectContaining({
+                  presence: 'required'
+                })
+              })
+            ])
           })
         )
       })
 
-      it('is cast to a string', () => {
+      it('may have unchecked value in addition to true', () => {
         const { formSchema } = collection
         const { keys } = formSchema.describe()
 
         expect(keys).toHaveProperty(
           'myComponent',
           expect.objectContaining({
-            flags: expect.objectContaining({
-              cast: 'string'
-            })
+            items: expect.arrayContaining([
+              expect.objectContaining({
+                allow: ['unchecked'],
+                flags: expect.objectContaining({
+                  result: 'strip'
+                })
+              })
+            ])
+          })
+        )
+
+        expect(keys).toHaveProperty(
+          'myComponent',
+          expect.objectContaining({
+            items: expect.arrayContaining([
+              expect.objectContaining({
+                allow: ['unchecked']
+              })
+            ])
           })
         )
       })
@@ -107,24 +128,29 @@ describe('DeclarationField', () => {
         expect(keys).toHaveProperty(
           'myComponent',
           expect.objectContaining({
-            flags: expect.objectContaining({
-              presence: 'optional'
-            })
+            items: expect.arrayContaining([
+              expect.objectContaining({
+                allow: ['true'],
+                flags: expect.not.objectContaining({
+                  presence: 'required'
+                })
+              })
+            ])
           })
         )
 
-        const result = collectionOptional.validate(getFormData())
+        const result = collectionOptional.validate(getFormData(['unchecked']))
         expect(result.errors).toBeUndefined()
       })
 
       it('accepts valid values', () => {
-        const result1 = collection.validate(getFormData('true'))
+        const result1 = collection.validate(getFormData(['unchecked', 'true']))
 
         expect(result1.errors).toBeUndefined()
       })
 
       it('adds errors for empty value', () => {
-        const result = collection.validate(getFormData())
+        const result = collection.validate(getFormData(['unchecked']))
 
         expect(result.errors).toEqual([
           expect.objectContaining({
@@ -139,6 +165,7 @@ describe('DeclarationField', () => {
           // @ts-expect-error - Allow invalid param for test
           getFormData({ unknown: 'invalid' })
         )
+        // @ts-expect-error - Allow invalid param for test
         const result3 = collection.validate('false')
 
         expect(result1.errors).toBeTruthy()
@@ -168,7 +195,7 @@ describe('DeclarationField', () => {
         const payload1 = field.getFormDataFromState(state1)
         const payload2 = field.getFormDataFromState(state2)
 
-        expect(payload1).toEqual(getFormData(true))
+        expect(payload1).toEqual(getFormData('true'))
         expect(payload2).toEqual(getFormData())
       })
 
@@ -179,7 +206,7 @@ describe('DeclarationField', () => {
         const value1 = field.getFormValueFromState(state1)
         const value2 = field.getFormValueFromState(state2)
 
-        expect(value1).toBe(true)
+        expect(value1).toBe('true')
         expect(value2).toBeUndefined()
       })
 
@@ -191,31 +218,34 @@ describe('DeclarationField', () => {
         const value2 = field.getContextValueFromState(state2)
 
         expect(value1).toBe(true)
-        expect(value2).toBeNull()
+        expect(value2).toBe(false)
       })
 
       it('returns state from payload', () => {
-        const payload1 = getFormData(true)
-        const payload2 = getFormData()
+        const payload1 = getFormData(['true'])
+        const payload2 = getFormData([])
+        const payload3 = getFormData(['unchecked'])
 
         const value1 = field.getStateFromValidForm(payload1)
         const value2 = field.getStateFromValidForm(payload2)
+        const value3 = field.getStateFromValidForm(payload3)
 
         expect(value1).toEqual(getFormState(true))
-        expect(value2).toEqual(getFormState(null))
+        expect(value2).toEqual(getFormState(false))
+        expect(value3).toEqual(getFormState(false))
       })
     })
 
     describe('View model', () => {
       it('sets Nunjucks component defaults', () => {
-        const viewModel = field.getViewModel(getFormData())
+        const viewModel = field.getViewModel(getFormData([]))
 
         expect(viewModel).toEqual(
           expect.objectContaining({
             label: { text: def.title },
             name: 'myComponent',
             attributes: {},
-            value: undefined,
+            values: [],
             content: 'Lorem ipsum dolar sit amet',
             id: 'myComponent',
             fieldset: {
@@ -241,11 +271,11 @@ describe('DeclarationField', () => {
 
         collection = new ComponentCollection([def], { model })
         field = collection.fields[0]
-        const viewModel = field.getViewModel(getFormData('true'))
+        const viewModel = field.getViewModel(getFormData(['true']))
 
         expect(viewModel).toEqual(
           expect.objectContaining({
-            value: 'true',
+            values: ['true'],
             hint: {
               text: 'Please read and confirm the following'
             }
@@ -270,7 +300,7 @@ describe('DeclarationField', () => {
         collection = new ComponentCollection([def], { model })
         field = collection.fields[0]
 
-        const viewModel = field.getViewModel(getFormData('true'))
+        const viewModel = field.getViewModel(getFormData(['unchecked', 'true']))
 
         expect(viewModel).toEqual(
           expect.objectContaining({
@@ -330,7 +360,7 @@ describe('DeclarationField', () => {
         } satisfies DeclarationFieldComponent,
         assertions: [
           {
-            input: getFormData('unchecked'),
+            input: getFormData(['unchecked']),
             output: {
               value: { myComponent: [] },
               errors: [
@@ -355,7 +385,7 @@ describe('DeclarationField', () => {
         } satisfies DeclarationFieldComponent,
         assertions: [
           {
-            input: getFormData('unchecked'),
+            input: getFormData(['unchecked']),
             output: { value: { myComponent: [] } }
           }
         ]

@@ -1,5 +1,9 @@
-import { type DeclarationFieldComponent } from '@defra/forms-model'
-import joi, { type BooleanSchema, type StringSchema } from 'joi'
+import { type DeclarationFieldComponent, type Item } from '@defra/forms-model'
+import joi, {
+  type ArraySchema,
+  type BooleanSchema,
+  type StringSchema
+} from 'joi'
 
 import {
   FormComponent,
@@ -23,7 +27,7 @@ export class DeclarationField extends FormComponent {
 
   declare declarationConfirmationLabel: string
 
-  declare formSchema: StringSchema
+  declare formSchema: ArraySchema<StringSchema[]>
   declare stateSchema: BooleanSchema
   declare content: string
 
@@ -51,7 +55,7 @@ export class DeclarationField extends FormComponent {
         'any.unknown': messageTemplate.declarationRequired as string,
         'array.includesRequiredUnknowns':
           messageTemplate.declarationRequired as string
-      }) as StringSchema
+      }) as ArraySchema<StringSchema[]>
 
     this.formSchema = formSchema
     this.stateSchema = joi.boolean().cast('string').label(this.label).required()
@@ -69,14 +73,24 @@ export class DeclarationField extends FormComponent {
 
   getFormDataFromState(state: FormSubmissionState): FormPayload {
     const { name } = this
-    const test = { [name]: state[name] === true ? 'true' : undefined }
-    return test
+    return { [name]: state[name] === true ? 'true' : undefined }
   }
 
   getStateFromValidForm(payload: FormPayload): FormState {
     const { name } = this
-    const value = payload[name] === 'true'
+    const payloadValue = payload[name]
+    const value =
+      this.isValue(payloadValue) &&
+      payloadValue.length > 0 &&
+      payloadValue.every((v) => {
+        return v === 'true'
+      })
+
     return { [name]: value }
+  }
+
+  getContextValueFromFormValue(value: FormValue | FormPayload): boolean {
+    return value === 'true'
   }
 
   getFormValue(value?: FormStateValue | FormState) {
@@ -98,14 +112,14 @@ export class DeclarationField extends FormComponent {
     } = this
     return {
       ...super.getViewModel(payload, errors),
-      hint: hint && { text: hint },
+      hint: hint ? { text: hint } : undefined,
       fieldset: {
         legend: {
           text: title
         }
       },
       content,
-      values: payload[this.name] === 'true' ? ['true'] : [],
+      values: payload[this.name],
       items: [
         {
           text: declarationConfirmationLabel,
@@ -115,8 +129,17 @@ export class DeclarationField extends FormComponent {
     }
   }
 
-  isValue(value?: FormStateValue | FormState): value is boolean {
-    return DeclarationField.isBool(value)
+  isValue(value?: FormStateValue | FormState): value is Item['value'][] {
+    if (!Array.isArray(value)) {
+      return false
+    }
+
+    // Skip checks when empty
+    if (!value.length) {
+      return true
+    }
+
+    return value.every(isFormValue)
   }
 
   /**
