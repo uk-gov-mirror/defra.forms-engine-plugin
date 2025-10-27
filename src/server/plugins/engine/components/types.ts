@@ -60,6 +60,8 @@ export interface DateInputItem {
   name?: string
   value?: Item['value']
   classes?: string
+  prefix?: ComponentText
+  suffix?: ComponentText
   condition?: undefined
 }
 

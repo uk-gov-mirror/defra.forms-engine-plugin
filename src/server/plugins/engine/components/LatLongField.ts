@@ -80,6 +80,7 @@ export class LatLongField extends FormComponent {
             required: isRequired,
             optionalText: true,
             classes: 'govuk-input--width-10',
+            suffix: '°',
             customValidationMessages: latitudeMessages
           }
         },
@@ -92,6 +93,7 @@ export class LatLongField extends FormComponent {
             required: isRequired,
             optionalText: true,
             classes: 'govuk-input--width-10',
+            suffix: '°',
             customValidationMessages: longitudeMessages
           }
         }

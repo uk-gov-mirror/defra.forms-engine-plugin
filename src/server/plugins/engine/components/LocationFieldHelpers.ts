@@ -40,7 +40,7 @@ export function getLocationFieldViewModel(
   const items: DateInputItem[] = collection
     .getViewModel(payload, errors)
     .map(({ model }): DateInputItem => {
-      let { label, type, value, classes, errorMessage } = model
+      let { label, type, value, classes, prefix, suffix, errorMessage } = model
 
       if (label) {
         label.toString = () => label.text // Use string labels
@@ -62,7 +62,9 @@ export function getLocationFieldViewModel(
         name: model.name,
         type,
         value,
-        classes
+        classes,
+        prefix,
+        suffix
       }
     })
 
