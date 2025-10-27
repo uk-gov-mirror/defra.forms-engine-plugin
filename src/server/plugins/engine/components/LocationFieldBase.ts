@@ -5,7 +5,7 @@ import {
   FormComponent,
   isFormValue
 } from '~/src/server/plugins/engine/components/FormComponent.js'
-import { markdown } from '~/src/server/plugins/engine/components/helpers/components.js'
+import { markdown } from '~/src/server/plugins/engine/components/markdownParser.js'
 import { messageTemplate } from '~/src/server/plugins/engine/pageControllers/validationOptions.js'
 import {
   type ErrorMessageTemplateList,
@@ -35,7 +35,6 @@ interface ValidationConfig {
 
 /**
  * Abstract base class for location-based field components
- * Reduces code duplication across similar location field types
  */
 export abstract class LocationFieldBase extends FormComponent {
   declare options: LocationFieldOptions
