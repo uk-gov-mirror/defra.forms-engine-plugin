@@ -11,6 +11,10 @@ import * as PageControllers from '~/src/server/plugins/engine/pageControllers/in
 export function isPageController(
   controllerName?: string | ControllerType
 ): controllerName is keyof typeof PageControllers {
+  // Handle SummaryWithConfirmationEmail as it uses SummaryPageController
+  if (controllerName === ControllerType.SummaryWithConfirmationEmail) {
+    return true
+  }
   return isControllerName(controllerName) && controllerName in PageControllers
 }
 
@@ -49,6 +53,10 @@ export function createPage(model: FormModel, pageDef: Page) {
       break
 
     case ControllerType.Summary:
+      controller = new PageControllers.SummaryPageController(model, pageDef)
+      break
+
+    case ControllerType.SummaryWithConfirmationEmail:
       controller = new PageControllers.SummaryPageController(model, pageDef)
       break
 
