@@ -12,7 +12,7 @@ export class OsGridRefField extends LocationFieldBase {
     // - 2 blocks of 4 digits (parcel ID) e.g., ST 6789 6789
     // - 2 blocks of 5 digits (OS grid reference) e.g., SO 12345 12345
     const osGridPattern =
-      /^((([sS]|[nN])[a-hA-Hj-zJ-Z])|(([tT]|[oO])[abfglmqrvwABFGLMQRVW])|([hH][l-zL-Z])|([jJ][lmqrvwLMQRVW]))\s?(([0-9]{4})\s?([0-9]{4})|([0-9]{5})\s?([0-9]{5}))$/
+      /^(?:[sn][a-hj-z]|[to][abfglmqrvw]|h[l-z]|j[lmqrvw])\s?(?:\d{4}\s?\d{4}|\d{5}\s?\d{5})$/i
 
     // More permissive pattern for initial validation (allows spaces to be cleaned)
     const initialPattern = /^[A-Za-z]{2}[\d\s]*$/
