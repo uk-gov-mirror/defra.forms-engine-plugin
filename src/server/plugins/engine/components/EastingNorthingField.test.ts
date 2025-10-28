@@ -204,7 +204,7 @@ describe('EastingNorthingField', () => {
         const answer1 = getAnswer(field, state1)
         const answer2 = getAnswer(field, state2)
 
-        expect(answer1).toBe('1234567, 12345')
+        expect(answer1).toBe('Northing: 1234567<br>Easting: 12345<br>')
         expect(answer2).toBe('')
       })
 

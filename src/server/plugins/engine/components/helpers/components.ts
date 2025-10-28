@@ -20,10 +20,14 @@ export type Field = InstanceType<
   | typeof Components.YesNoField
   | typeof Components.CheckboxesField
   | typeof Components.DatePartsField
+  | typeof Components.EastingNorthingField
   | typeof Components.EmailAddressField
+  | typeof Components.LatLongField
   | typeof Components.MonthYearField
   | typeof Components.MultilineTextField
+  | typeof Components.NationalGridFieldNumberField
   | typeof Components.NumberField
+  | typeof Components.OsGridRefField
   | typeof Components.SelectField
   | typeof Components.TelephoneNumberField
   | typeof Components.TextField
@@ -216,7 +220,9 @@ export function getAnswer(
   if (
     field instanceof ListFormComponent ||
     field instanceof Components.MultilineTextField ||
-    field instanceof Components.UkAddressField
+    field instanceof Components.UkAddressField ||
+    field instanceof Components.EastingNorthingField ||
+    field instanceof Components.LatLongField
   ) {
     return markdown
       .parse(getAnswerMarkdown(field, state), { async: false })
@@ -307,6 +313,12 @@ export function getAnswerMarkdown(
       .map(escapeMarkdown)
       .join('\n')
       .concat('\n')
+  } else if (
+    field instanceof Components.EastingNorthingField ||
+    field instanceof Components.LatLongField
+  ) {
+    const contextValue = field.getContextValueFromState(state)
+    answerEscaped = contextValue ? `${contextValue}\n` : ''
   }
 
   return answerEscaped

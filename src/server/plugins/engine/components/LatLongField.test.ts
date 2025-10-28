@@ -193,7 +193,7 @@ describe('LatLongField', () => {
         const answer1 = getAnswer(field, state1)
         const answer2 = getAnswer(field, state2)
 
-        expect(answer1).toBe('51.51945, -0.127758')
+        expect(answer1).toBe('Lat: 51.51945<br>Long: -0.127758<br>')
         expect(answer2).toBe('')
       })
 
