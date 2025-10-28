@@ -150,13 +150,23 @@ async function importExternalComponentState(
     : { [componentName]: stateAppendage }
 
   // Save the external component state immediately
-  const updatedState = await page.mergeState(request, state, componentState)
+  const pageState = page.getStateFromValidForm(
+    request,
+    state,
+    componentState as FormPayload
+  )
+  const savedState = await page.mergeState(request, state, pageState)
 
-  // Merge the stashed payload into the local state
+  // Merge any stashed payload into the local state
   const payload = request.yar.flash(EXTERNAL_STATE_PAYLOAD)
   const stashedPayload = Array.isArray(payload) ? {} : (payload as FormPayload)
 
-  return { ...stashedPayload, ...updatedState }
+  const localState = page.getStateFromValidForm(request, savedState, {
+    ...stashedPayload,
+    ...componentState
+  } as FormPayload)
+
+  return { ...savedState, ...localState }
 }
 
 export function makeLoadFormPreHandler(server: Server, options: PluginOptions) {
