@@ -39,7 +39,6 @@ export type Field = InstanceType<
 export type Guidance =
   | InstanceType<typeof Components.Details>
   | InstanceType<typeof Components.Html>
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   | InstanceType<typeof Components.Markdown>
   | InstanceType<typeof Components.InsetText>
   | InstanceType<typeof Components.List>
@@ -88,7 +87,6 @@ export function createComponent(
   def: ComponentDef,
   options: ConstructorParameters<typeof ComponentBase>[1]
 ): Component {
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   let component: Component | undefined
 
   switch (def.type) {

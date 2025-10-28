@@ -12,25 +12,23 @@
       }) }}
     {% endif %}
 
-    <div class="govuk-date-input">
+    <div class="app-location-input">
       {% for item in component.model.items %}
-        <div class="govuk-date-input__item">
-          <div class="govuk-form-group">
-            {{ govukInput({
-              id: item.id,
-              name: item.name,
-              label: {
-                text: item.label,
-                classes: "govuk-label--s"
-              },
-              classes: item.classes,
-              value: item.value,
-              type: inputType,
-              inputmode: inputMode,
-              prefix: item.prefix,
-              suffix: item.suffix
-            }) }}
-          </div>
+        <div class="app-location-input__item">
+          {{ govukInput({
+            id: item.id,
+            name: item.name,
+            label: {
+              text: item.label,
+              classes: "govuk-label--s"
+            },
+            classes: item.classes,
+            value: item.value,
+            type: inputType,
+            inputmode: inputMode,
+            prefix: item.prefix,
+            suffix: item.suffix
+          }) }}
         </div>
       {% endfor %}
     </div>

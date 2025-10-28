@@ -8,13 +8,14 @@ export class NationalGridFieldNumberField extends LocationFieldBase {
 
   protected getValidationConfig() {
     return {
-      pattern: /^[A-Z]{2}\d{8}$/i,
+      // Pattern allows spaces and commas in the input since custom validation will clean them
+      pattern: /^[A-Z]{2}[\d\s,]*$/i,
       patternErrorMessage: `Enter a valid National Grid field number for ${this.title} like NG12345678`,
       customValidation: (value: string, helpers: joi.CustomHelpers) => {
         // Strip spaces and commas
         const cleanValue = value.replace(/[\s,]/g, '')
 
-        // Check if it matches the pattern after cleaning
+        // Check if it matches the exact pattern after cleaning
         if (!/^[A-Z]{2}\d{8}$/i.test(cleanValue)) {
           return helpers.error('string.pattern.base')
         }

@@ -1,0 +1,31 @@
+@use "govuk-frontend" as *;
+
+.app-location-input {
+  @include govuk-clearfix;
+  font-size: 0; // removes whitespace caused by inline-block
+}
+
+.app-location-input__item {
+  display: inline-block;
+  margin-right: govuk-spacing(4);
+  margin-bottom: 0;
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  .govuk-form-group {
+    margin-bottom: 0;
+    display: inline-block;
+    width: auto;
+  }
+
+  .govuk-label {
+    display: block;
+  }
+
+  .govuk-input {
+    margin-bottom: 0;
+    width: auto;
+  }
+}

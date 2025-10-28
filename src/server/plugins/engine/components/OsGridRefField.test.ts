@@ -96,21 +96,40 @@ describe('OsGridRefField', () => {
       })
 
       it('accepts valid values', () => {
-        const result1 = collection.validate(getFormData('TQ123456'))
-        const result2 = collection.validate(getFormData('SU1234567890'))
-        const result3 = collection.validate(getFormData('nt123456'))
+        // Test 8-digit parcel ID format (2x4)
+        const result1 = collection.validate(getFormData('TQ12345678'))
+        const result2 = collection.validate(getFormData('TQ 1234 5678'))
+
+        // Test 10-digit OS grid reference format (2x5)
+        const result3 = collection.validate(getFormData('SU1234567890'))
+        const result4 = collection.validate(getFormData('SU 12345 67890'))
+
+        // Test case-insensitive
+        const result5 = collection.validate(getFormData('nt12345678'))
+
+        // Test various valid OS grid formats
+        const result6 = collection.validate(getFormData('SN 1232 1223')) // parcel ID format
+        const result7 = collection.validate(getFormData('SN 12324 12234')) // OS grid ref format
+        const result8 = collection.validate(getFormData('ST 6789 6789')) // parcel ID with different letters
+        const result9 = collection.validate(getFormData('SO 12345 12345')) // OS grid ref with different letters
 
         expect(result1.errors).toBeUndefined()
         expect(result2.errors).toBeUndefined()
         expect(result3.errors).toBeUndefined()
+        expect(result4.errors).toBeUndefined()
+        expect(result5.errors).toBeUndefined()
+        expect(result6.errors).toBeUndefined()
+        expect(result7.errors).toBeUndefined()
+        expect(result8.errors).toBeUndefined()
+        expect(result9.errors).toBeUndefined()
       })
 
-      it('strips spaces and commas from input', () => {
-        const result1 = collection.validate(getFormData('TQ 123 456'))
-        const result2 = collection.validate(getFormData('TQ123,456'))
+      it('strips spaces from input', () => {
+        const result1 = collection.validate(getFormData('TQ 1234 5678'))
+        const result2 = collection.validate(getFormData('SU 12345 67890'))
 
-        expect(result1.value.myComponent).toBe('TQ123456')
-        expect(result2.value.myComponent).toBe('TQ123456')
+        expect(result1.value.myComponent).toBe('TQ12345678')
+        expect(result2.value.myComponent).toBe('SU1234567890')
       })
 
       it('adds errors for empty value', () => {
@@ -125,82 +144,90 @@ describe('OsGridRefField', () => {
 
       it('adds errors for invalid values', () => {
         const result1 = collection.validate(getFormData('INVALID'))
-        const result2 = collection.validate(getFormData('TQ12345'))
-        const result3 = collection.validate(getFormData('A1234567'))
+        const result2 = collection.validate(getFormData('TQ12345')) // Wrong number of digits
+        const result3 = collection.validate(getFormData('AA12345678')) // Invalid letter combination
+        const result4 = collection.validate(getFormData('TQ123456')) // 6 digits not allowed
+
+        // Test mismatched digit counts (must be either 4+4 or 5+5, not mixed)
+        const result5 = collection.validate(getFormData('SN 4444 55555')) // mismatched digit counts
+        const result6 = collection.validate(getFormData('SN 55555 4444')) // mismatched digit counts
 
         expect(result1.errors).toBeTruthy()
         expect(result2.errors).toBeTruthy()
         expect(result3.errors).toBeTruthy()
+        expect(result4.errors).toBeTruthy()
+        expect(result5.errors).toBeTruthy()
+        expect(result6.errors).toBeTruthy()
       })
     })
 
     describe('State', () => {
       it('returns text from state', () => {
-        const state1 = getFormState('TQ123456')
+        const state1 = getFormState('TQ12345678')
         const state2 = getFormState(null)
 
         const answer1 = getAnswer(field, state1)
         const answer2 = getAnswer(field, state2)
 
-        expect(answer1).toBe('TQ123456')
+        expect(answer1).toBe('TQ12345678')
         expect(answer2).toBe('')
       })
 
       it('returns payload from state', () => {
-        const state1 = getFormState('TQ123456')
+        const state1 = getFormState('TQ12345678')
         const state2 = getFormState(null)
 
         const payload1 = field.getFormDataFromState(state1)
         const payload2 = field.getFormDataFromState(state2)
 
-        expect(payload1).toEqual(getFormData('TQ123456'))
+        expect(payload1).toEqual(getFormData('TQ12345678'))
         expect(payload2).toEqual(getFormData())
       })
 
       it('returns value from state', () => {
-        const state1 = getFormState('TQ123456')
+        const state1 = getFormState('TQ12345678')
         const state2 = getFormState(null)
 
         const value1 = field.getFormValueFromState(state1)
         const value2 = field.getFormValueFromState(state2)
 
-        expect(value1).toBe('TQ123456')
+        expect(value1).toBe('TQ12345678')
         expect(value2).toBeUndefined()
       })
 
       it('returns context for conditions and form submission', () => {
-        const state1 = getFormState('TQ123456')
+        const state1 = getFormState('TQ12345678')
         const state2 = getFormState(null)
 
         const value1 = field.getContextValueFromState(state1)
         const value2 = field.getContextValueFromState(state2)
 
-        expect(value1).toBe('TQ123456')
+        expect(value1).toBe('TQ12345678')
         expect(value2).toBeNull()
       })
 
       it('returns state from payload', () => {
-        const payload1 = getFormData('TQ123456')
+        const payload1 = getFormData('TQ12345678')
         const payload2 = getFormData()
 
         const value1 = field.getStateFromValidForm(payload1)
         const value2 = field.getStateFromValidForm(payload2)
 
-        expect(value1).toEqual(getFormState('TQ123456'))
+        expect(value1).toEqual(getFormState('TQ12345678'))
         expect(value2).toEqual(getFormState(null))
       })
     })
 
     describe('View model', () => {
       it('sets Nunjucks component defaults', () => {
-        const viewModel = field.getViewModel(getFormData('TQ123456'))
+        const viewModel = field.getViewModel(getFormData('TQ12345678'))
 
         expect(viewModel).toEqual(
           expect.objectContaining({
             label: { text: def.title },
             name: 'myComponent',
             id: 'myComponent',
-            value: 'TQ123456'
+            value: 'TQ12345678'
           })
         )
       })
@@ -209,19 +236,19 @@ describe('OsGridRefField', () => {
         const componentWithInstruction = new OsGridRefField(
           {
             ...def,
-            options: { instructionText: 'Enter in format **TQ123456**' }
+            options: { instructionText: 'Enter in format **TQ12345678**' }
           },
           { model }
         )
 
         const viewModel = componentWithInstruction.getViewModel(
-          getFormData('TQ123456')
+          getFormData('TQ12345678')
         )
 
         const instructionText =
           'instructionText' in viewModel ? viewModel.instructionText : undefined
         expect(instructionText).toBeTruthy()
-        expect(instructionText).toContain('TQ123456')
+        expect(instructionText).toContain('TQ12345678')
       })
     })
 
@@ -252,16 +279,16 @@ describe('OsGridRefField', () => {
         },
         assertions: [
           {
-            input: getFormData('  TQ123456'),
-            output: { value: getFormData('TQ123456') }
+            input: getFormData('  TQ12345678'),
+            output: { value: getFormData('TQ12345678') }
           },
           {
-            input: getFormData('TQ123456  '),
-            output: { value: getFormData('TQ123456') }
+            input: getFormData('TQ12345678  '),
+            output: { value: getFormData('TQ12345678') }
           },
           {
-            input: getFormData('  TQ123456 \n\n'),
-            output: { value: getFormData('TQ123456') }
+            input: getFormData('  TQ12345678 \n\n'),
+            output: { value: getFormData('TQ12345678') }
           }
         ]
       },
@@ -286,9 +313,9 @@ describe('OsGridRefField', () => {
             }
           },
           {
-            input: getFormData('A1234567'),
+            input: getFormData('AA1234567'),
             output: {
-              value: getFormData('A1234567'),
+              value: getFormData('AA1234567'),
               errors: expect.arrayContaining([
                 expect.objectContaining({
                   text: 'Enter a valid OS grid reference for Example OS grid reference like TQ123456'

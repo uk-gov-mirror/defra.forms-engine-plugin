@@ -60,6 +60,8 @@ export interface DateInputItem {
   name?: string
   value?: Item['value']
   classes?: string
+  // Prefix/suffix are used by location fields (e.g., LatLong, EastingNorthing) for units like "°"
+  // but not by date fields. This interface is reused by both component types.
   prefix?: ComponentText
   suffix?: ComponentText
   condition?: undefined
