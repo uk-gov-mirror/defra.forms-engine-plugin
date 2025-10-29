@@ -14,7 +14,7 @@
 }
 
 @media print {
-  a[href]:after {
-    content: none !important;
+  .govuk-link[href]::after {
+    content: none;
   }
 }
