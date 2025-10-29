@@ -163,6 +163,34 @@ pages:
     next:
       - path: '/how-many-members-of-staff-will-look-after-the-unicorns'
     components:
+      - name: dfGYuk
+        options: {}
+        schema: {}
+        type: EastingNorthingField
+        title: Easting and northing
+        hint:
+          This is an Easting and Northing component
+      - name: seTThb
+        options: {}
+        schema: {}
+        type: LatLongField
+        title: Latitute and longitude
+        hint:
+          This is an Latitute and Longitude component
+      - name: bhjloS
+        options: {}
+        schema: {}
+        type: NationalGridFieldNumberField
+        title: National grid field number
+        hint:
+          This is an National Grid Field Number component
+      - name: dfQQws
+        options: {}
+        schema: {}
+        type: OsGridRefField
+        title: Ordnance survey grid reference
+        hint:
+          This is an Ordnance survey Grid Reference component
       - name: bClCvo
         options: {}
         schema: {}
