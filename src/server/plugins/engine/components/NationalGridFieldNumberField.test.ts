@@ -108,12 +108,14 @@ describe('NationalGridFieldNumberField', () => {
         expect(result3.errors).toBeUndefined()
       })
 
-      it('strips spaces and commas from input', () => {
+      it('formats values with spaces per GDS guidance', () => {
         const result1 = collection.validate(getFormData('NG 1234 5678'))
-        const result2 = collection.validate(getFormData('NG12345,678'))
+        const result2 = collection.validate(getFormData('NG12345678'))
+        const result3 = collection.validate(getFormData('NG12345,678'))
 
-        expect(result1.value.myComponent).toBe('NG12345678')
-        expect(result2.value.myComponent).toBe('NG12345678')
+        expect(result1.value.myComponent).toBe('NG 1234 5678')
+        expect(result2.value.myComponent).toBe('NG 1234 5678')
+        expect(result3.value.myComponent).toBe('NG 1234 5678')
       })
 
       it('adds errors for empty value', () => {
@@ -256,15 +258,15 @@ describe('NationalGridFieldNumberField', () => {
         assertions: [
           {
             input: getFormData('  NG12345678'),
-            output: { value: getFormData('NG12345678') }
+            output: { value: getFormData('NG 1234 5678') }
           },
           {
             input: getFormData('NG12345678  '),
-            output: { value: getFormData('NG12345678') }
+            output: { value: getFormData('NG 1234 5678') }
           },
           {
             input: getFormData('  NG12345678 \n\n'),
-            output: { value: getFormData('NG12345678') }
+            output: { value: getFormData('NG 1234 5678') }
           }
         ]
       },
@@ -283,7 +285,7 @@ describe('NationalGridFieldNumberField', () => {
               value: getFormData('NG1234567'),
               errors: expect.arrayContaining([
                 expect.objectContaining({
-                  text: 'Enter a valid National Grid field number for Example National Grid field number like NG12345678'
+                  text: 'Enter a valid National Grid field number for Example National Grid field number like NG 1234 5678'
                 })
               ])
             }
@@ -294,7 +296,7 @@ describe('NationalGridFieldNumberField', () => {
               value: getFormData('N123456789'),
               errors: expect.arrayContaining([
                 expect.objectContaining({
-                  text: 'Enter a valid National Grid field number for Example National Grid field number like NG12345678'
+                  text: 'Enter a valid National Grid field number for Example National Grid field number like NG 1234 5678'
                 })
               ])
             }
@@ -305,7 +307,7 @@ describe('NationalGridFieldNumberField', () => {
               value: getFormData('NGABCDEFGH'),
               errors: expect.arrayContaining([
                 expect.objectContaining({
-                  text: 'Enter a valid National Grid field number for Example National Grid field number like NG12345678'
+                  text: 'Enter a valid National Grid field number for Example National Grid field number like NG 1234 5678'
                 })
               ])
             }

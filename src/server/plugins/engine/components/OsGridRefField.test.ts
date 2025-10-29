@@ -96,22 +96,26 @@ describe('OsGridRefField', () => {
       })
 
       it('accepts valid values', () => {
+        // Test 6-digit format (common OS grid reference)
+        const result1 = collection.validate(getFormData('SD865005'))
+        const result2 = collection.validate(getFormData('SD 865 005'))
+
         // Test 8-digit parcel ID format (2x4)
-        const result1 = collection.validate(getFormData('TQ12345678'))
-        const result2 = collection.validate(getFormData('TQ 1234 5678'))
+        const result3 = collection.validate(getFormData('TQ12345678'))
+        const result4 = collection.validate(getFormData('TQ 1234 5678'))
 
         // Test 10-digit OS grid reference format (2x5)
-        const result3 = collection.validate(getFormData('SU1234567890'))
-        const result4 = collection.validate(getFormData('SU 12345 67890'))
+        const result5 = collection.validate(getFormData('SU1234567890'))
+        const result6 = collection.validate(getFormData('SU 12345 67890'))
 
         // Test case-insensitive
-        const result5 = collection.validate(getFormData('nt12345678'))
+        const result7 = collection.validate(getFormData('nt12345678'))
 
         // Test various valid OS grid formats
-        const result6 = collection.validate(getFormData('SN 1232 1223')) // parcel ID format
-        const result7 = collection.validate(getFormData('SN 12324 12234')) // OS grid ref format
-        const result8 = collection.validate(getFormData('ST 6789 6789')) // parcel ID with different letters
-        const result9 = collection.validate(getFormData('SO 12345 12345')) // OS grid ref with different letters
+        const result8 = collection.validate(getFormData('SN 1232 1223')) // parcel ID format
+        const result9 = collection.validate(getFormData('SN 12324 12234')) // OS grid ref format
+        const result10 = collection.validate(getFormData('ST 6789 6789')) // parcel ID with different letters
+        const result11 = collection.validate(getFormData('SO 12345 12345')) // OS grid ref with different letters
 
         expect(result1.errors).toBeUndefined()
         expect(result2.errors).toBeUndefined()
@@ -122,14 +126,20 @@ describe('OsGridRefField', () => {
         expect(result7.errors).toBeUndefined()
         expect(result8.errors).toBeUndefined()
         expect(result9.errors).toBeUndefined()
+        expect(result10.errors).toBeUndefined()
+        expect(result11.errors).toBeUndefined()
       })
 
-      it('strips spaces from input', () => {
-        const result1 = collection.validate(getFormData('TQ 1234 5678'))
-        const result2 = collection.validate(getFormData('SU 12345 67890'))
+      it('formats values with spaces per GDS guidance', () => {
+        const result1 = collection.validate(getFormData('SD865005'))
+        const result2 = collection.validate(getFormData('TQ 1234 5678'))
+        const result3 = collection.validate(getFormData('SU1234567890'))
+        const result4 = collection.validate(getFormData('TQ12345678'))
 
-        expect(result1.value.myComponent).toBe('TQ12345678')
-        expect(result2.value.myComponent).toBe('SU1234567890')
+        expect(result1.value.myComponent).toBe('SD 865 005')
+        expect(result2.value.myComponent).toBe('TQ 1234 5678')
+        expect(result3.value.myComponent).toBe('SU 12345 67890')
+        expect(result4.value.myComponent).toBe('TQ 1234 5678')
       })
 
       it('adds errors for empty value', () => {
@@ -144,11 +154,11 @@ describe('OsGridRefField', () => {
 
       it('adds errors for invalid values', () => {
         const result1 = collection.validate(getFormData('INVALID'))
-        const result2 = collection.validate(getFormData('TQ12345')) // Wrong number of digits
+        const result2 = collection.validate(getFormData('TQ12345')) // Wrong number of digits (5)
         const result3 = collection.validate(getFormData('AA12345678')) // Invalid letter combination
-        const result4 = collection.validate(getFormData('TQ123456')) // 6 digits not allowed
+        const result4 = collection.validate(getFormData('TQ1234567')) // Wrong number of digits (7)
 
-        // Test mismatched digit counts (must be either 4+4 or 5+5, not mixed)
+        // Test mismatched digit counts (must be either 3+3, 4+4 or 5+5, not mixed)
         const result5 = collection.validate(getFormData('SN 4444 55555')) // mismatched digit counts
         const result6 = collection.validate(getFormData('SN 55555 4444')) // mismatched digit counts
 
@@ -280,15 +290,15 @@ describe('OsGridRefField', () => {
         assertions: [
           {
             input: getFormData('  TQ12345678'),
-            output: { value: getFormData('TQ12345678') }
+            output: { value: getFormData('TQ 1234 5678') }
           },
           {
             input: getFormData('TQ12345678  '),
-            output: { value: getFormData('TQ12345678') }
+            output: { value: getFormData('TQ 1234 5678') }
           },
           {
             input: getFormData('  TQ12345678 \n\n'),
-            output: { value: getFormData('TQ12345678') }
+            output: { value: getFormData('TQ 1234 5678') }
           }
         ]
       },
