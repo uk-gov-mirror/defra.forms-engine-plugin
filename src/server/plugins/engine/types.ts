@@ -23,6 +23,8 @@ import {
   type ComponentText,
   type ComponentViewModel,
   type DatePartsState,
+  type EastingNorthingState,
+  type LatLongState,
   type MonthYearState
 } from '~/src/server/plugins/engine/components/types.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
@@ -464,6 +466,8 @@ export type RichFormValue =
   | DatePartsState
   | MonthYearState
   | UkAddressState
+  | EastingNorthingState
+  | LatLongState
 
 export interface FormAdapterSubmissionMessageData {
   main: Record<string, RichFormValue | null>
