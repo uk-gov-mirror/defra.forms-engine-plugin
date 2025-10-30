@@ -12,7 +12,7 @@
       }) }}
     {% endif %}
 
-    <div class="app-location-input">
+    <div class="app-location-input app-location-input--{{component.type | lower}}">
       {% for item in component.model.items %}
         <div class="app-location-input__item">
           {{ govukInput({
