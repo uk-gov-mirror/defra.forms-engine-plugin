@@ -1,6 +1,6 @@
 {
   "name": "@defra/forms-engine-plugin",
-  "version": "4.0.4",
+  "version": "4.0.7",
   "description": "Defra forms engine",
   "type": "module",
   "files": [
@@ -27,7 +27,7 @@
     "./components": "./.server/server/plugins/engine/components/index.js",
     "./services/*": "./.server/server/plugins/engine/services/*",
     "./engine/*": "./.server/server/plugins/engine/*",
-    "./helpers.js": "./.server/server/plugins/engine/components/helpers.js",
+    "./helpers.js": "./.server/server/plugins/engine/components/helpers/index.js",
     "./schema.js": "./.server/server/schemas/index.js",
     "./templates/*": "./.server/server/plugins/engine/views/*",
     "./cache-service.js": "./.server/server/services/cacheService.js",
@@ -70,7 +70,7 @@
   },
   "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
-    "@defra/forms-model": "^3.0.560",
+    "@defra/forms-model": "^3.0.569",
     "@defra/hapi-tracing": "^1.26.0",
     "@elastic/ecs-pino-format": "^1.5.0",
     "@hapi/boom": "^10.0.1",
