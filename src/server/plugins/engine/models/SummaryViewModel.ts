@@ -1,4 +1,4 @@
-import { type Section } from '@defra/forms-model'
+import { SchemaVersion, type Section } from '@defra/forms-model'
 
 import {
   getAnswer,
@@ -64,6 +64,10 @@ export class SummaryViewModel {
 
     this.page = page
     this.pageTitle = page.title
+    if (def.schema === SchemaVersion.V2 && !page.title) {
+      this.pageTitle = 'Check your answers before sending your form'
+    }
+
     this.serviceUrl = `/${basePath}`
     this.name = def.name
     this.declaration = def.declaration
