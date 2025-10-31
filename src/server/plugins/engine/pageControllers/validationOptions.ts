@@ -21,7 +21,7 @@ const opts = {
  */
 export const messageTemplate: Record<string, JoiExpression> = {
   declarationRequired: joi.expression(
-    'You must confirm you understand and agree with {{lowerFirst(#label)}} to continue',
+    'You must confirm you understand and agree with the {{lowerFirst(#label)}} to continue',
     opts
   ) as JoiExpression,
   required: joi.expression(

@@ -4,6 +4,7 @@ import {
 } from '@defra/forms-model'
 
 import { ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
+import { DeclarationField } from '~/src/server/plugins/engine/components/DeclarationField.js'
 import {
   getAnswer,
   type Field
@@ -154,7 +155,7 @@ describe('DeclarationField', () => {
 
         expect(result.errors).toEqual([
           expect.objectContaining({
-            text: 'You must confirm you understand and agree with terms and conditions to continue'
+            text: 'You must confirm you understand and agree with the terms and conditions to continue'
           })
         ])
       })
@@ -322,6 +323,15 @@ describe('DeclarationField', () => {
         expect(errors.advancedSettingsErrors).toBeEmpty()
       })
     })
+
+    describe('getFormValue', () => {
+      test('should return correct value', () => {
+        expect(field.getFormValue(undefined)).toBeUndefined()
+        expect(field.getFormValue([true])).toEqual([true])
+        expect(field.getFormValue([])).toEqual([])
+        expect(field.getFormValue({})).toBeUndefined()
+      })
+    })
   })
 
   describe('Validation', () => {
@@ -352,7 +362,7 @@ describe('DeclarationField', () => {
         description: 'Use short description if it exists',
         component: {
           title: 'Terms and conditions',
-          shortDescription: 'The terms and conditions',
+          shortDescription: 'Terms and conditions',
           content: 'Lorem ipsum dolar sit amet',
           name: 'myComponent',
           type: ComponentType.DeclarationField,
@@ -404,6 +414,13 @@ describe('DeclarationField', () => {
           expect(result).toEqual(output)
         }
       )
+    })
+  })
+
+  describe('isBool', () => {
+    test('should return correct boolean', () => {
+      expect(DeclarationField.isBool('string')).toBe(false)
+      expect(DeclarationField.isBool(true)).toBe(true)
     })
   })
 })
