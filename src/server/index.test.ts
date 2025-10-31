@@ -585,6 +585,7 @@ describe('prepareEnvironment', () => {
     'href',
     'field',
     'page',
+    'merge',
     'markdown'
   ]
 
