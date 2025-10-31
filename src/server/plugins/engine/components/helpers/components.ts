@@ -1,11 +1,11 @@
 import { ComponentType, type ComponentDef } from '@defra/forms-model'
-import { Marked, type Token } from 'marked'
 
 import { config } from '~/src/config/index.js'
 import { type ComponentBase } from '~/src/server/plugins/engine/components/ComponentBase.js'
 import { ListFormComponent } from '~/src/server/plugins/engine/components/ListFormComponent.js'
 import { escapeMarkdown } from '~/src/server/plugins/engine/components/helpers/index.js'
 import * as Components from '~/src/server/plugins/engine/components/index.js'
+import { markdown } from '~/src/server/plugins/engine/components/markdownParser.js'
 import { type FormState } from '~/src/server/plugins/engine/types.js'
 
 // All component instances
@@ -20,10 +20,15 @@ export type Field = InstanceType<
   | typeof Components.YesNoField
   | typeof Components.CheckboxesField
   | typeof Components.DatePartsField
+  | typeof Components.DeclarationField
+  | typeof Components.EastingNorthingField
   | typeof Components.EmailAddressField
+  | typeof Components.LatLongField
   | typeof Components.MonthYearField
   | typeof Components.MultilineTextField
+  | typeof Components.NationalGridFieldNumberField
   | typeof Components.NumberField
+  | typeof Components.OsGridRefField
   | typeof Components.SelectField
   | typeof Components.TelephoneNumberField
   | typeof Components.TextField
@@ -32,13 +37,12 @@ export type Field = InstanceType<
 >
 
 // Guidance component instances only
-export type Guidance = InstanceType<
-  | typeof Components.Details
-  | typeof Components.Html
-  | typeof Components.Markdown
-  | typeof Components.InsetText
-  | typeof Components.List
->
+export type Guidance =
+  | InstanceType<typeof Components.Details>
+  | InstanceType<typeof Components.Html>
+  | InstanceType<typeof Components.Markdown>
+  | InstanceType<typeof Components.InsetText>
+  | InstanceType<typeof Components.List>
 
 // List component instances only
 export type ListField = InstanceType<
@@ -51,43 +55,8 @@ export type ListField = InstanceType<
 
 export const designerUrl = config.get('designerUrl')
 
-export const markdown = new Marked({
-  breaks: true,
-  gfm: true,
-
-  /**
-   * Render paragraphs without `<p>` wrappers
-   * for check answers summary list `<dd>`
-   */
-  extensions: [
-    {
-      name: 'paragraph',
-      renderer({ tokens = [] }) {
-        const text = this.parser.parseInline(tokens)
-        return tokens.length > 1 ? `${text}<br>` : text
-      }
-    }
-  ],
-
-  /**
-   * Restrict allowed Markdown tokens
-   */
-  walkTokens(token) {
-    const tokens: Token['type'][] = [
-      'br',
-      'escape',
-      'list',
-      'list_item',
-      'paragraph',
-      'space',
-      'text'
-    ]
-
-    if (!tokens.includes(token.type)) {
-      token.type = 'text'
-    }
-  }
-})
+// Re-export markdown from its own module to avoid circular dependencies
+export { markdown } from '~/src/server/plugins/engine/components/markdownParser.js'
 
 /**
  * Filter known components with lists
@@ -95,7 +64,7 @@ export const markdown = new Marked({
 export function hasListFormField(
   field?: Partial<Component>
 ): field is ListFormComponent {
-  return !!field && isListFieldType(field.type)
+  return !!field && field.type !== undefined && isListFieldType(field.type)
 }
 
 export function isListFieldType(
@@ -132,6 +101,10 @@ export function createComponent(
 
     case ComponentType.DatePartsField:
       component = new Components.DatePartsField(def, options)
+      break
+
+    case ComponentType.DeclarationField:
+      component = new Components.DeclarationField(def, options)
       break
 
     case ComponentType.Details:
@@ -198,8 +171,21 @@ export function createComponent(
       component = new Components.FileUploadField(def, options)
       break
 
-    case ComponentType.DeclarationField:
-      component = new Components.DeclarationField(def, options)
+    case ComponentType.EastingNorthingField:
+      component = new Components.EastingNorthingField(def, options)
+      break
+
+    case ComponentType.OsGridRefField:
+      component = new Components.OsGridRefField(def, options)
+      break
+
+    case ComponentType.NationalGridFieldNumberField:
+      component = new Components.NationalGridFieldNumberField(def, options)
+      break
+
+    case ComponentType.LatLongField:
+      component = new Components.LatLongField(def, options)
+      break
   }
 
   if (typeof component === 'undefined') {
@@ -237,7 +223,9 @@ export function getAnswer(
   if (
     field instanceof ListFormComponent ||
     field instanceof Components.MultilineTextField ||
-    field instanceof Components.UkAddressField
+    field instanceof Components.UkAddressField ||
+    field instanceof Components.EastingNorthingField ||
+    field instanceof Components.LatLongField
   ) {
     return markdown
       .parse(getAnswerMarkdown(field, state), { async: false })
@@ -328,6 +316,12 @@ export function getAnswerMarkdown(
       .map(escapeMarkdown)
       .join('\n')
       .concat('\n')
+  } else if (
+    field instanceof Components.EastingNorthingField ||
+    field instanceof Components.LatLongField
+  ) {
+    const contextValue = field.getContextValueFromState(state)
+    answerEscaped = contextValue ? `${contextValue}\n` : ''
   }
 
   return answerEscaped

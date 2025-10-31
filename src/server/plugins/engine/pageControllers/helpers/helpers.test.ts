@@ -67,6 +67,10 @@ describe('Page controller helpers', () => {
         controller = SummaryPageController
         break
 
+      case ControllerType.SummaryWithConfirmationEmail:
+        controller = SummaryPageController
+        break
+
       case ControllerType.Status:
         controller = StatusPageController
         break
