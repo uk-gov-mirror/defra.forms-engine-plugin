@@ -20,6 +20,7 @@ export type Field = InstanceType<
   | typeof Components.YesNoField
   | typeof Components.CheckboxesField
   | typeof Components.DatePartsField
+  | typeof Components.DeclarationField
   | typeof Components.EastingNorthingField
   | typeof Components.EmailAddressField
   | typeof Components.LatLongField
@@ -100,6 +101,10 @@ export function createComponent(
 
     case ComponentType.DatePartsField:
       component = new Components.DatePartsField(def, options)
+      break
+
+    case ComponentType.DeclarationField:
+      component = new Components.DeclarationField(def, options)
       break
 
     case ComponentType.Details:
