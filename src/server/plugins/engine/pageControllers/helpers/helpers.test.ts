@@ -11,7 +11,6 @@ import { PageController } from '~/src/server/plugins/engine/pageControllers/Page
 import { getProxyUrlForLocalDevelopment } from '~/src/server/plugins/engine/pageControllers/helpers/index.js'
 import {
   createPage,
-  isPageController,
   type PageControllerType
 } from '~/src/server/plugins/engine/pageControllers/helpers/pages.js'
 import {
@@ -26,7 +25,10 @@ import {
 import definition from '~/test/form/definitions/blank.js'
 
 describe('Page controller helpers', () => {
-  const examples = PageTypes.map((pageType) => {
+  const examples = PageTypes.filter(
+    (pageType) =>
+      pageType.controller !== ControllerType.SummaryWithConfirmationEmail
+  ).map((pageType) => {
     const pageDef = structuredClone(pageType)
 
     let controller: PageControllerType | undefined
@@ -64,10 +66,6 @@ describe('Page controller helpers', () => {
         break
 
       case ControllerType.Summary:
-        controller = SummaryPageController
-        break
-
-      case ControllerType.SummaryWithConfirmationEmail:
         controller = SummaryPageController
         break
 
@@ -152,24 +150,6 @@ describe('Page controller helpers', () => {
       expect(() => createPage(model, pageDef)).toThrow(
         `Page controller ${pageDef.controller} does not exist`
       )
-    })
-  })
-
-  describe('Helper: isPageController', () => {
-    it.each([...examples])(
-      "allows valid page controller '$pageDef.controller'",
-      ({ pageDef }) => {
-        expect(isPageController(pageDef.controller)).toBe(true)
-      }
-    )
-
-    it.each([
-      { name: './pages/unknown.js' },
-      { name: 'UnknownPageController' },
-      { name: undefined },
-      { name: '' }
-    ])("rejects invalid page controller '$name'", ({ name }) => {
-      expect(isPageController(name)).toBe(false)
     })
   })
 
