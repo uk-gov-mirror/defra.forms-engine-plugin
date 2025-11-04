@@ -1,22 +1,11 @@
 import {
   ControllerType,
   controllerNameFromPath,
-  isControllerName,
   type Page
 } from '@defra/forms-model'
 
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import * as PageControllers from '~/src/server/plugins/engine/pageControllers/index.js'
-
-export function isPageController(
-  controllerName?: string | ControllerType
-): controllerName is keyof typeof PageControllers {
-  // Handle SummaryWithConfirmationEmail as it uses SummaryPageController
-  if (controllerName === ControllerType.SummaryWithConfirmationEmail) {
-    return true
-  }
-  return isControllerName(controllerName) && controllerName in PageControllers
-}
 
 export type PageControllerClass = InstanceType<PageControllerType>
 export type PageControllerType =
@@ -53,10 +42,6 @@ export function createPage(model: FormModel, pageDef: Page) {
       break
 
     case ControllerType.Summary:
-      controller = new PageControllers.SummaryPageController(model, pageDef)
-      break
-
-    case ControllerType.SummaryWithConfirmationEmail:
       controller = new PageControllers.SummaryPageController(model, pageDef)
       break
 
