@@ -24,7 +24,7 @@ import {
   type Page
 } from '@defra/forms-model'
 import { add, format } from 'date-fns'
-import { Parser, type Value } from 'expr-eval'
+import { Parser, type Value } from 'expr-eval-fork'
 import joi from 'joi'
 
 import { createLogger } from '~/src/server/common/helpers/logging/logger.js'
