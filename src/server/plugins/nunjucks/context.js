@@ -50,7 +50,6 @@ export async function context(request) {
     // take consumers props first so we can override it
     ...consumerViewContext,
     baseLayoutPath: pluginStorage.baseLayoutPath,
-    // crumb: safeGenerateCrumb(request),
     currentPath: `${request.path}${request.url.search}`,
     previewMode: isPreviewMode ? formState : undefined,
     slug: isResponseOK ? params?.slug : undefined
