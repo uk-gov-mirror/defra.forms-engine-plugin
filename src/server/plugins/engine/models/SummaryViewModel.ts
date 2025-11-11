@@ -104,7 +104,7 @@ export class SummaryViewModel {
           },
           value: {
             classes: 'app-prose-scope',
-            html: item.value || 'Not supplied'
+            html: item.value || 'Not provided'
           },
           actions: {
             items
@@ -216,7 +216,10 @@ function ItemField(
   return {
     name: field.name,
     label: field.title,
-    title: field.label,
+    title:
+      field.options.required === false
+        ? `${field.label} (optional)`
+        : field.label,
     error: field.getFirstError(options.errors),
     value: getAnswer(field, state),
     href: getPageHref(page, options.path, {

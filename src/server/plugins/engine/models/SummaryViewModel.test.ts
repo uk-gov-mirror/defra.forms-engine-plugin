@@ -66,7 +66,7 @@ describe('SummaryViewModel', () => {
         'Pizzas',
         'Pizza'
       ],
-      values: ['Collection', 'Not supplied'],
+      values: ['Collection', 'Not provided'],
       answers: ['Collection', ''],
       names: ['orderType', 'pizza']
     },
@@ -342,7 +342,7 @@ describe('SummaryPageController', () => {
       )
     })
 
-    it('should display default page title for v2 form when title not supplied', () => {
+    it('should display default page title for v2 form when title not provided', () => {
       const state: FormState = {
         $$__referenceNumber: 'foobar',
         orderType: 'collection',
