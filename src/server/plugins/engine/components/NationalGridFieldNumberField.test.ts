@@ -265,6 +265,7 @@ describe('NationalGridFieldNumberField', () => {
         description: 'Trim empty spaces',
         component: {
           title: 'Example National Grid field number',
+          shortDescription: 'Grid field',
           name: 'myComponent',
           type: ComponentType.NationalGridFieldNumberField,
           options: {}
@@ -288,6 +289,7 @@ describe('NationalGridFieldNumberField', () => {
         description: 'Pattern validation',
         component: {
           title: 'Example National Grid field number',
+          shortDescription: 'Grid field',
           name: 'myComponent',
           type: ComponentType.NationalGridFieldNumberField,
           options: {}
@@ -299,7 +301,7 @@ describe('NationalGridFieldNumberField', () => {
               value: getFormData('NG1234567'),
               errors: expect.arrayContaining([
                 expect.objectContaining({
-                  text: 'Enter a valid National Grid field number for Example National Grid field number like NG 1234 5678'
+                  text: 'Enter a valid National Grid field number for grid field like NG 1234 5678'
                 })
               ])
             }
@@ -310,7 +312,7 @@ describe('NationalGridFieldNumberField', () => {
               value: getFormData('N123456789'),
               errors: expect.arrayContaining([
                 expect.objectContaining({
-                  text: 'Enter a valid National Grid field number for Example National Grid field number like NG 1234 5678'
+                  text: 'Enter a valid National Grid field number for grid field like NG 1234 5678'
                 })
               ])
             }
@@ -321,7 +323,7 @@ describe('NationalGridFieldNumberField', () => {
               value: getFormData('NGABCDEFGH'),
               errors: expect.arrayContaining([
                 expect.objectContaining({
-                  text: 'Enter a valid National Grid field number for Example National Grid field number like NG 1234 5678'
+                  text: 'Enter a valid National Grid field number for grid field like NG 1234 5678'
                 })
               ])
             }
@@ -332,6 +334,7 @@ describe('NationalGridFieldNumberField', () => {
         description: 'Custom validation message',
         component: {
           title: 'Example National Grid field number',
+          shortDescription: 'Grid field',
           name: 'myComponent',
           type: ComponentType.NationalGridFieldNumberField,
           options: {
@@ -367,6 +370,7 @@ describe('NationalGridFieldNumberField', () => {
         description: 'Custom validation messages (multiple)',
         component: {
           title: 'Example National Grid field number',
+          shortDescription: 'Grid field',
           name: 'myComponent',
           type: ComponentType.NationalGridFieldNumberField,
           options: {
@@ -417,6 +421,7 @@ describe('NationalGridFieldNumberField', () => {
         description: 'Optional field',
         component: {
           title: 'Example National Grid field number',
+          shortDescription: 'Grid field',
           name: 'myComponent',
           type: ComponentType.NationalGridFieldNumberField,
           options: {

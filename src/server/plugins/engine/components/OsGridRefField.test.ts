@@ -284,6 +284,7 @@ describe('OsGridRefField', () => {
         description: 'Pattern validation',
         component: {
           title: 'Example OS grid reference',
+          shortDescription: 'Grid reference',
           name: 'myComponent',
           type: ComponentType.OsGridRefField,
           options: {}
@@ -295,7 +296,7 @@ describe('OsGridRefField', () => {
               value: getFormData('TQ12345'),
               errors: expect.arrayContaining([
                 expect.objectContaining({
-                  text: 'Enter a valid OS grid reference for Example OS grid reference like TQ123456'
+                  text: 'Enter a valid OS grid reference for grid reference like TQ123456'
                 })
               ])
             }
@@ -306,7 +307,7 @@ describe('OsGridRefField', () => {
               value: getFormData('AA1234567'),
               errors: expect.arrayContaining([
                 expect.objectContaining({
-                  text: 'Enter a valid OS grid reference for Example OS grid reference like TQ123456'
+                  text: 'Enter a valid OS grid reference for grid reference like TQ123456'
                 })
               ])
             }
@@ -317,7 +318,7 @@ describe('OsGridRefField', () => {
               value: getFormData('TQABCDEF'),
               errors: expect.arrayContaining([
                 expect.objectContaining({
-                  text: 'Enter a valid OS grid reference for Example OS grid reference like TQ123456'
+                  text: 'Enter a valid OS grid reference for grid reference like TQ123456'
                 })
               ])
             }
