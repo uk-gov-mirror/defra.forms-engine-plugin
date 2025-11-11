@@ -247,7 +247,7 @@ describe('Location field formatting', () => {
       }
 
       const answer = getAnswer(field, state, { format: 'email' })
-      expect(answer).toBe('\n')
+      expect(answer).toBe('Not provided\n')
     })
 
     it('formats for data output when agreed', () => {
@@ -265,14 +265,14 @@ describe('Location field formatting', () => {
       }
 
       const answer = getAnswer(field, state, { format: 'data' })
-      expect(answer).toBe('')
+      expect(answer).toBe('false')
     })
 
     it('formats for data output when no value', () => {
       const state = {}
 
       const answer = getAnswer(field, state, { format: 'data' })
-      expect(answer).toBe('')
+      expect(answer).toBe('false')
     })
 
     it('formats for summary display when agreed', () => {
@@ -290,14 +290,14 @@ describe('Location field formatting', () => {
       }
 
       const answer = getAnswer(field, state, { format: 'summary' })
-      expect(answer).toBe('')
+      expect(answer).toBe('Not provided')
     })
 
     it('formats for summary display when no value', () => {
       const state = {}
 
       const answer = getAnswer(field, state, { format: 'summary' })
-      expect(answer).toBe('')
+      expect(answer).toBe('Not provided')
     })
   })
 

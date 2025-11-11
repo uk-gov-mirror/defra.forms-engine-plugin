@@ -216,9 +216,6 @@ export function getAnswer(
   // Use context value for submission data
   if (options.format === 'data') {
     const context = field.getContextValueFromState(state)
-    if (field instanceof Components.DeclarationField) {
-      return context ? context.toString() : ''
-    }
     return context?.toString() ?? ''
   }
 

@@ -186,7 +186,7 @@ describe('DeclarationField', () => {
         const answer2 = getAnswer(field, state2)
 
         expect(answer1).toBe('I understand and agree')
-        expect(answer2).toBe('')
+        expect(answer2).toBe('Not provided')
       })
 
       it('returns payload from state', () => {

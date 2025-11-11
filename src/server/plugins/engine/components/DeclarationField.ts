@@ -98,7 +98,7 @@ export class DeclarationField extends FormComponent {
   }
 
   getDisplayStringFromFormValue(value: FormValue | FormPayload): string {
-    return value ? this.declarationConfirmationLabel : ''
+    return value ? this.declarationConfirmationLabel : 'Not provided'
   }
 
   getViewModel(payload: FormPayload, errors?: FormSubmissionError[]) {
