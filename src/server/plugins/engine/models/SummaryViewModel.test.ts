@@ -1,3 +1,9 @@
+import {
+  type FormDefinition,
+  type PageQuestion,
+  type RadiosFieldComponent
+} from '@defra/forms-model'
+
 import { FORM_PREFIX } from '~/src/server/constants.js'
 import {
   FormModel,
@@ -281,6 +287,49 @@ describe('SummaryViewModel', () => {
       })
     }
   )
+
+  it('should use correct summary labels', () => {
+    request.query.force = '' // Preview URL '?force'
+    const state = {
+      $$__referenceNumber: 'foobar',
+      orderType: 'collection',
+      pizza: []
+    } satisfies FormState
+
+    // Setup an optional question
+    const definitionOptional = structuredClone(definition) as FormDefinition
+    const firstPage = definitionOptional.pages[0] as PageQuestion
+    const firstComponent = firstPage.components[0] as RadiosFieldComponent
+    firstComponent.options.required = false
+
+    const model = new FormModel(definitionOptional, {
+      basePath: `${FORM_PREFIX}/test`
+    })
+
+    context = model.getFormContext(request, state)
+
+    const page = createPage(model, definition.pages[2])
+
+    summaryViewModel = new SummaryViewModel(request, page, context)
+
+    expect(summaryViewModel.details).toHaveLength(2)
+
+    const [details1, details2] = summaryViewModel.details
+
+    expect(details1.items[0]).toMatchObject({
+      name: 'orderType',
+      value: 'Collection',
+      title: 'How you would like to receive your pizza (optional)',
+      label: 'How would you like to receive your pizza?'
+    })
+
+    expect(details2.items[0]).toMatchObject({
+      name: 'pizza',
+      value: '',
+      title: 'Pizzas',
+      label: 'Pizza'
+    })
+  })
 })
 
 describe('SummaryPageController', () => {

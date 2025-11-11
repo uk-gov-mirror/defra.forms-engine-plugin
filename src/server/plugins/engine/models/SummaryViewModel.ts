@@ -204,7 +204,7 @@ function ItemRepeat(
  * Creates a form field detail item
  * @see {@link DetailItemField}
  */
-function ItemField(
+export function ItemField(
   page: PageControllerClass,
   state: FormState,
   field: Field,
