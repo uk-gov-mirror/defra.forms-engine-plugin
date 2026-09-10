@@ -92,7 +92,7 @@
   },
   "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
-    "@defra/forms-model": "^3.0.704",
+    "@defra/forms-model": "^3.0.708",
     "@defra/hapi-tracing": "^1.29.0",
     "@defra/interactive-map": "0.0.33-alpha",
     "@elastic/ecs-pino-format": "^1.5.0",
@@ -197,7 +197,7 @@
     "core-js": "^3.46.0",
     "cssnano": "^7.1.2",
     "cssnano-preset-default": "^7.0.10",
-    "editorconfig-checker": "^6.1.1",
+    "editorconfig-checker": "^6.2.0",
     "eslint": "^9.39.3",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-jest": "^28.14.0",
