@@ -13,6 +13,7 @@ import { type Component } from '~/src/server/plugins/engine/components/helpers/c
 import { type ViewModel } from '~/src/server/plugins/engine/components/types.js'
 import { type FormModel } from '~/src/server/plugins/engine/models/index.js'
 import { type PageControllerClass } from '~/src/server/plugins/engine/pageControllers/helpers/pages.js'
+import { type FileState } from '~/src/server/plugins/engine/types/index.js'
 
 export class ComponentBase {
   id?: string
@@ -89,10 +90,11 @@ export class ComponentBase {
 }
 
 export type ComponentSchema =
-  | ArraySchema<string>
-  | ArraySchema<number>
-  | ArraySchema<boolean>
-  | ArraySchema<object>
+  | ArraySchema<string[]>
+  | ArraySchema<number[]>
+  | ArraySchema<boolean[]>
+  | ArraySchema<object[]>
+  | ArraySchema<FileState[]>
   | BooleanSchema<string>
   | BooleanSchema
   | DateSchema
