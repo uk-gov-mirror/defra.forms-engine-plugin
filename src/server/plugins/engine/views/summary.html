@@ -88,6 +88,7 @@
               When a better fix is implemented, this class can be removed and preventDoubleClick should be set back to true. #}
           {{ govukButton({
             text: submitButtonText,
+            classes: "prevent-multiple-clicks",
             name: "action",
             value: "send",
             preventDoubleClick: false
