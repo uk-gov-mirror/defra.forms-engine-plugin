@@ -133,14 +133,12 @@ export function simplifyNestedTitles(schema, originalParentTitle = '') {
  * come from elsewhere in the form definition, so the enum has no fixed list to
  * document. The doc generator renders enum values as a table, which needs
  * primitive or array values.
- * @param {unknown} node - The schema node to clean in place
+ * @param {JsonSchema} schema - The schema to clean in place
  */
-export function removeJoiReferenceEnums(node) {
-  if (!node || typeof node !== 'object') {
+export function removeJoiReferenceEnums(schema) {
+  if (!schema || typeof schema !== 'object') {
     return
   }
-
-  const schema = /** @type {JsonSchema} */ (node)
 
   if (
     Array.isArray(schema.enum) &&
