@@ -98,11 +98,16 @@ export function withCustomValidationOverrides(
   }
 
   // When populating the defaults, don't override anything the user has explicitly configured
-  return Object.fromEntries(
-    Object.entries(defaults).filter(
-      ([key]) => !(key in (customValidationMessages ?? {}))
-    )
-  ) as LanguageMessages
+  const authorKeys = Object.keys(customValidationMessages ?? {})
+  const messages: TranslatedValidationMessages = {}
+
+  for (const [key, message] of Object.entries(defaults)) {
+    if (!authorKeys.includes(key)) {
+      messages[key] = message
+    }
+  }
+
+  return messages as LanguageMessages
 }
 
 /**
