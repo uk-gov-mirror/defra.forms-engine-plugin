@@ -90,15 +90,22 @@ export function withCustomValidationOverrides(
   customValidationMessage?: string,
   customValidationMessages?: LanguageMessages
 ): LanguageMessages {
-  const authorKeys = Object.keys(customValidationMessages ?? {})
   const messages: TranslatedValidationMessages = {}
 
-  for (const [key, message] of Object.entries(defaults)) {
-    if (customValidationMessage) {
-      // A global override for all messages is the value for all scenarios
+  // A global override for all messages is the value for all scenarios
+  if (customValidationMessage) {
+    for (const key of Object.keys(defaults)) {
       messages[key] = customValidationMessage
-    } else if (!authorKeys.includes(key)) {
-      // A default only fills a key that the user has not configured
+    }
+
+    return messages as LanguageMessages
+  }
+
+  // A default only fills a key that the user has not configured
+  const authorKeys = Object.keys(customValidationMessages ?? {})
+
+  for (const [key, message] of Object.entries(defaults)) {
+    if (!authorKeys.includes(key)) {
       messages[key] = message
     }
   }
