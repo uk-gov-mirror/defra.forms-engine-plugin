@@ -1,5 +1,6 @@
 import {
   ComponentType,
+  isFormType,
   type AutocompleteFieldComponent,
   type CheckboxesFieldComponent,
   type DatePartsFieldComponent,
@@ -101,31 +102,17 @@ const NOT_SUPPORTED_COMPONENT_TYPES = [
   ComponentType.TrackingField
 ]
 
-/**
- * Content-only component types. They have no user input and no validation,
- * so options.customValidationMessages does not apply to them.
- */
-const CONTENT_ONLY_COMPONENT_TYPES = [
-  ComponentType.Details,
-  ComponentType.Html,
-  ComponentType.Markdown,
-  ComponentType.InsetText,
-  ComponentType.List,
-  ComponentType.NotificationBanner
-]
-
 describe('Component-level validation message override (customValidationMessages)', () => {
-  // Fails when a new ComponentType is not in one of the three lists above.
-  it('accounts for every ComponentType', () => {
+  // Fails when a new form ComponentType is not in one of the two lists above.
+  it('accounts for every form ComponentType', () => {
     const accountedFor = [
       ...SUPPORTED_COMPONENT_TYPES,
-      ...NOT_SUPPORTED_COMPONENT_TYPES,
-      ...CONTENT_ONLY_COMPONENT_TYPES
+      ...NOT_SUPPORTED_COMPONENT_TYPES
     ]
 
     expect(new Set(accountedFor).size).toBe(accountedFor.length)
     expect([...accountedFor].sort()).toEqual(
-      [...Object.values(ComponentType)].sort()
+      Object.values(ComponentType).filter(isFormType).sort()
     )
   })
 

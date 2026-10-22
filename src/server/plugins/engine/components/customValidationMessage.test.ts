@@ -1,5 +1,6 @@
 import {
   ComponentType,
+  isFormType,
   type EastingNorthingFieldComponent,
   type EmailAddressFieldComponent,
   type LatLongFieldComponent,
@@ -36,12 +37,12 @@ import {
  *
  * The lists below record which components declare and read this option.
  * They come from reading each component's source code and its
- * `@defra/forms-model` type, not from guessing. Only 11 of the 29
- * ComponentType values declare customValidationMessage on their options
- * type at all - the other 18 cannot express it, so TypeScript itself proves
+ * `@defra/forms-model` type, not from guessing. Only 11 of the 23
+ * form ComponentType values declare customValidationMessage on their options
+ * type at all - the other 12 cannot express it, so TypeScript itself proves
  * the option does not apply to them. No runtime test is needed for those;
  * they are listed below only so the coverage guard test accounts for every
- * ComponentType.
+ * form ComponentType.
  *
  * Fixed regression: NumberField, OsGridRefField and NationalGridFieldNumberField
  * worked in v4.23.0 (the last v4 release, which had no
@@ -85,7 +86,7 @@ const NOT_SUPPORTED_COMPONENT_TYPES = [
  * Component types with no customValidationMessage field on their options
  * type. TypeScript itself proves the option cannot be set, so there is
  * nothing to test at runtime. Listed here only so the coverage guard test
- * below accounts for every ComponentType.
+ * below accounts for every form ComponentType.
  */
 const NO_SINGULAR_MESSAGE_OPTION = [
   ComponentType.CheckboxesField,
@@ -99,18 +100,12 @@ const NO_SINGULAR_MESSAGE_OPTION = [
   ComponentType.RadiosField,
   ComponentType.SelectField,
   ComponentType.AutocompleteField,
-  ComponentType.TrackingField,
-  ComponentType.Details,
-  ComponentType.Html,
-  ComponentType.Markdown,
-  ComponentType.InsetText,
-  ComponentType.List,
-  ComponentType.NotificationBanner
+  ComponentType.TrackingField
 ]
 
 describe('Component-level validation message override (customValidationMessage)', () => {
-  // Fails when a new ComponentType is not in one of the three lists above.
-  it('accounts for every ComponentType', () => {
+  // Fails when a new form ComponentType is not in one of the three lists above.
+  it('accounts for every form ComponentType', () => {
     const accountedFor = [
       ...SUPPORTS_SINGULAR_MESSAGE,
       ...NOT_SUPPORTED_COMPONENT_TYPES,
@@ -119,7 +114,7 @@ describe('Component-level validation message override (customValidationMessage)'
 
     expect(new Set(accountedFor).size).toBe(accountedFor.length)
     expect([...accountedFor].sort()).toEqual(
-      [...Object.values(ComponentType)].sort()
+      Object.values(ComponentType).filter(isFormType).sort()
     )
   })
 
