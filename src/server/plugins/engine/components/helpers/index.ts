@@ -90,19 +90,15 @@ export function withCustomValidationOverrides(
   customValidationMessage?: string,
   customValidationMessages?: LanguageMessages
 ): LanguageMessages {
-  // If component has a global override for all messages, set that as the value for all scenarios
-  if (customValidationMessage) {
-    return Object.fromEntries(
-      Object.keys(defaults).map((key) => [key, customValidationMessage])
-    ) as LanguageMessages
-  }
-
-  // When populating the defaults, don't override anything the user has explicitly configured
   const authorKeys = Object.keys(customValidationMessages ?? {})
   const messages: TranslatedValidationMessages = {}
 
   for (const [key, message] of Object.entries(defaults)) {
-    if (!authorKeys.includes(key)) {
+    if (customValidationMessage) {
+      // A global override for all messages is the value for all scenarios
+      messages[key] = customValidationMessage
+    } else if (!authorKeys.includes(key)) {
+      // A default only fills a key that the user has not configured
       messages[key] = message
     }
   }
