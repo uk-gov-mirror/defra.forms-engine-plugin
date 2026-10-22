@@ -1,18 +1,16 @@
 import {
   ComponentType,
   isFormType,
-  type ComponentDef
+  type FormComponentsDef
 } from '@defra/forms-model'
 
 import { ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
-import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
+import { type FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
 import {
-  type FormPayload,
-  type FormValue
-} from '~/src/server/plugins/engine/types.js'
-import { listString } from '~/test/fixtures/list.js'
-import definition from '~/test/form/definitions/blank.js'
-import { getFormData } from '~/test/helpers/component-helpers.js'
+  buildComponent,
+  buildModel,
+  getInput
+} from '~/test/helpers/validation-helpers.js'
 
 /**
  * Checks `options.customValidationMessage` for every form component type,
@@ -25,7 +23,7 @@ const OVERRIDE = { customValidationMessage: CUSTOM }
 /**
  * Component types that use options.customValidationMessage
  */
-const SUPPORTED_COMPONENT_TYPES = [
+const SUPPORTED_COMPONENT_TYPES: FormComponentsDef['type'][] = [
   ComponentType.TextField,
   ComponentType.EmailAddressField,
   ComponentType.MultilineTextField,
@@ -39,7 +37,7 @@ const SUPPORTED_COMPONENT_TYPES = [
 /**
  * Component types that ignore options.customValidationMessage
  */
-const NOT_SUPPORTED_COMPONENT_TYPES = [
+const NOT_SUPPORTED_COMPONENT_TYPES: FormComponentsDef['type'][] = [
   ComponentType.CheckboxesField,
   ComponentType.DatePartsField,
   ComponentType.MonthYearField,
@@ -56,65 +54,6 @@ const NOT_SUPPORTED_COMPONENT_TYPES = [
   ComponentType.AutocompleteField,
   ComponentType.TrackingField
 ]
-
-/**
- * Definition fields for each type, where they differ from the defaults in
- * `buildComponent()`
- */
-const EXTRA_DEFINITION_FIELDS: Partial<
-  Record<ComponentType, { options?: object; [key: string]: unknown }>
-> = {
-  [ComponentType.MultilineTextField]: { schema: {} },
-  [ComponentType.NumberField]: { schema: {} },
-  [ComponentType.FileUploadField]: { schema: {} },
-  [ComponentType.RadiosField]: { list: 'listString' },
-  [ComponentType.SelectField]: { list: 'listString' },
-  [ComponentType.AutocompleteField]: { list: 'listString' },
-  [ComponentType.CheckboxesField]: { list: 'listString' },
-  [ComponentType.DeclarationField]: { content: 'Lorem ipsum dolar sit amet' },
-  [ComponentType.PaymentField]: {
-    options: { amount: 100, description: 'Test payment description' }
-  }
-}
-
-/**
- * Form input for each type, where it differs from `getFormData()`. Each
- * input gives a validation error.
- */
-const INPUTS: Partial<Record<ComponentType, FormPayload>> = {
-  [ComponentType.DeclarationField]: getFormData(['unchecked']),
-  [ComponentType.PaymentField]: getFormData({
-    paymentId: '',
-    reference: '',
-    amount: 0,
-    description: '',
-    uuid: '',
-    formId: '',
-    isLivePayment: false
-  } as unknown as FormValue)
-}
-
-/**
- * Build a component definition for a type, with extra options merged in
- */
-function buildComponent(type: ComponentType, options = {}) {
-  const fields = EXTRA_DEFINITION_FIELDS[type]
-
-  return {
-    title: 'Example field',
-    name: 'myComponent',
-    type,
-    ...fields,
-    options: { ...fields?.options, ...options }
-  } as ComponentDef
-}
-
-/**
- * Get form input for a type
- */
-function getInput(type: ComponentType) {
-  return INPUTS[type] ?? getFormData()
-}
 
 describe('Component-level validation message override (customValidationMessage)', () => {
   // Fails when a new form ComponentType is not in one of the two lists above.
@@ -134,10 +73,7 @@ describe('Component-level validation message override (customValidationMessage)'
   let translator: ReturnType<FormModel['createTranslator']>
 
   beforeEach(() => {
-    const updated = structuredClone(definition)
-    updated.lists = [listString]
-
-    model = new FormModel(updated, { basePath: 'test' })
+    model = buildModel()
     translator = model.createTranslator()
   })
 
