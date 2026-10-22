@@ -20,6 +20,7 @@ import {
   type SelectFieldComponent,
   type TelephoneNumberFieldComponent,
   type TextFieldComponent,
+  type TrackingFieldComponent,
   type UkAddressFieldComponent,
   type YesNoFieldComponent
 } from '@defra/forms-model'
@@ -96,7 +97,8 @@ const NOT_SUPPORTED_COMPONENT_TYPES = [
   ComponentType.DeclarationField,
   ComponentType.HiddenField,
   ComponentType.GeospatialField,
-  ComponentType.PaymentField
+  ComponentType.PaymentField,
+  ComponentType.TrackingField
 ]
 
 /**
@@ -772,6 +774,29 @@ describe('Component-level validation message override (customValidationMessages)
       const overridden = new ComponentCollection([withOverride], {
         model
       }).validate(input)
+
+      expect(overridden.errors).toEqual(baseline.errors)
+    })
+
+    it('TrackingField', () => {
+      const base = {
+        title: 'Example tracking field',
+        name: 'myComponent',
+        type: ComponentType.TrackingField,
+        options: {}
+      } satisfies TrackingFieldComponent
+
+      const withOverride = {
+        ...base,
+        options: { customValidationMessages: { 'any.required': CUSTOM } }
+      } satisfies TrackingFieldComponent
+
+      const baseline = new ComponentCollection([base], { model }).validate(
+        getFormData()
+      )
+      const overridden = new ComponentCollection([withOverride], {
+        model
+      }).validate(getFormData())
 
       expect(overridden.errors).toEqual(baseline.errors)
     })

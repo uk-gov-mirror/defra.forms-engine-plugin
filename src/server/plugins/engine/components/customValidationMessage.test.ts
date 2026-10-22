@@ -36,9 +36,9 @@ import {
  *
  * The lists below record which components declare and read this option.
  * They come from reading each component's source code and its
- * `@defra/forms-model` type, not from guessing. Only 11 of the 28
+ * `@defra/forms-model` type, not from guessing. Only 11 of the 29
  * ComponentType values declare customValidationMessage on their options
- * type at all - the other 17 cannot express it, so TypeScript itself proves
+ * type at all - the other 18 cannot express it, so TypeScript itself proves
  * the option does not apply to them. No runtime test is needed for those;
  * they are listed below only so the coverage guard test accounts for every
  * ComponentType.
@@ -99,6 +99,7 @@ const NO_SINGULAR_MESSAGE_OPTION = [
   ComponentType.RadiosField,
   ComponentType.SelectField,
   ComponentType.AutocompleteField,
+  ComponentType.TrackingField,
   ComponentType.Details,
   ComponentType.Html,
   ComponentType.Markdown,
