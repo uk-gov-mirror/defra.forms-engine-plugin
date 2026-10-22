@@ -128,6 +128,39 @@ export function simplifyNestedTitles(schema, originalParentTitle = '') {
 }
 
 /**
+ * Recursively removes `enum` keywords that contain a Joi reference such as
+ * `{ ref: { path: ['conditions'] } }`. A Joi reference means the allowed values
+ * come from elsewhere in the form definition, so the enum has no fixed list to
+ * document. The doc generator renders enum values as a table, which needs
+ * primitive or array values.
+ * @param {unknown} node - The schema node to clean in place
+ */
+export function removeJoiReferenceEnums(node) {
+  if (!node || typeof node !== 'object') {
+    return
+  }
+
+  const schema = /** @type {JsonSchema} */ (node)
+
+  if (
+    Array.isArray(schema.enum) &&
+    schema.enum.some(
+      (value) =>
+        value !== null &&
+        typeof value === 'object' &&
+        !Array.isArray(value) &&
+        'ref' in value
+    )
+  ) {
+    delete schema.enum
+  }
+
+  for (const child of Object.values(schema)) {
+    removeJoiReferenceEnums(child)
+  }
+}
+
+/**
  * Process schema content by adding ID if missing and building title map
  * @param {JsonSchema} schema - Schema content to process
  * @param {string} filename - Original filename
@@ -139,6 +172,7 @@ export function processSchemaContent(schema, filename, schemaTitleMap) {
     schema.$id = `@defra/forms-model/schemas/${filename}`
   }
 
+  removeJoiReferenceEnums(schema)
   simplifyNestedTitles(schema)
   buildTitleMap(schema, filename.replace('.json', ''), schemaTitleMap)
   return schema
