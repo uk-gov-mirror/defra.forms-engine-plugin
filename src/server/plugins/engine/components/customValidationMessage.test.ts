@@ -6,12 +6,8 @@ import {
 
 import { ComponentCollection } from '~/src/server/plugins/engine/components/ComponentCollection.js'
 import { FormModel } from '~/src/server/plugins/engine/models/FormModel.js'
-import { type FormPayload } from '~/src/server/plugins/engine/types.js'
 import definition from '~/test/form/definitions/blank.js'
-import {
-  getCompositeFormData,
-  getFormData
-} from '~/test/helpers/component-helpers.js'
+import { getFormData } from '~/test/helpers/component-helpers.js'
 
 /**
  * Each component has its own test file for schema, state and view model
@@ -95,50 +91,26 @@ const NO_SINGULAR_MESSAGE_OPTION = [
   ComponentType.TrackingField
 ]
 
-interface Fixture {
-  def?: { list?: string; content?: string; options?: object; schema?: object }
-  input?: FormPayload
-}
-
 /**
- * Definition fields and form input for each type, where they differ from
- * the defaults in `buildComponent()` and `getInput()`. Each input is empty,
- * so that every component gives a validation error.
+ * Definition fields for each type, where they differ from the defaults in
+ * `buildComponent()`
  */
-const FIXTURES: Partial<Record<ComponentType, Fixture>> = {
-  [ComponentType.MultilineTextField]: { def: { schema: {} } },
-  [ComponentType.NumberField]: { def: { schema: {} } },
-  [ComponentType.EastingNorthingField]: {
-    input: getCompositeFormData({ easting: '', northing: '' })
-  },
-  [ComponentType.LatLongField]: {
-    input: getCompositeFormData({ latitude: '', longitude: '' })
-  },
-  [ComponentType.MonthYearField]: {
-    input: getCompositeFormData({ month: '', year: '' })
-  }
+const DEFINITION_FIELDS: Partial<Record<ComponentType, { schema: object }>> = {
+  [ComponentType.MultilineTextField]: { schema: {} },
+  [ComponentType.NumberField]: { schema: {} }
 }
 
 /**
  * Build a component definition for a type, with extra options merged in
  */
 function buildComponent(type: ComponentType, options = {}) {
-  const def = FIXTURES[type]?.def
-
   return {
     title: 'Example field',
     name: 'myComponent',
     type,
-    ...def,
-    options: { ...def?.options, ...options }
+    ...DEFINITION_FIELDS[type],
+    options
   } as ComponentDef
-}
-
-/**
- * Get empty form input for a type
- */
-function getInput(type: ComponentType) {
-  return FIXTURES[type]?.input ?? getFormData()
 }
 
 describe('Component-level validation message override (customValidationMessage)', () => {
@@ -171,7 +143,7 @@ describe('Component-level validation message override (customValidationMessage)'
           [buildComponent(type, OVERRIDE)],
           { model }
         )
-        const result = collection.validate(getInput(type))
+        const result = collection.validate(getFormData())
 
         expect(result.errors).toEqual([
           expect.objectContaining({ text: CUSTOM })
@@ -183,7 +155,7 @@ describe('Component-level validation message override (customValidationMessage)'
           [buildComponent(type, OVERRIDE)],
           { model }
         )
-        const result = collection.validate(getInput(type), translator)
+        const result = collection.validate(getFormData(), translator)
 
         expect(result.errors).toEqual([
           expect.objectContaining({ text: CUSTOM })
@@ -199,7 +171,7 @@ describe('Component-level validation message override (customValidationMessage)'
    */
   describe('Not supported', () => {
     it.each(NOT_SUPPORTED_COMPONENT_TYPES)('%s', (type) => {
-      const input = getInput(type)
+      const input = getFormData()
       const baseline = new ComponentCollection([buildComponent(type)], {
         model
       }).validate(input)

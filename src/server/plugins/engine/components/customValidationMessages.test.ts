@@ -12,10 +12,7 @@ import {
 } from '~/src/server/plugins/engine/types.js'
 import { listString } from '~/test/fixtures/list.js'
 import definition from '~/test/form/definitions/blank.js'
-import {
-  getCompositeFormData,
-  getFormData
-} from '~/test/helpers/component-helpers.js'
+import { getFormData } from '~/test/helpers/component-helpers.js'
 
 /**
  * Each component has its own test file for schema, state and view model
@@ -91,8 +88,8 @@ interface Fixture {
 
 /**
  * Definition fields and form input for each type, where they differ from
- * the defaults in `buildComponent()` and `getInput()`. Each input is empty,
- * so that every component gives a validation error.
+ * the defaults in `buildComponent()` and `getInput()`. Each input gives a
+ * validation error.
  */
 const FIXTURES: Partial<Record<ComponentType, Fixture>> = {
   [ComponentType.MultilineTextField]: { def: { schema: {} } },
@@ -102,35 +99,9 @@ const FIXTURES: Partial<Record<ComponentType, Fixture>> = {
   [ComponentType.SelectField]: { def: { list: 'listString' } },
   [ComponentType.AutocompleteField]: { def: { list: 'listString' } },
   [ComponentType.CheckboxesField]: { def: { list: 'listString' } },
-  [ComponentType.DatePartsField]: {
-    input: getCompositeFormData({ day: '', month: '', year: '' })
-  },
-  [ComponentType.MonthYearField]: {
-    input: getCompositeFormData({ month: '', year: '' })
-  },
-  [ComponentType.EastingNorthingField]: {
-    input: getCompositeFormData({ easting: '', northing: '' })
-  },
-  [ComponentType.LatLongField]: {
-    input: getCompositeFormData({ latitude: '', longitude: '' })
-  },
-  [ComponentType.UkAddressField]: {
-    input: getCompositeFormData({
-      addressLine1: '',
-      addressLine2: '',
-      town: '',
-      county: '',
-      postcode: '',
-      uprn: ''
-    })
-  },
   [ComponentType.DeclarationField]: {
     def: { content: 'Lorem ipsum dolar sit amet' },
     input: getFormData(['unchecked'])
-  },
-  [ComponentType.GeospatialField]: {
-    def: { options: { required: true } },
-    input: getFormData('')
   },
   [ComponentType.PaymentField]: {
     def: {
