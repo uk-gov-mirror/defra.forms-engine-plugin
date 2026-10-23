@@ -12,9 +12,9 @@ import {
 import {
   EVENTS,
   createMap,
-  defaultConfig,
   getCentroidGridRef,
   getCoordinateGridRef,
+  getDefaultConfig,
   getMapCountryLayers,
   getMapLayers
 } from '~/src/client/javascripts/map.js'
@@ -219,11 +219,11 @@ export function processGeospatial(config, geospatial, index) {
 
   // Create a map dataset plugin if there are any present
   if (datasets.length) {
-    plugins.push(createDatasetsPlugin({ datasets }))
+    plugins.push(createDatasetsPlugin({ id: `datasets_${mapId}`, datasets }))
   }
 
   const initConfig = {
-    ...defaultConfig,
+    ...getDefaultConfig(),
     bounds,
     plugins
   }

@@ -10,8 +10,8 @@ import {
   EVENTS,
   centerMap,
   createMap,
-  defaultConfig,
   eastingNorthingToLatLong,
+  getDefaultConfig,
   getMapCountryLayers,
   getMapLayers,
   latLongToEastingNorthing,
@@ -446,7 +446,7 @@ export function processLocation(config, location, index) {
   mapContainer.setAttribute('id', mapId)
   mapContainer.setAttribute('class', 'map-container')
 
-  const initConfig = getInitMapConfig(location) ?? defaultConfig
+  const initConfig = getInitMapConfig(location) ?? getDefaultConfig()
 
   locationInputs.after(mapContainer)
 
@@ -460,7 +460,9 @@ export function processLocation(config, location, index) {
 
   // Create a map dataset plugin if there are any present
   if (datasets.length) {
-    initConfig.plugins = [createDatasetsPlugin({ datasets })]
+    initConfig.plugins = [
+      createDatasetsPlugin({ id: `datasets_${mapId}`, datasets })
+    ]
   }
 
   const lang = /** @type {LanguageCode} */ (

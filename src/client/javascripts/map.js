@@ -122,10 +122,15 @@ export function getCentroidGridRef(feature) {
   }
 }
 
-/** @type {InteractiveMapInitConfig} */
-export const defaultConfig = {
-  zoom: '6',
-  center: [DEFAULT_LONG, DEFAULT_LAT]
+/**
+ * Get the default config for a map
+ * @returns {InteractiveMapInitConfig}
+ */
+export const getDefaultConfig = () => {
+  return {
+    zoom: '6',
+    center: [DEFAULT_LONG, DEFAULT_LAT]
+  }
 }
 
 export const EVENTS = {
