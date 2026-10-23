@@ -57,6 +57,14 @@ const NOT_SUPPORTED_COMPONENT_TYPES: FormComponentsDef['type'][] = [
 ]
 
 describe('Component-level validation message override (customValidationMessages)', () => {
+  let model: FormModel
+  let translator: ReturnType<FormModel['createTranslator']>
+
+  beforeEach(() => {
+    model = buildModel()
+    translator = model.createTranslator()
+  })
+
   // Fails when a new form ComponentType is not in one of the two lists above.
   it('accounts for every form ComponentType', () => {
     const accountedFor = [
@@ -68,14 +76,6 @@ describe('Component-level validation message override (customValidationMessages)
     expect([...accountedFor].sort()).toEqual(
       Object.values(ComponentType).filter(isFormType).sort()
     )
-  })
-
-  let model: FormModel
-  let translator: ReturnType<FormModel['createTranslator']>
-
-  beforeEach(() => {
-    model = buildModel()
-    translator = model.createTranslator()
   })
 
   describe('Supported', () => {
