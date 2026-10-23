@@ -460,9 +460,7 @@ export function processLocation(config, location, index) {
 
   // Create a map dataset plugin if there are any present
   if (datasets.length) {
-    initConfig.plugins = [
-      createDatasetsPlugin({ id: `datasets_${mapId}`, datasets })
-    ]
+    initConfig.plugins = [createDatasetsPlugin({ datasets })]
   }
 
   const lang = /** @type {LanguageCode} */ (

@@ -219,7 +219,7 @@ export function processGeospatial(config, geospatial, index) {
 
   // Create a map dataset plugin if there are any present
   if (datasets.length) {
-    plugins.push(createDatasetsPlugin({ id: `datasets_${mapId}`, datasets }))
+    plugins.push(createDatasetsPlugin({ datasets }))
   }
 
   const initConfig = {
