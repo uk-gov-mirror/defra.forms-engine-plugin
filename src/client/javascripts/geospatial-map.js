@@ -1,7 +1,7 @@
 // @ts-expect-error - no types
 import createDatasetsPlugin from '@defra/interactive-map/plugins/datasets'
 // @ts-expect-error - no types
-import createDrawPlugin from '@defra/interactive-map/plugins/draw-ml'
+import createDrawPlugin from '@defra/interactive-map/plugins/draw'
 import { bbox } from '@turf/bbox'
 
 import {
